@@ -1,0 +1,11 @@
+include     'macgyver-metrics',
+            'macgyver-core',
+           // 'macgyver-cloud-vsphere',
+            'macgyver-github',
+            'macgyver-cloud',
+            'macgyver-mongodb',
+            'macgyver-jdbc', 
+            'macgyver-http',
+            'macgyver-test-project',
+            'macgyver-scheduler',
+            'macgyver-test'

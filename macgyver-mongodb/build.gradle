@@ -1,0 +1,18 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin:'application'
+
+
+
+
+
+dependencies {
+
+	
+    compile 'org.mongodb:mongo-java-driver:2.11.3'
+	compile project(':macgyver-core')
+	testCompile project(":macgyver-test")
+
+}
+

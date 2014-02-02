@@ -1,0 +1,23 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin:'application'
+
+
+configurations {
+	all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
+	all*.exclude group: 'log4j'
+	all*.exclude group: 'xml-apis'
+}
+
+
+dependencies {
+
+
+    testCompile 'junit:junit:4.11'
+    // testCompile
+	compile project(':macgyver-elb')
+	compile project(':macgyver-core')
+}
+
+

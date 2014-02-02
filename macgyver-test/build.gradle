@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin:'application'
+
+
+configurations {
+	all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
+	all*.exclude group: 'log4j'
+	all*.exclude group: 'xml-apis'
+    all*.exclude group: 'commons-logging'
+}
+
+
+
+dependencies {
+
+	compile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
+	compile "org.slf4j:jcl-over-slf4j:${SLF4J_VERSION}"
+	compile "org.springframework:spring-test:${SPRING_VERSION}"
+	compile "org.springframework:spring-context:${SPRING_VERSION}"
+	compile "org.springframework:spring-core:${SPRING_VERSION}"
+    compile "junit:junit:${JUNIT_VERSION}"
+
+
+}
+

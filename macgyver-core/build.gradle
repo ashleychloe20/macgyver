@@ -1,0 +1,53 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'groovy'
+apply plugin:'application'
+
+/*
+configurations {
+	all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
+	all*.exclude group: 'log4j'
+	all*.exclude group: 'xml-apis'
+    all*.exclude group: 'commons-logging'
+}*/
+
+mainClassName = 'io.macgyver.core.CLI'
+
+
+dependencies {
+
+    compile ('org.glassfish.jersey.core:jersey-client:2.5')
+    compile "org.slf4j:jcl-over-slf4j:${SLF4J_VERSION}"
+    compile 'org.glassfish.jersey.media:jersey-media-json-processing:2.5'
+    compile 'com.google.guava:guava:15.0'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile "org.springframework:spring-context-support:${SPRING_VERSION}"
+
+    compile 'commons-cli:commons-cli:1.2'
+    compile 'org.codehaus.groovy:groovy-all:2.1.9'
+
+    compile 'commons-cli:commons-cli:1.2'
+    compile 'com.ning:async-http-client:1.7.23'
+	provided "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
+	testCompile "org.springframework:spring-test:${SPRING_VERSION}"
+    testCompile project(":macgyver-test")
+
+
+
+}
+
+task showRepos << {
+    println "All repos:"
+    println repositories.collect { it.name }
+}
+
+run {  
+    
+    if ( project.hasProperty("macgyver.project.dir")) {
+        systemProperty "macgyver.project.dir", project['macgyver.project.dir']
+    }
+    if ( project.hasProperty("appArgs") ) {  
+        args Eval.me(appArgs)  
+    }  
+}

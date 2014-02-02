@@ -1,0 +1,18 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+.settings
+.classpath
+.project
+bin/
+.gradle
+build/
+workspace
+*.bak
+x
+macgyver-grails/target
+logs/
+macgyver-cloud*
