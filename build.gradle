@@ -3,10 +3,11 @@
 task wrapper(type: Wrapper) {
     gradleVersion = '1.10'
 }
-allprojects {
+/*allprojects {
     group 'io.macgyver'
     version = '1.0.0-SNAPSHOT'
 }
+*/
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
@@ -15,7 +16,7 @@ subprojects {
 	
     
     group 'io.macgyver'
-    version = '1.0.0-SNAPSHOT'
+    version = '0.9.0'
     
     
     configurations {
