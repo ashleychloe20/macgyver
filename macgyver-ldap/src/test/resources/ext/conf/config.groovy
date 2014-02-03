@@ -4,9 +4,8 @@ services {
         defaultService {
             url="ldap://myserver.com"
             userDn="cn=service-account,DC=example,DC=com"
-            passwprd="tiger"
+            password="tiger"
             
-
         }
 
     }
