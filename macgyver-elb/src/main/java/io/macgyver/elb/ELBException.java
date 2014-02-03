@@ -1,6 +1,8 @@
-package io.macgyver.elb.a10;
+package io.macgyver.elb;
 
-public class ELBException extends RuntimeException {
+import io.macgyver.core.MacGyverException;
+
+public class ELBException extends MacGyverException {
 
 	public ELBException() {
 		super();

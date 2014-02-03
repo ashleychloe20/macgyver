@@ -1,5 +1,7 @@
 package io.macgyver.elb.a10;
 
+import io.macgyver.elb.ELBException;
+
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;

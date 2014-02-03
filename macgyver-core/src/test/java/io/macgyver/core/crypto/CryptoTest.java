@@ -1,6 +1,8 @@
 package io.macgyver.core.crypto;
 
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.KeyStoreException;
 
@@ -10,6 +12,10 @@ import javax.json.JsonObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.BaseEncoding;
+import com.ning.http.util.Base64;
 
 import io.macgyver.test.MacgyverIntegrationTest;
 
@@ -33,7 +39,9 @@ public class CryptoTest extends MacgyverIntegrationTest {
 	
 	@Test
 	public void testDecryptWithMac0() throws GeneralSecurityException {
-		String input = "{\"k\":\"mac0\",\"d\":\"XF3+l0ncJvioma7canvCe+NhHchjFqy7iGWm5/ymQgU=\"}";
+		
+		String input = "eyJrIjoibWFjMCIsImQiOiJYRjMrbDBuY0p2aW9tYTdjYW52Q2UrTmhIY2hqRnF5N2lHV201L3ltUWdVPSJ9";
+		String x = BaseEncoding.base64().encode(input.getBytes(Charsets.UTF_8));
 		
 		String plain = crypto.decryptString(input);
 		
@@ -48,9 +56,11 @@ public class CryptoTest extends MacgyverIntegrationTest {
 		String cipherEnvelope = crypto.encryptString("test", "invalid");
 	}
 	@Test
-	public void testEncrypt() throws GeneralSecurityException {
-		String cipherEnvelope = crypto.encryptString("test", "mac0");
-		JsonObject obj = Json.createReader(new StringReader(cipherEnvelope)).readObject();
+	public void testEncrypt() throws GeneralSecurityException , UnsupportedEncodingException{
+		String encodedEnvelope = crypto.encryptString("test", "mac0");
+		String envelope = new String(BaseEncoding.base64().decode(encodedEnvelope),"UTF-8");
+		
+		JsonObject obj = Json.createReader(new StringReader(envelope)).readObject();
 		
 		Assert.assertEquals("mac0",obj.getString("k"));
 		Assert.assertTrue(obj.getString("d").length()>10);

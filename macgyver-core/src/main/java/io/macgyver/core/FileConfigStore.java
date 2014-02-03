@@ -50,7 +50,7 @@ public class FileConfigStore extends ConfigStore {
 			return Optional.fromNullable(co);
 
 		} catch (IOException e) {
-			throw new MultiToolException(e);
+			throw new MacGyverException(e);
 
 		}
 

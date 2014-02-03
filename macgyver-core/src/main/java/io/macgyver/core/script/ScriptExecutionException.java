@@ -1,8 +1,8 @@
 package io.macgyver.core.script;
 
-import io.macgyver.core.MultiToolException;
+import io.macgyver.core.MacGyverException;
 
-public class ScriptExecutionException extends MultiToolException {
+public class ScriptExecutionException extends MacGyverException {
 
 	public ScriptExecutionException() {
 		super();

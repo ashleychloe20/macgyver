@@ -1,7 +1,7 @@
 package io.macgyver.github;
 
 import groovy.util.ConfigObject;
-import io.macgyver.core.MultiToolException;
+import io.macgyver.core.MacGyverException;
 import io.macgyver.core.ServiceFactory;
 
 import java.io.IOException;
@@ -37,7 +37,7 @@ public class GitHubClientFactory extends ServiceFactory<GitHub> {
 			}
 			return gh;
 		} catch (IOException e) {
-			throw new MultiToolException(e);
+			throw new MacGyverException(e);
 		}
 
 	}

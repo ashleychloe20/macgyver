@@ -128,7 +128,10 @@ public class Crypto {
 	 * @return
 	 */
 	Optional<JsonObject> decodeEnvelope(String input) {
+		
+		
 		try {
+			input = new String(BaseEncoding.base64().decode(input),"UTF-8");
 			if (input==null || input.length()<2 || input.charAt(0)!='{') {
 				return Optional.absent();
 			}
@@ -191,8 +194,9 @@ public class Crypto {
 			cos.close();
 
 			String encoded = BaseEncoding.base64().encode(baos.toByteArray());
-			return Json.createObjectBuilder().add("k", alias)
-					.add("d", encoded).build().toString();
+			String encodedEnvelope = BaseEncoding.base64().encode(Json.createObjectBuilder().add("k", alias)
+					.add("d", encoded).build().toString().getBytes("UTF-8"));
+			return encodedEnvelope;
 
 		} catch (IOException e) {
 			throw new GeneralSecurityException(e);

@@ -71,7 +71,7 @@ public class Kernel implements InitializingBean, ApplicationContextAware {
 					"spring context already initialized");
 		}
 		if (startupError != null) {
-			throw new MultiToolException(startupError);
+			throw new MacGyverException(startupError);
 		}
 	}
 

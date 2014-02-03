@@ -1,7 +1,7 @@
 package io.macgyver.mongodb;
 
 import io.macgyver.core.ConfigurationException;
-import io.macgyver.core.MultiToolException;
+import io.macgyver.core.MacGyverException;
 
 import java.net.UnknownHostException;
 
@@ -42,7 +42,7 @@ public class MongoClientServiceFactory extends
 			
 			return mc;
 		} catch (UnknownHostException e) {
-			throw new MultiToolException(e);
+			throw new MacGyverException(e);
 		}
 	}
 	

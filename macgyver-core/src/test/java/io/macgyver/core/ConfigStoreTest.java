@@ -1,33 +1,39 @@
 package io.macgyver.core;
 
+import java.security.GeneralSecurityException;
+
+import io.macgyver.core.crypto.Crypto;
+import io.macgyver.test.MacgyverIntegrationTest;
+
 import javax.json.JsonObject;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import groovy.util.ConfigObject;
 import groovy.util.ConfigSlurper;
 
 import com.google.common.base.Optional;
 
-public class ConfigStoreTest {
+public class ConfigStoreTest extends MacgyverIntegrationTest{
 
-	ConfigStore cs = new ConfigStore() {
-
-		@Override
-		public Optional<ConfigObject> getRootConfigObject() {
-			return Optional.of(new ConfigSlurper().parse("a=1\nfoo='bar'\ntest {\nb=2\n}\n"));
-			
-		}
-		
-	};
+	Logger logger = LoggerFactory.getLogger(ConfigStoreTest.class);
+	@Autowired
+	Crypto crypto;
+	
+	@Autowired
+	ConfigStore configStore;
 	
 
 	
 	@Test
-	public void testX() {
-		JsonObject root = cs.getRootConfig();
-		System.out.println(root);
+	public void testX() throws GeneralSecurityException {
+
+		JsonObject root = configStore.getRootConfig();
+		logger.debug("CS: "+root);
 	}
 	
 }

@@ -1,6 +1,6 @@
 package io.macgyver.metrics.leftronic;
 
-import io.macgyver.core.MultiToolException;
+import io.macgyver.core.MacGyverException;
 
 import java.io.IOException;
 
@@ -50,7 +50,7 @@ public class LeftronicClient {
 					.execute(h);
 
 		} catch (IOException e) {
-			throw new MultiToolException(e);
+			throw new MacGyverException(e);
 		}
 		finally {
 			if (asyncHttpClient!=null) {

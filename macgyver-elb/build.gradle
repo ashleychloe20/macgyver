@@ -12,10 +12,11 @@ configurations {
 
 
 dependencies {
-	compile project(':macgyver-elb')
+
+
+
 	compile project(':macgyver-core')
-    
-    testCompile project(":macgyver-test")
+    testCompile project(':macgyver-test')
 }
 
 
