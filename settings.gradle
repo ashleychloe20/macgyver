@@ -1,6 +1,7 @@
 include     'macgyver-metrics',
             'macgyver-core',
             'macgyver-ldap',
+            'macgyver-email',
             'macgyver-cloud',
             'macgyver-cloud-vsphere',
             'macgyver-elb',
