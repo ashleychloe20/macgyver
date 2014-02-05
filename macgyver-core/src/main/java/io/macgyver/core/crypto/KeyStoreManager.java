@@ -91,6 +91,7 @@ public class KeyStoreManager {
 		try {
 			File keyStoreLocation = getKeyStoreLocation();
 			if (!keyStoreLocation.exists()) {
+				keyStoreLocation.getParentFile().mkdirs();
 				KeyStore ks = KeyStore.getInstance("JCEKS");
 				ks.load(null,  getKeyStorePassword());
 				
