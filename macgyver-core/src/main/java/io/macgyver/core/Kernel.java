@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.runtime.metaclass.MissingMethodExceptionNoStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,8 +89,11 @@ public class Kernel implements ApplicationContextAware {
 				} catch (IOException e) {
 					throw new IllegalStateException(e);
 				}
-				catch (GroovyRuntimeException e) {
-					throw new IllegalStateException(gbf+" must return a java.lang.Class");
+				catch (MultipleCompilationErrorsException e) {
+					throw e;
+				}
+				catch (RuntimeException e) {
+					throw new IllegalStateException(gbf+" must return a java.lang.Class",e);
 				}
 			}
 			kernelRef.set(k);

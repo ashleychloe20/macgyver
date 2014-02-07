@@ -23,7 +23,7 @@ public class TestConfig {
 			public void postProcessBeanFactory(
 					ConfigurableListableBeanFactory beanFactory) throws BeansException {
 					GroovyShell gs = new GroovyShell();
-					ApplicationContext ctx  = (ApplicationContext) gs.evaluate("io.macgyver.core.Kernel.getInstance().getApplicationContext()");
+					ApplicationContext ctx  = (ApplicationContext) gs.evaluate("import io.macgyver.core.Kernel\nKernel.getInstance().getApplicationContext()");
 					beanFactory.setParentBeanFactory(ctx);
 				
 			}

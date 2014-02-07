@@ -1,25 +1,20 @@
 package io.macgyver.github;
 
-import io.macgyver.core.MacGyverException;
-import io.macgyver.core.ServiceFactoryBean;
+import io.macgyver.core.ServiceFactory;
 
 import java.io.IOException;
-import java.util.Properties;
-
-import javax.json.JsonObject;
 
 import org.kohsuke.github.GitHub;
 
-public class GitHubClientFactory extends ServiceFactoryBean<GitHub> {
+public class GitHubClientFactory implements ServiceFactory<GitHub> {
 
 	public GitHubClientFactory() {
-		super(GitHub.class);
-	
+
 	}
 
 	String url;
 	String oauthToken;
-	
+
 	public String getUrl() {
 		return url;
 	}
@@ -36,19 +31,20 @@ public class GitHubClientFactory extends ServiceFactoryBean<GitHub> {
 		this.oauthToken = oauthToken;
 	}
 
-
-
 	@Override
-	public GitHub getObject() throws Exception {
-		GitHub gh = null;
-		if (url != null) {
-			gh = GitHub.connectToEnterprise(url, oauthToken);
-		} else {
-			gh = GitHub.connectUsingOAuth(oauthToken);
+	public GitHub get() {
+		try {
+			GitHub gh = null;
+			if (url != null) {
+				gh = GitHub.connectToEnterprise(url, oauthToken);
+			} else {
+				gh = GitHub.connectUsingOAuth(oauthToken);
 
+			}
+			return gh;
+		} catch (IOException e) {
+			throw new io.macgyver.core.ConfigurationException("problem creating GitHub client", e);
 		}
-		return gh;
 	}
 
-	
 }

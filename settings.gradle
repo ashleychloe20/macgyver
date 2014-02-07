@@ -11,6 +11,8 @@ include     'macgyver-metrics',
             'macgyver-mongodb',
             'macgyver-jdbc', 
             'macgyver-http',
+            'macgyver-chat',
+            'macgyver-newrelic',
             'macgyver-test-project',
             'macgyver-scheduler',
             'macgyver-test'
