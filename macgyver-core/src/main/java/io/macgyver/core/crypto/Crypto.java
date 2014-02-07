@@ -11,6 +11,8 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.SecureRandom;
+import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
 
@@ -35,16 +38,21 @@ public class Crypto {
 
 	Logger logger = LoggerFactory.getLogger(Crypto.class);
 
-	@Autowired
-	KeyStoreManager keyStoreManager;
+	public static Crypto instance;
+
+	KeyStoreManager keyStoreManager = new KeyStoreManager();
+
+	public KeyStoreManager getKeyStoreManager() {
+		return keyStoreManager;
+	}
 
 	public String encryptString(String plainText, String alias)
 			throws GeneralSecurityException {
 		KeyStore ks = keyStoreManager.getKeyStore();
 		SecretKey sk = (SecretKey) ks.getKey(alias,
 				keyStoreManager.getPasswordForKey(alias));
-		if (sk==null) {
-			throw new KeyStoreException("no such key: "+alias);
+		if (sk == null) {
+			throw new KeyStoreException("no such key: " + alias);
 		}
 		return encryptString(plainText, sk, alias);
 
@@ -106,8 +114,7 @@ public class Crypto {
 			return decryptedString;
 		} catch (IOException e) {
 			throw new GeneralSecurityException(e);
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			throw new GeneralSecurityException(e);
 		}
 
@@ -128,11 +135,10 @@ public class Crypto {
 	 * @return
 	 */
 	Optional<JsonObject> decodeEnvelope(String input) {
-		
-		
+
 		try {
-			input = new String(BaseEncoding.base64().decode(input),"UTF-8");
-			if (input==null || input.length()<2 || input.charAt(0)!='{') {
+			input = new String(BaseEncoding.base64().decode(input), "UTF-8");
+			if (input == null || input.length() < 2 || input.charAt(0) != '{') {
 				return Optional.absent();
 			}
 			JsonObject obj = Json.createReader(new StringReader(input))
@@ -194,8 +200,10 @@ public class Crypto {
 			cos.close();
 
 			String encoded = BaseEncoding.base64().encode(baos.toByteArray());
-			String encodedEnvelope = BaseEncoding.base64().encode(Json.createObjectBuilder().add("k", alias)
-					.add("d", encoded).build().toString().getBytes("UTF-8"));
+			String encodedEnvelope = BaseEncoding.base64().encode(
+					Json.createObjectBuilder().add("k", alias)
+							.add("d", encoded).build().toString()
+							.getBytes("UTF-8"));
 			return encodedEnvelope;
 
 		} catch (IOException e) {
@@ -217,6 +225,19 @@ public class Crypto {
 
 		baos.close();
 		return baos.toByteArray();
+	}
+
+	public Properties decryptProperties(Properties input) {
+		
+		Preconditions.checkNotNull(input);
+		Properties out = new Properties();
+		for (Object key : input.keySet()) {
+			String val = input.getProperty(key.toString());
+			val = decryptStringWithPassThrough(val);
+			out.put(key, val);
+		}
+
+		return out;
 	}
 
 }

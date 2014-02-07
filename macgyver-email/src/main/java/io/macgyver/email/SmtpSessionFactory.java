@@ -1,9 +1,20 @@
 package io.macgyver.email;
 
+import io.macgyver.core.ServiceFactoryBean;
+
+import javax.json.JsonObject;
 import javax.mail.Session;
 
-import io.macgyver.core.ServiceFactory;
+public class SmtpSessionFactory  {
 
-public class SmtpSessionFactory extends ServiceFactory<Session> {
+	public SmtpSessionFactory() {
+	
+	}
+
+
+	public Session create() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

@@ -14,7 +14,7 @@ public class JettyConfig {
 	@Bean
 	public JettyServer jettyServer() {
 		return new JettyServer(8080);
-
+		
 	}
 
 	@Bean

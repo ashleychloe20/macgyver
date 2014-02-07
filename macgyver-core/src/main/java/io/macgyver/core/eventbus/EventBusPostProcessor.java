@@ -34,7 +34,9 @@ public class EventBusPostProcessor implements BeanPostProcessor,
 			throws BeansException {
 
 		if (bean!=this && !(bean instanceof EventBus) && !(bean instanceof ContextRefreshApplicationListener)) {
-			if (bean.getClass().getPackage().getName()
+			Package p = bean.getClass().getPackage();
+			
+			if (p!=null && p.getName()
 					.startsWith("io.macgyver")) {
 				log.info("registering spring bean {} with {}", beanName,
 						eventBus);

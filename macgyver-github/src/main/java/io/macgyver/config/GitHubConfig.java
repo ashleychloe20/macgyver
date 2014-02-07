@@ -13,14 +13,6 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 @Configuration
 public class GitHubConfig {
 
-	@Bean(name={"githubClientFactory","gitHubClientFactory"})
-	public GitHubClientFactory gitHubClientFactory() {
-		
-		GHRepository r;
-		
-		
-		return new GitHubClientFactory();
-		
-	}
+	
 	
 }

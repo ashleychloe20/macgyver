@@ -1,5 +1,7 @@
 
 
+println "HELLO!!!!"
+foo="bar"
 services {
 
     foo {

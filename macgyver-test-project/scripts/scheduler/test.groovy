@@ -1,3 +1,3 @@
 // #@Schedule {"cron":"*/5 * * * * ?"}
 
-println "test"
+println "test ${beans['testds']}"

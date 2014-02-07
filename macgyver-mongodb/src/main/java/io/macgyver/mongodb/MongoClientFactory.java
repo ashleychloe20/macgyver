@@ -1,24 +1,31 @@
 package io.macgyver.mongodb;
 
 import io.macgyver.core.ConfigurationException;
-import io.macgyver.core.MacGyverException;
+import io.macgyver.core.ServiceFactoryBean;
 
 import java.net.UnknownHostException;
 
-import javax.json.JsonObject;
-
-import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
-public class MongoClientServiceFactory extends
-		io.macgyver.core.ServiceFactory<MongoClient> {
+public class MongoClientFactory extends
+		ServiceFactoryBean<MongoClient> {
 
-	public MongoClientServiceFactory() {
-		super("mongodb");
+	public MongoClientFactory() {
+		super(MongoClient.class);
 		
 	}
 
+	String uri;
+	
+	public MongoClient getObject() {
+		try {
+		return new ExtendedMongoClient(new MongoClientURI(uri));
+		}
+		catch (UnknownHostException e) {
+			throw new ConfigurationException(e);
+		}
+	}
 	public class ExtendedMongoClient extends MongoClient {
 
 		MongoClientURI mongoClientUri;
@@ -30,22 +37,8 @@ public class MongoClientServiceFactory extends
 		}
 		
 	}
-	@Override
-	public MongoClient create(String name, JsonObject obj) {
-		try {
-			
-		
-			String url = obj.getString("url");
-			MongoClientURI mci = new MongoClientURI(url);
-
-			ExtendedMongoClient mc = new ExtendedMongoClient(mci);
-			
-			return mc;
-		} catch (UnknownHostException e) {
-			throw new MacGyverException(e);
-		}
-	}
 	
+	/*
 	public DB getDB(String name) {
 		ExtendedMongoClient c = (ExtendedMongoClient) get(name);
 		String dbName = c.mongoClientUri.getDatabase();
@@ -55,5 +48,5 @@ public class MongoClientServiceFactory extends
 		return c.getDB(dbName);
 		
 	}
-
+	*/
 }

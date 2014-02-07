@@ -57,15 +57,13 @@ public class Kernel implements InitializingBean, ApplicationContextAware {
 
 	public synchronized static void initialize() {
 		if (kernelRef.get() == null) {
-			try {
-				Kernel k = new Kernel(new File(".").getCanonicalFile());
+	
+				Kernel k = new Kernel(Kernel.determineExtensionDir());
 
 				k.applicationContext = new AnnotationConfigApplicationContext(
 						CoreConfig.class.getPackage().getName());
 				kernelRef.set(k);
-			} catch (IOException e) {
-				throw new ConfigurationException(e);
-			}
+			
 		} else {
 			throw new IllegalStateException(
 					"spring context already initialized");
@@ -116,14 +114,33 @@ public class Kernel implements InitializingBean, ApplicationContextAware {
 	static String profile = null;
 
 	public static synchronized String getExecutionProfile() {
-		if (profile==null){
+		if (profile == null) {
 			String p = System.getProperty("profile");
 			if (!Strings.isNullOrEmpty(p)) {
 				profile = p;
-				logger.info("execution profile: {}",profile);
-			
+				logger.info("execution profile: {}", profile);
+
 			}
 		}
 		return profile;
+	}
+
+	public static File determineExtensionDir() {
+		try {
+			String location = System.getProperty("macgyver.ext.location");
+
+			if (!Strings.isNullOrEmpty(location)) {
+				return new File(location).getCanonicalFile();
+			}
+			File extLocation = new File("./src/test/resources/ext");
+			if (extLocation.exists()) {
+				return extLocation.getCanonicalFile();
+			}
+			return new File(".").getCanonicalFile();
+
+		} catch (IOException e) {
+			throw new ConfigurationException(e);
+		}
+
 	}
 }

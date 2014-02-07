@@ -11,14 +11,7 @@ import org.kohsuke.github.GitHub;
 
 public class GitHubTest extends MacgyverIntegrationTest {
 
-	
-	@Test(expected=ServiceNotFoundException.class)
-	public void testGitHubInvalidService() throws IOException {
-		
-		
-		GitHubClientFactory cf = Kernel.getInstance().getApplicationContext().getBean(GitHubClientFactory.class);
-		GitHub gh = cf.get("INVALID");
-		
-		
+	@Test
+	public void testX() {
 	}
 }

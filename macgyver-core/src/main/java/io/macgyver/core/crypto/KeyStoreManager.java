@@ -32,11 +32,10 @@ public class KeyStoreManager {
 	private char[] globalKeyPass = defaultPass;
 	KeyStore keyStore;
 
-	@Autowired
-	Kernel kernel;
+
 	
 	public File getKeyStoreLocation() {
-		return new File(kernel.getExtensionDir(),
+		return new File(Kernel.determineExtensionDir(),
 				"conf/keystore.jceks");
 	}
 

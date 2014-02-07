@@ -22,7 +22,15 @@ public abstract class Command {
 	}
 
 	protected void doShutdownKernel() {
-		ConfigurableApplicationContext ctx = (ConfigurableApplicationContext) Kernel
+		Kernel k = null;
+		
+		try {
+		k = Kernel.getInstance();
+		}
+		catch (IllegalStateException e) {
+			return;
+		}
+		ConfigurableApplicationContext ctx = (ConfigurableApplicationContext) k
 				.getInstance().getApplicationContext();
 		ctx.close();
 	}

@@ -20,9 +20,19 @@ public class LeftronicClient {
 	String url = DEFAULT_URL;
 	String apiKey;
 
-	public LeftronicClient(String apiKey) {
+
+	public void LeftronicClient() {
+	
+	}
+	
+	public String getApiKey() {
+		return apiKey;
+	}
+
+	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
 	}
+
 	public void send(String streamName, long val) {
 
 		AsyncHttpClient asyncHttpClient = null;

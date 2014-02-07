@@ -15,13 +15,11 @@ import com.google.common.collect.Maps;
 
 public class DataSourceSparklet extends Sparklet {
 
-	@Autowired
-	DataSourceFactory dataSourceFactory;
 
 	@Override
 	public void init() {
 
-		
+		/*
 		get(new MacGyverFreeMarkerRoute("/jdbc/datasources") {
 
 			@Override
@@ -32,6 +30,7 @@ public class DataSourceSparklet extends Sparklet {
 				return modelAndView(m, "jdbcDataSources.ftl");
 			}
 		});
+		*/
 	}
 
 }

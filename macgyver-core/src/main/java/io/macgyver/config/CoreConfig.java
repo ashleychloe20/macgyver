@@ -1,10 +1,10 @@
 package io.macgyver.config;
 
-import io.macgyver.core.ConfigStore;
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
-import io.macgyver.core.FileConfigStore;
 import io.macgyver.core.Kernel;
+import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
+import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
 import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.crypto.KeyStoreManager;
@@ -40,35 +40,14 @@ public class CoreConfig {
 	static Logger logger = LoggerFactory.getLogger(CoreConfig.class);
 
 	@Value("${macgyver.ext.location:.}")
-	String extLocation;
+	public String extLocation;
 
 	@Bean(name = "macgyverConfigurer")
 	static public PropertySourcesPlaceholderConfigurer macgyverConfigurer() {
-		PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
-
-		FileSystemResource testResource = new FileSystemResource(new File(".",
-				"src/test/resources/macgyver-test.properties"));
-		List<Resource> rlist = Lists.newArrayList();
-
-		if (testResource.exists()) {
-			rlist.add(testResource);
-		} else {
-			logger.info("not using {} because file does not exist",
-					testResource.getFile().getAbsolutePath());
-		}
-		pspc.setLocations(rlist.toArray(new Resource[0]));
-		pspc.setIgnoreResourceNotFound(true);
-		pspc.setIgnoreUnresolvablePlaceholders(true);
-		return pspc;
+		return new MacGyverPropertySourcesPlaceholderConfigurer();
 	}
 
-	@Bean(name = "configStore")
-	public ConfigStore configStore() {
-		FileConfigStore fcs = new FileConfigStore(new File(extLocation,
-				"conf/config.groovy"));
 
-		return fcs;
-	}
 
 	@Bean
 	public ContextRefreshApplicationListener contextRefreshApplicationListener() {
@@ -95,7 +74,7 @@ public class CoreConfig {
 	public Kernel createKernel() {
 
 		logger.info("macgyver.ext.location: {}", extLocation);
-		File extensionDir = new File(extLocation);
+		File extensionDir = Kernel.determineExtensionDir();
 
 		return new Kernel(extensionDir);
 	}
@@ -117,12 +96,12 @@ public class CoreConfig {
 
 	@Bean
 	public KeyStoreManager keyStoreManager() {
-		return new KeyStoreManager();
+		return crypto().getKeyStoreManager();
 	}
 
 	@Bean
 	public Crypto crypto() {
-		return new Crypto();
+		return Crypto.instance;
 	}
 
 	@Bean(name = "testOverride")
@@ -136,4 +115,11 @@ public class CoreConfig {
 		return new AutowiredAnnotationBeanPostProcessor();
 		
 	}
+	
+	@Bean
+	public static MacGyverBeanFactoryPostProcessor macGyverBeanFactoryPostProcessor() {
+		return new MacGyverBeanFactoryPostProcessor(Kernel.determineExtensionDir());
+	}
+	
+	
 }
