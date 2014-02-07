@@ -16,6 +16,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -240,4 +241,8 @@ public class Crypto {
 		return out;
 	}
 
+	@PostConstruct
+	public void createKeyStoreIfNotPresent() {
+		keyStoreManager.createKeyStoreIfNotPresent();
+	}
 }

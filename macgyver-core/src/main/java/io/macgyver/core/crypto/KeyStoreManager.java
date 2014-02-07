@@ -84,7 +84,7 @@ public class KeyStoreManager {
 		return kg.generateKey();
 	}
 
-	@PostConstruct
+
 	public void createKeyStoreIfNotPresent() {
 		Closer closer = Closer.create();
 		try {

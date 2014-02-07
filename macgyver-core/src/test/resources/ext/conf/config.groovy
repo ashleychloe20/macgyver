@@ -12,3 +12,6 @@ services {
    
 
 }
+
+myTestBean.foo="xxx"
+anotherTestBean.foo="xxx"

@@ -1,24 +1,18 @@
-import io.macgyver.core.TestBean
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
 
-
-
-
-beans {
-
-    myTestBean(TestBean) {
-      
-        foo = prop.SOME_TEST_PROPERTY
-    }
+@Configuration
+class MyConfig {
     
-    yadda(Yadda) {
-        
+    @Bean
+    def testObject() {
+        println "creating!!!!"
+        return "test"
+    
     }
 
 }
 
 
-class Yadda {
-
-}
+return MyConfig.class

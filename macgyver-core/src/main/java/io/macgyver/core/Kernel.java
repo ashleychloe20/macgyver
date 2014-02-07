@@ -1,11 +1,14 @@
 package io.macgyver.core;
 
+import groovy.lang.GroovyRuntimeException;
+import groovy.lang.GroovyShell;
 import io.macgyver.config.CoreConfig;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.codehaus.groovy.runtime.metaclass.MissingMethodExceptionNoStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -17,7 +20,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
-public class Kernel implements InitializingBean, ApplicationContextAware {
+public class Kernel implements ApplicationContextAware {
 
 	static Logger logger = LoggerFactory.getLogger(Kernel.class);
 
@@ -27,7 +30,7 @@ public class Kernel implements InitializingBean, ApplicationContextAware {
 	private File extensionDir;
 	private static Throwable startupError = null;
 
-	public Kernel(File extensionDir) {
+	private Kernel(File extensionDir) {
 
 		this.extensionDir = extensionDir.getAbsoluteFile();
 		if (this.extensionDir.exists()) {
@@ -57,13 +60,40 @@ public class Kernel implements InitializingBean, ApplicationContextAware {
 
 	public synchronized static void initialize() {
 		if (kernelRef.get() == null) {
-	
-				Kernel k = new Kernel(Kernel.determineExtensionDir());
 
-				k.applicationContext = new AnnotationConfigApplicationContext(
-						CoreConfig.class.getPackage().getName());
-				kernelRef.set(k);
+			Kernel k = new Kernel(Kernel.determineExtensionDir());
+			kernelRef.set(k);
+			AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 			
+
+			k.applicationContext = ctx;
+
+			File gbf = new File(Kernel.determineExtensionDir(),
+					"conf/beans.groovy");
+			if (gbf.exists()) {
+				logger.info("loading spring java config from: {}", gbf);
+
+				try {
+					GroovyShell gs = new GroovyShell(Thread.currentThread()
+							.getContextClassLoader());
+					Object x = gs.evaluate(gbf);
+					if (x==null || (! (x instanceof Class))) {
+						throw new IllegalStateException(gbf+" must return a java.lang.Class");
+					}
+					ctx.setClassLoader((((Class) x).getClassLoader()));
+					ctx.scan(CoreConfig.class.getPackage().getName());
+					ctx.register((Class) x);
+					ctx.refresh();
+
+				} catch (IOException e) {
+					throw new IllegalStateException(e);
+				}
+				catch (GroovyRuntimeException e) {
+					throw new IllegalStateException(gbf+" must return a java.lang.Class");
+				}
+			}
+			kernelRef.set(k);
+
 		} else {
 			throw new IllegalStateException(
 					"spring context already initialized");
@@ -76,7 +106,9 @@ public class Kernel implements InitializingBean, ApplicationContextAware {
 	public synchronized static Kernel getInstance() {
 		Kernel k = kernelRef.get();
 		if (k == null) {
-			throw new IllegalStateException("kernel not initialized");
+			Kernel.initialize();
+			k = kernelRef.get();
+			// throw new IllegalStateException("kernel not initialized");
 		}
 		return k;
 	}
@@ -92,11 +124,6 @@ public class Kernel implements InitializingBean, ApplicationContextAware {
 		return applicationContext;
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		kernelRef.set(this);
-	}
-
 	public File getExtensionDir() {
 		return extensionDir;
 	}
@@ -104,8 +131,9 @@ public class Kernel implements InitializingBean, ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
-		if (this.applicationContext != null) {
-			throw new IllegalStateException("application context already set");
+		if (this.applicationContext != null && this.applicationContext!=applicationContext) {
+
+			throw new IllegalStateException("application context already set: "+this.applicationContext);
 		}
 		this.applicationContext = applicationContext;
 

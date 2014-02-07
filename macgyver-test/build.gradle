@@ -21,7 +21,8 @@ dependencies {
 	compile "org.springframework:spring-context:${SPRING_VERSION}"
 	compile "org.springframework:spring-core:${SPRING_VERSION}"
     compile "junit:junit:${JUNIT_VERSION}"
-
+    compile "org.codehaus.groovy:groovy-all:${GROOVY_VERSION}"
+    
 
 }
 

@@ -11,14 +11,16 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 import com.google.common.collect.Lists;
 
 public class MacGyverPropertySourcesPlaceholderConfigurer extends
-		PropertySourcesPlaceholderConfigurer {
+		PropertySourcesPlaceholderConfigurer implements InitializingBean, Ordered {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	Crypto crypto = null;
@@ -28,6 +30,31 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		crypto = new Crypto();
 		Crypto.instance = crypto;
 
+	
+	}
+
+	protected Properties processProperties() {
+
+		try {
+			File f = new File(Kernel.determineExtensionDir(),
+					"conf/config.groovy");
+			if (f.exists()) {
+				ConfigSlurper cs = new ConfigSlurper();
+				ConfigObject co = cs.parse(f.toURI().toURL());
+				Properties p = co.toProperties();
+				logger.debug("keys: {}", p);
+				return p;
+			} else {
+				logger.warn("config not found: {}", f.getAbsolutePath());
+			}
+			return new Properties();
+		} catch (MalformedURLException e) {
+			throw new ConfigurationException(e);
+		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
 		FileSystemResource testResource = new FileSystemResource(new File(".",
 				"src/test/resources/macgyver-test.properties"));
 		List<Resource> rlist = Lists.newArrayList();
@@ -41,32 +68,15 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 
 		setLocations(rlist.toArray(new Resource[0]));
 		setIgnoreResourceNotFound(true);
-		setIgnoreUnresolvablePlaceholders(true);
+		setIgnoreUnresolvablePlaceholders(false);
+
 		setLocalOverride(true);
 
 		Properties p = crypto.decryptProperties(processProperties());
 
-		setProperties(processProperties());
-	}
+		setProperties(p);
 
-	protected Properties processProperties() {
-
-		try {
-			File f = new File(Kernel.determineExtensionDir(),
-					"conf/config.groovy");
-			if (f.exists()) {
-				ConfigSlurper cs = new ConfigSlurper();
-				ConfigObject co = cs.parse(f.toURI().toURL());
-				Properties p = co.toProperties();
-				logger.debug("keys: {}", p.keySet());
-				return p;
-			} else {
-				logger.warn("config not found: {}", f.getAbsolutePath());
-			}
-			return new Properties();
-		} catch (MalformedURLException e) {
-			throw new ConfigurationException(e);
-		}
+		
 	}
 
 }

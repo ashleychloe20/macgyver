@@ -19,12 +19,13 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.AbstractBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.FileSystemResource;
 
 import com.google.common.collect.Sets;
 
 public class MacGyverBeanFactoryPostProcessor implements
-		BeanFactoryPostProcessor {
+		BeanFactoryPostProcessor, Ordered {
 
 	Logger logger = LoggerFactory.getLogger(MacGyverBeanFactoryPostProcessor.class);
 	
@@ -153,5 +154,11 @@ public class MacGyverBeanFactoryPostProcessor implements
 		public Set<java.util.Map.Entry<String, Object>> entrySet() {
 			return Sets.newHashSet();
 		}
+	}
+
+
+	@Override
+	public int getOrder() {
+		return 0;
 	}
 }

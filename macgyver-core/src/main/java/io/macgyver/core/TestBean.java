@@ -11,7 +11,7 @@ public class TestBean {
 	}
 
 	public void setFoo(String foo) {
-		
+		Kernel.getInstance().getApplicationContext();
 		this.foo = foo;
 	}
 	
