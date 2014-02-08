@@ -30,7 +30,8 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		PropertySourcesPlaceholderConfigurer implements InitializingBean,
 		Ordered {
 	Logger logger = LoggerFactory.getLogger(getClass());
-
+	public static final String MACGYVER_PROPERTIES_CONFIG_SYSTEM_PROPERTY = "macgyver.propertiesConfigFile";
+	public static final String MACGYVER_GROOVY_CONFIG_SYSTEM_PROPERTY = "macgyver.groovyConfigFile";
 	Crypto crypto = null;
 
 	public MacGyverPropertySourcesPlaceholderConfigurer() {
@@ -43,10 +44,10 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 	protected Properties processProperties() {
 
 		try {
-			File f = new File(Kernel.determineExtensionDir(),
-					"conf/config.groovy");
-			if (f.exists()) {
+			File f = findGroovyConfigFile();
 
+			if (f.exists()) {
+			
 				Optional<String> profile = Kernel.getExecutionProfile();
 
 				ConfigSlurper cs = new ConfigSlurper();
@@ -55,11 +56,10 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 							profile.get());
 					cs.setEnvironment(profile.get());
 				} else {
-					logger.info("sourcing {} with no profile '{}'");
+					logger.info("sourcing {} with no profile",f);
 				}
 				ConfigObject co = cs.parse(f.toURI().toURL());
 				Properties p = co.toProperties();
-				logger.debug("keys: {}", p);
 				return p;
 			} else {
 				logger.warn("config not found: {}", f.getAbsolutePath());
@@ -70,19 +70,39 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		}
 	}
 
-	public Optional<File> findLocalPropertiesFile() {
-		String configFile = System.getProperty("macgyver.configFile");
+	private Optional<File> findConfigFileViaSystemProperty(String sysprop) {
 
-		if (Strings.isNullOrEmpty(configFile)) {
+		String configLocation = System.getProperty(sysprop);
+
+		if (Strings.isNullOrEmpty(configLocation)) {
 			return Optional.absent();
 		}
-		File f = new File(configFile).getAbsoluteFile();
+		File f = new File(configLocation).getAbsoluteFile();
 		if (!f.exists()) {
-			logger.warn("-Dmacgyver.configFile not found: {}",
-					f.getAbsolutePath());
+			logger.warn("-D{}={} specified but file not found", sysprop,
+					configLocation);
 			return Optional.absent();
 		}
 		return Optional.of(f);
+	}
+
+	public File findGroovyConfigFile() {
+		File groovyConfig = new File(Kernel.determineExtensionDir(),
+				"conf/config.groovy");
+		Optional<File> of = findConfigFileViaSystemProperty(MACGYVER_GROOVY_CONFIG_SYSTEM_PROPERTY);
+		groovyConfig = of.isPresent() ? of.get() : groovyConfig;
+
+		return groovyConfig;
+	}
+
+	public File findPropertiesConfigFile() {
+		File propertiesFile = new File(Kernel.determineExtensionDir(),
+				"conf/config.properties");
+		Optional<File> of = findConfigFileViaSystemProperty(MACGYVER_PROPERTIES_CONFIG_SYSTEM_PROPERTY);
+		if (of.isPresent()) {
+			propertiesFile = of.get();
+		}
+		return propertiesFile;
 	}
 
 	@Override
@@ -91,9 +111,9 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 				"src/test/resources/macgyver-test.properties"));
 		List<Resource> rlist = Lists.newArrayList();
 
-		Optional<File> configFile = findLocalPropertiesFile();
-		if (configFile.isPresent()) {
-			rlist.add(new FileSystemResource(configFile.get()));
+		File configFile = findPropertiesConfigFile();
+		if (configFile.exists()) {
+			rlist.add(new FileSystemResource(configFile));
 		}
 
 		if (testResource.exists()) {
@@ -147,7 +167,7 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 	 */
 	@Override
 	protected String convertPropertyValue(final String originalValue) {
-		String val =  crypto.decryptStringWithPassThrough(originalValue);		
+		String val = crypto.decryptStringWithPassThrough(originalValue);
 		return val;
 	}
 
