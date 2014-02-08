@@ -17,6 +17,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.env.StandardEnvironment;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -143,18 +144,30 @@ public class Kernel implements ApplicationContextAware {
 
 	}
 
-	static String profile = null;
+	static Optional<String> profile = null;
 
-	public static synchronized String getExecutionProfile() {
-		if (profile == null) {
-			String p = System.getProperty("profile");
-			if (!Strings.isNullOrEmpty(p)) {
-				profile = p;
-				logger.info("execution profile: {}", profile);
-
+	public static synchronized Optional<String> getExecutionProfile() {
+		if (profile!=null) {
+			return profile;
+		}
+		StandardEnvironment standardEnvironment = new StandardEnvironment();
+		
+		String [] activeProfiles = standardEnvironment.getActiveProfiles();
+		if (activeProfiles==null) {
+			profile = Optional.absent();
+		}
+		for (String p: activeProfiles) {
+			if (p!=null && p.endsWith("_env")) {
+				p = p.substring(0,p.length()-"_env".length());
+				profile = Optional.of(p);
 			}
 		}
+		if (profile == null) {
+			logger.info("no profile selected");
+			profile=Optional.absent();
+		}
 		return profile;
+		
 	}
 
 	public static File determineExtensionDir() {
