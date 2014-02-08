@@ -21,6 +21,7 @@ import javax.crypto.SecretKeyFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Strings;
 import com.google.common.io.Closer;
 
 public class KeyStoreManager {
@@ -32,11 +33,17 @@ public class KeyStoreManager {
 	private char[] globalKeyPass = defaultPass;
 	KeyStore keyStore;
 
+	public static final String KEYSTORE_LOCATION_SYSTEM_PROPERTY = "macgyver.keyStore";
 
-	
 	public File getKeyStoreLocation() {
-		return new File(Kernel.determineExtensionDir(),
-				"conf/keystore.jceks");
+
+		String location = System.getProperty(KEYSTORE_LOCATION_SYSTEM_PROPERTY);
+		if (!Strings.isNullOrEmpty(location)) {
+			return new File(location);
+		} else {
+			return new File(Kernel.determineExtensionDir(),
+					"conf/keystore.jceks");
+		}
 	}
 
 	protected char[] getKeyStorePassword() {
@@ -84,7 +91,6 @@ public class KeyStoreManager {
 		return kg.generateKey();
 	}
 
-
 	public void createKeyStoreIfNotPresent() {
 		Closer closer = Closer.create();
 		try {
@@ -92,17 +98,15 @@ public class KeyStoreManager {
 			if (!keyStoreLocation.exists()) {
 				keyStoreLocation.getParentFile().mkdirs();
 				KeyStore ks = KeyStore.getInstance("JCEKS");
-				ks.load(null,  getKeyStorePassword());
-				
-				
+				ks.load(null, getKeyStorePassword());
+
 				String keyAlias = "mac0";
-				ks.setKeyEntry(keyAlias, createAESSecretKey(), getPasswordForKey(keyAlias),null);
-				
+				ks.setKeyEntry(keyAlias, createAESSecretKey(),
+						getPasswordForKey(keyAlias), null);
+
 				OutputStream out = new FileOutputStream(keyStoreLocation);
 				closer.register(out);
 				ks.store(out, getKeyStorePassword());
-			
-				
 
 			}
 		} catch (GeneralSecurityException e) {
