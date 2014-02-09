@@ -1,7 +1,7 @@
 package io.macgyver.mongodb;
 
 import io.macgyver.core.ConfigurationException;
-import io.macgyver.core.ServiceFactoryBean;
+import io.macgyver.core.ServiceFactory;
 
 import java.net.UnknownHostException;
 
@@ -9,16 +9,15 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
 public class MongoClientFactory extends
-		ServiceFactoryBean<MongoClient> {
+		ServiceFactory<MongoClient> {
 
 	public MongoClientFactory() {
-		super(MongoClient.class);
-		
+	
 	}
 
 	String uri;
 	
-	public MongoClient getObject() {
+	public MongoClient create() {
 		try {
 		return new ExtendedMongoClient(new MongoClientURI(uri));
 		}

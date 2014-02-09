@@ -1,6 +1,6 @@
 package io.macgyver.core;
 
-public interface  ServiceFactory<T> {
+public abstract class  ServiceFactory<T> {
 
-	public abstract T get();
+	public abstract T create();
 }

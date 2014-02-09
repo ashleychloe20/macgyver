@@ -21,7 +21,10 @@ import spark.Response;
 import spark.Route;
 
 public class AdminSparklet extends Sparklet {
-
+	public void init() {
+		
+	}
+/*
 	public boolean isAuthenticated(Request request) {
 		Object auth = request.session().attribute("__username");
 		return (auth != null);
@@ -29,7 +32,7 @@ public class AdminSparklet extends Sparklet {
 
 	@Override
 	public void init() {
-
+	
 		before(new Filter() {
 
 			@Override
@@ -139,5 +142,5 @@ public class AdminSparklet extends Sparklet {
 		});
 
 	}
-
+*/
 }

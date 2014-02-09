@@ -1,11 +1,10 @@
 package io.macgyver.email;
 
-import io.macgyver.core.ServiceFactoryBean;
+import io.macgyver.core.ServiceFactory;
 
-import javax.json.JsonObject;
 import javax.mail.Session;
 
-public class SmtpSessionFactory  {
+public class SmtpSessionFactory  extends ServiceFactory<Session>{
 
 	public SmtpSessionFactory() {
 	

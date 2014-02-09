@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.kohsuke.github.GitHub;
 
-public class GitHubClientFactory implements ServiceFactory<GitHub> {
+public class GitHubClientFactory extends ServiceFactory<GitHub> {
 
 	public GitHubClientFactory() {
 
@@ -32,7 +32,7 @@ public class GitHubClientFactory implements ServiceFactory<GitHub> {
 	}
 
 	@Override
-	public GitHub get() {
+	public GitHub create() {
 		try {
 			GitHub gh = null;
 			if (url != null) {
