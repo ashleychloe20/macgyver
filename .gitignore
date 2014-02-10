@@ -15,7 +15,6 @@ workspace
 x
 macgyver-grails/target
 logs/
-macgyver-cloud*
 *.jceks
 *.swp
 *~
