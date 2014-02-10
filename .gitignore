@@ -17,3 +17,5 @@ macgyver-grails/target
 logs/
 macgyver-cloud*
 *.jceks
+*.swp
+*~
