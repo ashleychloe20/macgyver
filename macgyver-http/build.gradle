@@ -17,6 +17,7 @@ dependencies {
 
     compile "org.eclipse.jetty:jetty-servlet:$JETTY_VERSION"
 	compile "org.springframework:spring-web:$SPRING_VERSION"
+    compile "org.apache.shiro:shiro-spring:${SHIRO_VERSION}"
     compile 'com.sparkjava:spark-core:1.1.1'
     compile 'com.sparkjava:spark-template-freemarker:1.0'
     
