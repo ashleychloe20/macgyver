@@ -75,6 +75,9 @@ public class MongoClientFactory extends ServiceFactory<MongoClient> {
 		this.password = password;
 	}
 
+	public DB getDB() {
+		return createDBConnection();
+	}
 	/*
 	 * public DB getDB(String name) { ExtendedMongoClient c =
 	 * (ExtendedMongoClient) get(name); String dbName =
