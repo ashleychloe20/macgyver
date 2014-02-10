@@ -16,7 +16,7 @@ subprojects {
 	
     
     group 'io.macgyver'
-    version = '0.9.3'
+    version = "${MACGYVER_VERSION}"
     
     
     configurations {
