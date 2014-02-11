@@ -19,7 +19,7 @@ dependencies {
 	compile 'com.jolbox:bonecp:0.8.0.RELEASE'
 
 	compile project(':macgyver-core')
-	compile project(':macgyver-http')
+	compile project(':macgyver-web')
 	testCompile  'com.h2database:h2:1.3.175'
 	testCompile project(":macgyver-test")
 
