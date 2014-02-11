@@ -48,7 +48,7 @@ import com.google.common.eventbus.Subscribe;
 
 public class JettyServer extends Server {
 
-	@Value("${http.server.enabled:true}")
+	@Value("${macgyver.web.enabled:true}")
 	boolean enabled = true;
 
 	@Autowired

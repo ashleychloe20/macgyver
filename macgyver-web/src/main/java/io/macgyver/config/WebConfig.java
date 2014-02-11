@@ -8,19 +8,25 @@ import io.macgyver.http.spark.AuthSparklet;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 @Configuration
-public class HttpConfig {
+public class WebConfig {
 
-	int httpPort = 8080;
+	Logger logger = LoggerFactory.getLogger(WebConfig.class);
+	
+	@Value("${macgyver.web.http.port:8080}")
+	int httpPort;
 
 	@Bean
 	public JettyServer jettyServer() {
-		return new JettyServer(8080);
-		
+		logger.info("macgyver.web.http.port: {}",httpPort);
+		return new JettyServer(httpPort);
 	}
 
 	@Bean
