@@ -2,6 +2,7 @@ package io.macgyver.http.jetty;
 
 import static spark.Spark.get;
 import io.macgyver.core.Kernel;
+import io.macgyver.http.shiro.MacGyverFilter;
 import io.macgyver.http.spark.SparkletBuilder;
 
 import java.io.IOException;
@@ -69,7 +70,23 @@ public class JettyServer extends Server {
 	public void addHandler(ServletContextHandler h) throws Exception {
 		log.info("adding ServletContextHandler for deferred startup: {}", h);
 
-		
+	       FilterHolder fh = new FilterHolder();
+
+	   
+	        fh.setName("shiroFilter");
+
+	        fh.setFilter(new DelegatingFilterProxy());
+
+	        fh.setInitParameter("targetFilterLifecycle", Boolean.TRUE.toString());
+	        h.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
+	                DispatcherType.ERROR, DispatcherType.FORWARD,
+	                DispatcherType.INCLUDE));
+
+	        fh = new FilterHolder();
+	        fh.setFilter(new MacGyverFilter());
+	        h.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
+	                DispatcherType.ERROR, DispatcherType.FORWARD,
+	                DispatcherType.INCLUDE));	
 
 		contextHandlerCollection.addHandler(h);
 
@@ -109,21 +126,9 @@ public class JettyServer extends Server {
 		setHandler(servletContextHandler);
 	
 		
-		
-		
-/*
-		FilterHolder fh = new FilterHolder();
-		fh.setName("test");
-		fh.setFilter(f);
-		fh.setInitParameter("targetFilterLifecycle", Boolean.TRUE.toString());
-		servletContextHandler.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
-				DispatcherType.ERROR, DispatcherType.FORWARD,
-				DispatcherType.INCLUDE));
-		*/
-		
-	//	servletContextHandler.addServlet(DefaultServlet.class, "/");
+
 		servletContextHandler.addServlet(StatcResourceServlet.class,"/*");
-		//servletContextHandler.add
+
 	
 	
 		Filter sparkFilter = new SparkFilter();
@@ -137,6 +142,38 @@ public class JettyServer extends Server {
 		sparkFilterHolder.setInitParameter("applicationClass",
 				SparkletBuilder.class.getName());
 
+		
+	       FilterHolder fh = new FilterHolder();
+
+		   
+	        fh.setName("shiroFilter");
+
+	        fh.setFilter(new DelegatingFilterProxy());
+
+	        fh.setInitParameter("targetFilterLifecycle", Boolean.TRUE.toString());
+	        servletContextHandler.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
+	                DispatcherType.ERROR, DispatcherType.FORWARD,
+	                DispatcherType.INCLUDE));
+
+	        fh = new FilterHolder();
+	        fh.setFilter(new MacGyverFilter());
+	        servletContextHandler.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
+	                DispatcherType.ERROR, DispatcherType.FORWARD,
+	                DispatcherType.INCLUDE));	
+		
+	        
+	        // Now bind to applicationContext
+	        GenericWebApplicationContext gwac = new GenericWebApplicationContext();
+            gwac.setParent(Kernel.getInstance().getApplicationContext());
+            gwac.setServletContext(servletContextHandler
+                    .getServletContext());
+            servletContextHandler
+            .getServletContext()
+            .setAttribute(
+                    WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
+                    gwac);
+            gwac.refresh();
+            // End binding to GWAC
 		
 		servletContextHandler.addFilter(sparkFilterHolder, "/*",
 				EnumSet.of(DispatcherType.REQUEST));

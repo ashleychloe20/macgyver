@@ -35,7 +35,7 @@ public abstract class MacGyverFreeMarkerRoute extends FreeMarkerRoute {
 			
 			
 			
-			File templateDir = new File(Kernel.getInstance().getExtensionDir(),"web/templates").getAbsoluteFile();
+			File templateDir = new File(Kernel.getInstance().getExtensionDir(),"web").getAbsoluteFile();
 			logger.info("templates dir: {}",templateDir.getAbsolutePath());
 			
 			List<TemplateLoader> list = Lists.newArrayList();
@@ -54,7 +54,7 @@ public abstract class MacGyverFreeMarkerRoute extends FreeMarkerRoute {
 			}
 			
 			
-			ClassTemplateLoader ctl = new ClassTemplateLoader(getClass(),"/io/macgyver/web/templates");
+			ClassTemplateLoader ctl = new ClassTemplateLoader(getClass(),"/io/macgyver/web");
 			
 			
 			

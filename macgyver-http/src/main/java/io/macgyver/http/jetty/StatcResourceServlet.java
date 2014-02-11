@@ -20,7 +20,18 @@ import com.google.common.io.Closer;
 public class StatcResourceServlet extends HttpServlet {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
-	
+
+	boolean isExcluded(HttpServletRequest req) {
+		String path = req.getRequestURI();
+		if (path == null) {
+			return true;
+		}
+		if (path.endsWith(".ftl")) {
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -29,31 +40,36 @@ public class StatcResourceServlet extends HttpServlet {
 
 		String uri = req.getRequestURI();
 		InputStream input = null;
-		String resourcePath = "io/macgyver/webresources" + uri;
+		String resourcePath = "io/macgyver/web" + uri;
 
 		Closer closer = Closer.create();
-		URL urx = getClass().getClassLoader().getResource(resourcePath);
-		boolean found=false;
-		try {
-			
-			if (urx != null) {
-				input = urx.openStream();
-				if (input != null) {
-					found=true;
-					logger.debug("serving: {}",urx);
-					closer.register(closer);
-				
-					OutputStream output = resp.getOutputStream();
-					
-					ByteStreams.copy(input, output);
-					return;
-				}
 
+		boolean found = false;
+
+		try {
+			if (isExcluded(req)) {
+				// do not serve
+			} else {
+				URL urx = getClass().getClassLoader().getResource(resourcePath);
+				if (urx != null) {
+					input = urx.openStream();
+					if (input != null) {
+						found = true;
+						logger.debug("serving: {}", urx);
+						closer.register(closer);
+
+						OutputStream output = resp.getOutputStream();
+
+						ByteStreams.copy(input, output);
+						return;
+					}
+
+				}
 			}
-		
+
 		} finally {
 			if (!found) {
-				logger.debug("404 {}",uri);
+				logger.debug("404 {}", uri);
 				resp.setStatus(404);
 			}
 			closer.close();
