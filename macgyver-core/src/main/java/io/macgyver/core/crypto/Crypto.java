@@ -160,7 +160,11 @@ public class Crypto {
 		Optional<JsonObject> envelope = decodeEnvelope(input);
 		if (envelope.isPresent()) {
 			String keyAlias = envelope.get().getString("k");
+			logger.debug("decrypting with alias: {}",keyAlias);
 			SecretKey key = (SecretKey) keyStoreManager.getKey(keyAlias);
+			if (key==null) {
+				throw new KeyStoreException("could not load key: "+keyAlias);
+			}
 			return decryptString(envelope.get().getString("d"), key);
 		}
 		throw new GeneralSecurityException("could not decrypt");
