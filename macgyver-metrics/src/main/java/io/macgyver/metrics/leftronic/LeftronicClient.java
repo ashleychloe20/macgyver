@@ -59,7 +59,7 @@ public class LeftronicClient {
 	}
 	public void send(String streamName, long val) {
 
-		AsyncHttpClient asyncHttpClient = null;
+	
 		try {
 			Gson gson = new Gson();
 
@@ -68,7 +68,7 @@ public class LeftronicClient {
 			data.addProperty("streamName", qualifyStreamName(streamName));
 			data.addProperty("point", val);
 			logger.trace("sending data leftronic: {}",data);
-			asyncHttpClient = new AsyncHttpClient();
+		
 
 			AsyncCompletionHandler<String> h = new AsyncCompletionHandler<String>() {
 

@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.ning.http.client.AsyncHttpClient;
 
@@ -38,7 +37,7 @@ public class CoreConfig {
 
 	
 	@Bean(name = "macgyverConfigurer")
-	static public PropertySourcesPlaceholderConfigurer macgyverConfigurer() {
+	static public MacGyverPropertySourcesPlaceholderConfigurer macgyverConfigurer() {
 		return new MacGyverPropertySourcesPlaceholderConfigurer();
 	}
 
@@ -87,12 +86,7 @@ public class CoreConfig {
 		return new CoreBindingSupplier();
 	}
 
-	/*
-	@Bean
-	public KeyStoreManager keyStoreManager() {
-		return crypto().getKeyStoreManager();
-	}
-*/
+
 	@Bean
 	public Crypto crypto() {
 		return Crypto.instance;
@@ -116,4 +110,5 @@ public class CoreConfig {
 		return new TestBean();
 	}
 	
+
 }

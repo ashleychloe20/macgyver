@@ -12,7 +12,9 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
@@ -27,14 +29,15 @@ import com.google.common.collect.Lists;
 import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
 
 public class MacGyverPropertySourcesPlaceholderConfigurer extends
-		PropertySourcesPlaceholderConfigurer implements InitializingBean,
+		PropertySourcesPlaceholderConfigurer implements InitializingBean, BeanFactoryPostProcessor,
 		Ordered {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	public static final String MACGYVER_PROPERTIES_CONFIG_SYSTEM_PROPERTY = "macgyver.propertiesConfigFile";
 	public static final String MACGYVER_GROOVY_CONFIG_SYSTEM_PROPERTY = "macgyver.groovyConfigFile";
 	Crypto crypto = null;
-
-	public MacGyverPropertySourcesPlaceholderConfigurer() {
+	
+	Properties effectiveProperties = new Properties();
+	public MacGyverPropertySourcesPlaceholderConfigurer()  {
 
 		crypto = new Crypto();
 		Crypto.instance = crypto;
@@ -133,7 +136,7 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		Properties p = crypto.decryptProperties(processProperties());
 
 		setProperties(p);
-
+		effectiveProperties.putAll(p);
 	}
 
 	boolean alreadyConverted = false;
@@ -170,5 +173,10 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		String val = crypto.decryptStringWithPassThrough(originalValue);
 		return val;
 	}
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		super.postProcessBeanFactory(beanFactory);
+		
+	
 
+	}
 }

@@ -29,9 +29,6 @@ public class HipChatClient {
 	AsyncHttpClient client;
 
 	AsyncHttpClient getClient() {
-		if (client == null) {
-			client = new AsyncHttpClient();
-		}
 		return client;
 	}
 	public void sendMessage(String roomId, String user, String message)  {
