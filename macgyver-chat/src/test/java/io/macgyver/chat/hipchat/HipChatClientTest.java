@@ -1,22 +1,31 @@
 package io.macgyver.chat.hipchat;
-import java.net.Inet4Address;
+
+import io.macgyver.test.MacgyverIntegrationTest;
+
 import java.net.InetAddress;
 
-import io.macgyver.chat.hipchat.HipChat;
-
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.ning.http.client.AsyncHttpClient;
 
-public class HipChatClientTest {
+public class HipChatClientTest extends MacgyverIntegrationTest {
 
-	
+	@Autowired
+	@Qualifier("macgyverAsyncHttpClient")
+	AsyncHttpClient client;
+
 	@Test
 	public void testIt() throws Exception {
-		HipChat client = new HipChat();
-		
+
+		HipChat client = new HipChat(this.client);
 		client.setApiKey("");
-		client.sendMessage("test from "+InetAddress.getLocalHost().getHostName(), "Notification Testing", "12345678901234", true, null);
-		
-		Thread.sleep(5000);
+		client.sendMessage("test from "
+				+ InetAddress.getLocalHost().getHostName(),
+				"Notification Testing", "12345678901234", true, null);
+
+		//Thread.sleep(5000);
+
 	}
 }

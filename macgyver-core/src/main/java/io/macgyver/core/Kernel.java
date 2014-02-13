@@ -73,6 +73,8 @@ public class Kernel implements ApplicationContextAware {
 			File gbf = new File(Kernel.determineExtensionDir(),
 					"conf/beans.groovy");
 			if (gbf.exists()) {
+				
+				// Need to move all of this into a BeanFactoryPostProcessor
 				logger.info("loading spring java config from: {}", gbf);
 
 				try {
@@ -84,8 +86,9 @@ public class Kernel implements ApplicationContextAware {
 					}
 					ctx.setClassLoader((((Class) x).getClassLoader()));
 					ctx.scan(CoreConfig.class.getPackage().getName());
+					
 					ctx.register((Class) x);
-					ctx.refresh();
+				
 
 				} catch (IOException e) {
 					throw new IllegalStateException(e);
@@ -97,6 +100,11 @@ public class Kernel implements ApplicationContextAware {
 					throw new IllegalStateException(gbf+" must return a java.lang.Class",e);
 				}
 			}
+			else {
+				ctx.scan(CoreConfig.class.getPackage().getName());
+				
+			}
+			ctx.refresh();
 			kernelRef.set(k);
 
 		} else {
@@ -106,6 +114,7 @@ public class Kernel implements ApplicationContextAware {
 		if (startupError != null) {
 			throw new MacGyverException(startupError);
 		}
+		
 	}
 
 	public synchronized static Kernel getInstance() {
@@ -113,7 +122,7 @@ public class Kernel implements ApplicationContextAware {
 		if (k == null) {
 			Kernel.initialize();
 			k = kernelRef.get();
-			// throw new IllegalStateException("kernel not initialized");
+			
 		}
 		return k;
 	}

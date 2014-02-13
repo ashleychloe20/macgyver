@@ -16,8 +16,8 @@ configurations {
 dependencies {
 
   
-    testCompile project(':macgyver-test')
-	 compile project(':macgyver-core')
 
+	 compile project(':macgyver-core')
+	 testCompile project(':macgyver-test')
 }
 

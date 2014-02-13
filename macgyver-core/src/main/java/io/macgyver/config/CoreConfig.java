@@ -5,7 +5,6 @@ import io.macgyver.core.CoreBindingSupplier;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
 import io.macgyver.core.Startup;
-import io.macgyver.core.TestBean;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
@@ -48,8 +47,8 @@ public class CoreConfig {
 		return new ContextRefreshApplicationListener();
 	}
 
-	@Bean(name = "asyncHttpClient", destroyMethod = "close")
-	public AsyncHttpClient asyncHttpClient() {
+	@Bean(name = "macgyverAsyncHttpClient", destroyMethod = "close")
+	public AsyncHttpClient macgyverAsyncHttpClient() {
 		return new AsyncHttpClient();
 	}
 
@@ -64,7 +63,7 @@ public class CoreConfig {
 		return new EventBusPostProcessor();
 	}
 
-	@Bean
+	@Bean(name="macgyverKernel")
 	public Kernel createKernel() {
 
 		logger.info("macgyver.ext.location: {}", extLocation);
