@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Strings;
 import com.ning.http.client.AsyncHttpClient;
 
-public class HipChatClient {
+public class HipChat {
 
-	Logger logger = LoggerFactory.getLogger(HipChatClient.class);
+	Logger logger = LoggerFactory.getLogger(HipChat.class);
 	String apiKey;
 
 	public String getApiKey() {

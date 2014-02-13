@@ -17,15 +17,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -33,14 +34,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class MacGyverPropertySourcesPlaceholderConfigurer extends
-		PropertySourcesPlaceholderConfigurer implements InitializingBean, BeanDefinitionRegistryPostProcessor,Ordered {
+		PropertySourcesPlaceholderConfigurer implements InitializingBean,
+		BeanDefinitionRegistryPostProcessor, Ordered {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	public static final String MACGYVER_PROPERTIES_CONFIG_SYSTEM_PROPERTY = "macgyver.propertiesConfigFile";
 	public static final String MACGYVER_GROOVY_CONFIG_SYSTEM_PROPERTY = "macgyver.groovyConfigFile";
 	Crypto crypto = null;
-	
+
 	Properties effectiveProperties = new Properties();
-	public MacGyverPropertySourcesPlaceholderConfigurer()  {
+
+	public MacGyverPropertySourcesPlaceholderConfigurer() {
 
 		crypto = new Crypto();
 		Crypto.instance = crypto;
@@ -53,7 +56,7 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 			File f = findGroovyConfigFile();
 
 			if (f.exists()) {
-			
+
 				Optional<String> profile = Kernel.getExecutionProfile();
 
 				ConfigSlurper cs = new ConfigSlurper();
@@ -62,7 +65,7 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 							profile.get());
 					cs.setEnvironment(profile.get());
 				} else {
-					logger.info("sourcing {} with no profile",f);
+					logger.info("sourcing {} with no profile", f);
 				}
 				ConfigObject co = cs.parse(f.toURI().toURL());
 				Properties p = co.toProperties();
@@ -177,55 +180,79 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		return val;
 	}
 
-	
-	protected void autoRegisterBean(String name, String serviceType, Properties props, BeanDefinitionRegistry x) {
-		logger.info("autoRegister name={} serviceType={} props={}",name,serviceType,props.keySet());
-		String serviceTypeClass = CoreConfig.class.getPackage().getName()+"."+serviceType.substring(0,1).toUpperCase()+serviceType.substring(1)+"Factory";
-	
-	//	Class serviceClass = getClass().getClassLoader().loadClass(serviceTypeClass);
-	
-		
-		Map<Object,Object> mpm = Maps.newHashMap();
-	//	mpm.putAll(props);
-		mpm.put("properties", props);
-		
-		MutablePropertyValues mpv = new MutablePropertyValues(mpm);
-		RootBeanDefinition bd = new RootBeanDefinition(serviceTypeClass,null,mpv);
-		
-		x.registerBeanDefinition(name, bd);
-		
+	protected void autoRegisterBean(String name, String serviceType,
+			Properties props, BeanDefinitionRegistry x) {
+		try {
+			logger.info("autoRegister name={} serviceType={} props={}", name,
+					serviceType, props.keySet());
+			String serviceTypeClass = CoreConfig.class.getPackage().getName()
+					+ "." + serviceType.substring(0, 1).toUpperCase()
+					+ serviceType.substring(1) + "FactoryBean";
+
+			Map<Object, Object> mpm = Maps.newHashMap();
+			mpm.put("properties", props);
+			Class<ServiceFactoryBean> xx = (Class<ServiceFactoryBean>) getClass()
+					.getClassLoader().loadClass(serviceTypeClass);
+
+			MutablePropertyValues mpv = new MutablePropertyValues(mpm);
+			SimpleMetadataReaderFactory mf = new SimpleMetadataReaderFactory();
+			MetadataReader mdr = mf.getMetadataReader(serviceTypeClass);
+			ScannedGenericBeanDefinition bd = new ScannedGenericBeanDefinition(
+					mdr);
+
+			ServiceFactoryBean sfb = xx.newInstance();
+			sfb.registerCollaborators(x, props);
+
+			// serviceTypeClass, null,
+			// mpv);
+			bd.setPropertyValues(mpv);
+			bd.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+			bd.setAutowireCandidate(true);
+
+			x.registerBeanDefinition(name, bd);
+		} catch (IOException e) {
+			throw new MacGyverException(e);
+		} catch (InstantiationException e) {
+			throw new MacGyverException(e);
+		} catch (ClassNotFoundException e) {
+			throw new MacGyverException(e);
+		} catch (IllegalAccessException e) {
+			throw new MacGyverException(e);
+		}
+
 	}
 
 	@Override
 	public void postProcessBeanDefinitionRegistry(
 			BeanDefinitionRegistry registry) throws BeansException {
 		List<String> names = Lists.newArrayList();
-		for (Object k: effectiveProperties.keySet()) {
+		for (Object k : effectiveProperties.keySet()) {
 			String key = k.toString();
 			if (key.endsWith("serviceType")) {
 				String val = effectiveProperties.getProperty(key);
-				names.add(key.substring(0,key.length()-".serviceType".length()));
+				names.add(key.substring(0,
+						key.length() - ".serviceType".length()));
 			}
 		}
-		
 
-		for (String name: names) {
+		for (String name : names) {
 			int dotIdx = name.lastIndexOf(".");
 			String unqualifiedName = name;
-			if (dotIdx>=0) {
-				unqualifiedName = unqualifiedName.substring(dotIdx+1);
+			if (dotIdx >= 0) {
+				unqualifiedName = unqualifiedName.substring(dotIdx + 1);
 			}
 			Properties scoped = new Properties();
-			for (Map.Entry<Object, Object> entry: effectiveProperties.entrySet()) {
+			for (Map.Entry<Object, Object> entry : effectiveProperties
+					.entrySet()) {
 				String key = entry.getKey().toString();
-				if (key.startsWith(name+".")) {
-					String scopedKey = key.substring((name+".").length());
+				if (key.startsWith(name + ".")) {
+					String scopedKey = key.substring((name + ".").length());
 					scoped.setProperty(scopedKey, entry.getValue().toString());
 				}
 			}
 			String serviceType = scoped.getProperty("serviceType");
 			scoped.remove("serviceType");
-			autoRegisterBean(unqualifiedName,serviceType,scoped, registry);
+			autoRegisterBean(unqualifiedName, serviceType, scoped, registry);
 		}
 	}
 }

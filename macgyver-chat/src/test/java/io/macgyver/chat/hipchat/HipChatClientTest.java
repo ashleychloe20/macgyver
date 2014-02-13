@@ -2,7 +2,7 @@ package io.macgyver.chat.hipchat;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 
-import io.macgyver.chat.hipchat.HipChatClient;
+import io.macgyver.chat.hipchat.HipChat;
 
 import org.junit.Test;
 
@@ -12,7 +12,7 @@ public class HipChatClientTest {
 	
 	@Test
 	public void testIt() throws Exception {
-		HipChatClient client = new HipChatClient();
+		HipChat client = new HipChat();
 		
 		client.setApiKey("");
 		client.sendMessage("test from "+InetAddress.getLocalHost().getHostName(), "Notification Testing", "12345678901234", true, null);

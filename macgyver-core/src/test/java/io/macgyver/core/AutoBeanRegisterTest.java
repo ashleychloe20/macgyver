@@ -18,5 +18,7 @@ public class AutoBeanRegisterTest extends MacgyverIntegrationTest {
 	public void testRegistration() {
 		Assert.assertNotNull(applicationContext.getBean("testBeanName"));
 		
+		
+		Assert.assertNotNull(applicationContext.getBean(TestBean.class).getCrypto());
 	}
 }

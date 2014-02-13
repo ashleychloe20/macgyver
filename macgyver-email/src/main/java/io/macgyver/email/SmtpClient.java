@@ -1,5 +1,6 @@
 package io.macgyver.email;
 
+import io.macgyver.config.SmtpSessionFactoryBean;
 import io.macgyver.core.MacGyverException;
 
 import java.net.InetAddress;
@@ -15,21 +16,21 @@ import com.google.common.collect.Lists;
 
 public class SmtpClient {
 
-	SmtpSessionFactory smtpSessionFactory;
+	SmtpSessionFactoryBean smtpSessionFactory;
 
 	public SmtpClient() {
 
 	}
 
-	public SmtpClient(SmtpSessionFactory factory) {
+	public SmtpClient(SmtpSessionFactoryBean factory) {
 		this.smtpSessionFactory = factory;
 	}
 
-	public SmtpSessionFactory getSmtpSessionFactory() {
+	public SmtpSessionFactoryBean getSmtpSessionFactory() {
 		return smtpSessionFactory;
 	}
 
-	public void setSmtpSessionFactory(SmtpSessionFactory smtpSessionFactory) {
+	public void setSmtpSessionFactory(SmtpSessionFactoryBean smtpSessionFactory) {
 		this.smtpSessionFactory = smtpSessionFactory;
 	}
 
@@ -42,7 +43,7 @@ public class SmtpClient {
 			String body) {
 		try {
 			 
-			Message message = new MimeMessage(smtpSessionFactory.create());
+			Message message = new MimeMessage(smtpSessionFactory.createObject());
 			message.setFrom(new InternetAddress(from));
 			List<InternetAddress> addressList = Lists.newArrayList();
 			for (String addr: to) {

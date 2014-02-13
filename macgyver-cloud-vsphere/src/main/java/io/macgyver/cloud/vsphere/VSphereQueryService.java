@@ -1,5 +1,7 @@
 package io.macgyver.cloud.vsphere;
 
+import io.macgyver.config.VSphereFactoryBean;
+
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
@@ -14,12 +16,12 @@ import com.vmware.vim25.mo.VirtualMachine;
 
 public class VSphereQueryService {
 
-	VSphereClientFactory vSphereClientFactory;
+	VSphereFactoryBean vSphereClientFactory;
 
 	Gson gson = VSphereGsonBuilder.createBuilder().setPrettyPrinting().create();
 
 	ServiceInstance getServiceInstance() {
-		return vSphereClientFactory.create();
+		return vSphereClientFactory.createObject();
 	}
 
 	public JsonElement asJson(VirtualMachine vm) {
@@ -83,12 +85,12 @@ public class VSphereQueryService {
 
 	}
 
-	public VSphereClientFactory getVsphereClientFactory() {
+	public VSphereFactoryBean getVsphereClientFactory() {
 		return vSphereClientFactory;
 	}
 
 	public void setVSphereClientFactory(
-			VSphereClientFactory vsphereClientFactory) {
+			VSphereFactoryBean vsphereClientFactory) {
 		this.vSphereClientFactory = vsphereClientFactory;
 	}
 

@@ -1,7 +1,7 @@
-package io.macgyver.mongodb;
+package io.macgyver.config;
 
 import io.macgyver.core.ConfigurationException;
-import io.macgyver.core.ServiceFactory;
+import io.macgyver.core.ServiceFactoryBean;
 
 import java.net.UnknownHostException;
 
@@ -11,27 +11,24 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
-public class MongoClientFactory extends ServiceFactory<MongoClient> {
+public class MongoDBFactoryBean extends ServiceFactoryBean<MongoClient> {
 
-	public MongoClientFactory() {
-
+	public MongoDBFactoryBean() {
+		super(MongoClient.class);
 	}
 
-	String uri = null;
-	String username = null;
-	String password = null;
 
-	public MongoClient create() {
+	public MongoClient createObject() {
 		try {
 			return new ExtendedMongoClient(new MongoClientURI(
-					injectCredentials(getUri(), getUsername(), getPassword())));
+					injectCredentials(getProperties().getProperty("uri"), getProperties().getProperty("username"), getProperties().getProperty("password"))));
 		} catch (UnknownHostException e) {
 			throw new ConfigurationException(e);
 		}
 	}
 
 	public DB createDBConnection() {
-		ExtendedMongoClient c = (ExtendedMongoClient) create();
+		ExtendedMongoClient c = (ExtendedMongoClient) createObject();
 		return c.getDB(c.getDatabaseName());
 		
 	}
@@ -51,29 +48,9 @@ public class MongoClientFactory extends ServiceFactory<MongoClient> {
 		}
 	}
 
-	public String getUri() {
-		return uri;
-	}
 
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
 
-	public String getUsername() {
-		return username;
-	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
 
 	public DB getDB() {
 		return createDBConnection();
@@ -88,7 +65,7 @@ public class MongoClientFactory extends ServiceFactory<MongoClient> {
 	 * }
 	 */
 
-	String injectCredentials(String uri, String username, String password) {
+	public String injectCredentials(String uri, String username, String password) {
 		Preconditions.checkNotNull(uri);
 		Preconditions.checkArgument(uri.startsWith("mongodb://"),
 				"mongo uri must start with mongodb://");

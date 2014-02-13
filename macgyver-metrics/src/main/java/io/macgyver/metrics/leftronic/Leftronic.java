@@ -17,9 +17,9 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.HttpResponseStatus;
 import com.ning.http.client.Response;
 
-public class LeftronicClient {
+public class Leftronic {
 
-	public static Logger logger = LoggerFactory.getLogger(LeftronicClient.class);
+	public static Logger logger = LoggerFactory.getLogger(Leftronic.class);
 	public static final String DEFAULT_URL = "https://www.leftronic.com/customSend/";
 	String url = DEFAULT_URL;
 	String apiKey;
@@ -28,9 +28,6 @@ public class LeftronicClient {
 	@Autowired
 	AsyncHttpClient client;
 	
-	public void LeftronicClient() {
-
-	}
 	
 	public String getApiKey() {
 		return apiKey;

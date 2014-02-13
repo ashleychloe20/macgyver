@@ -11,7 +11,7 @@ public class LeftronicClientTest {
 	public void testX() throws Exception {
 		
 		
-		LeftronicClient c = new LeftronicClient();
+		Leftronic c = new Leftronic();
 		c.setApiKey("xxx");
 		
 		c.send("sandboxTestStream", 150);
