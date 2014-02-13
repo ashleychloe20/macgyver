@@ -2,35 +2,38 @@ package io.macgyver.core;
 
 import groovy.util.ConfigObject;
 import groovy.util.ConfigSlurper;
+import io.macgyver.config.CoreConfig;
 import io.macgyver.core.crypto.Crypto;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.util.StringValueResolver;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
+import com.google.common.collect.Maps;
 
 public class MacGyverPropertySourcesPlaceholderConfigurer extends
-		PropertySourcesPlaceholderConfigurer implements InitializingBean, BeanFactoryPostProcessor,
-		Ordered {
+		PropertySourcesPlaceholderConfigurer implements InitializingBean, BeanDefinitionRegistryPostProcessor,Ordered {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	public static final String MACGYVER_PROPERTIES_CONFIG_SYSTEM_PROPERTY = "macgyver.propertiesConfigFile";
 	public static final String MACGYVER_GROOVY_CONFIG_SYSTEM_PROPERTY = "macgyver.groovyConfigFile";
@@ -173,10 +176,56 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		String val = crypto.decryptStringWithPassThrough(originalValue);
 		return val;
 	}
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		super.postProcessBeanFactory(beanFactory);
-		
-	
 
+	
+	protected void autoRegisterBean(String name, String serviceType, Properties props, BeanDefinitionRegistry x) {
+		logger.info("autoRegister name={} serviceType={} props={}",name,serviceType,props.keySet());
+		String serviceTypeClass = CoreConfig.class.getPackage().getName()+"."+serviceType.substring(0,1).toUpperCase()+serviceType.substring(1)+"Factory";
+	
+	//	Class serviceClass = getClass().getClassLoader().loadClass(serviceTypeClass);
+	
+		
+		Map<Object,Object> mpm = Maps.newHashMap();
+	//	mpm.putAll(props);
+		mpm.put("properties", props);
+		
+		MutablePropertyValues mpv = new MutablePropertyValues(mpm);
+		RootBeanDefinition bd = new RootBeanDefinition(serviceTypeClass,null,mpv);
+		
+		x.registerBeanDefinition(name, bd);
+		
+	}
+
+	@Override
+	public void postProcessBeanDefinitionRegistry(
+			BeanDefinitionRegistry registry) throws BeansException {
+		List<String> names = Lists.newArrayList();
+		for (Object k: effectiveProperties.keySet()) {
+			String key = k.toString();
+			if (key.endsWith("serviceType")) {
+				String val = effectiveProperties.getProperty(key);
+				names.add(key.substring(0,key.length()-".serviceType".length()));
+			}
+		}
+		
+
+		for (String name: names) {
+			int dotIdx = name.lastIndexOf(".");
+			String unqualifiedName = name;
+			if (dotIdx>=0) {
+				unqualifiedName = unqualifiedName.substring(dotIdx+1);
+			}
+			Properties scoped = new Properties();
+			for (Map.Entry<Object, Object> entry: effectiveProperties.entrySet()) {
+				String key = entry.getKey().toString();
+				if (key.startsWith(name+".")) {
+					String scopedKey = key.substring((name+".").length());
+					scoped.setProperty(scopedKey, entry.getValue().toString());
+				}
+			}
+			String serviceType = scoped.getProperty("serviceType");
+			scoped.remove("serviceType");
+			autoRegisterBean(unqualifiedName,serviceType,scoped, registry);
+		}
 	}
 }

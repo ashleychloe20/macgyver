@@ -13,5 +13,10 @@ services {
 
 }
 
-myTestBean.foo="xxx"
-anotherTestBean.foo="xxx"
+myTestBean.foo="bar"
+
+
+unittest.testBeanName.serviceType="testService"
+unittest.testBeanName.foo="bar"
+
+a.b.c.url="http://whatever"

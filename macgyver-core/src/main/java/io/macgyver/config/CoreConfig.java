@@ -105,10 +105,7 @@ public class CoreConfig {
 		
 	}
 
-	@Bean
-	public static TestBean anotherTestBean() {
-		return new TestBean();
-	}
+
 	
 
 }
