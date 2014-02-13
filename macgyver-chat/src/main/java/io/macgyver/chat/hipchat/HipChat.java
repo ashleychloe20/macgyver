@@ -7,10 +7,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
-import sun.font.CreatedFontTracker;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -24,7 +20,7 @@ public class HipChat {
 	private static AsyncHttpClient sharedInstance = null;
 
 	public HipChat() {
-	
+		this.client = createClientIfNecessary();
 	}
 
 	public HipChat(AsyncHttpClient client) {
@@ -40,15 +36,12 @@ public class HipChat {
 		this.apiKey = apiKey;
 	}
 
-
 	AsyncHttpClient client;
 
 	protected AsyncHttpClient getClient() {
-		Preconditions.checkNotNull(client,"client not initialized");
+		Preconditions.checkNotNull(client, "client not initialized");
 		return client;
 	}
-
-
 
 	public void sendMessage(String roomId, String user, String message) {
 		sendMessage(roomId, user, message, false, null);
@@ -59,6 +52,15 @@ public class HipChat {
 			return userId.substring(0, 14);
 		}
 		return userId;
+	}
+
+	protected AsyncHttpClient createClientIfNecessary() {
+		synchronized (AsyncHttpClient.class) {
+			if (sharedInstance == null) {
+				sharedInstance = new AsyncHttpClient();
+			}
+			return sharedInstance;
+		}
 	}
 
 	public void sendMessage(String roomId, String user, String message,
