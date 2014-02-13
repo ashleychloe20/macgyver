@@ -13,7 +13,7 @@ import com.vmware.vim25.mo.ServiceInstance;
 
 public class VSphereFactoryBean extends ServiceFactoryBean<ServiceInstance> {
 
-	@Autowired
+
 	public VSphereFactoryBean() {
 		super(ServiceInstance.class);
 	}
