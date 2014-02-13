@@ -201,10 +201,18 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 					mdr);
 
 			ServiceFactoryBean sfb = xx.newInstance();
-			sfb.registerCollaborators(x, props);
 
-			// serviceTypeClass, null,
-			// mpv);
+			Optional<CollaboratorRegistrationCallback> reg = sfb
+					.getCollaboratorRegistrationCallback();
+			if (reg.isPresent()) {
+				CollaboratorRegistrationCallback.RegistrationDetail detail = new CollaboratorRegistrationCallback.RegistrationDetail();
+				detail.setPrimaryBeanDefinition(bd);
+				detail.setPrimaryBeanName(name);
+				detail.setProperties(props);
+				detail.setRegistry(x);
+				reg.get().registerCollaborators(detail);
+			}
+	
 			bd.setPropertyValues(mpv);
 			bd.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
 			bd.setAutowireCandidate(true);
