@@ -20,8 +20,10 @@ public class GitHubFactoryBean extends ServiceFactoryBean<GitHub> {
 			String oauthToken = getProperties().getProperty("oauthToken");
 			GitHub gh = null;
 			if (url != null) {
+				logger.info("connecting to: {}",url);
 				gh = GitHub.connectToEnterprise(url, oauthToken);
 			} else {
+				logger.info("connecting to github.com");
 				gh = GitHub.connectUsingOAuth(oauthToken);
 
 			}

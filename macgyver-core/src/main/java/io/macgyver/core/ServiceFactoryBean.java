@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 public abstract class ServiceFactoryBean<T> implements FactoryBean<T>,
 		ApplicationContextAware {
 
-	Logger logger = LoggerFactory.getLogger(getClass());
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	ApplicationContext applicationContext;
 
 	Class<? extends T> classType;
