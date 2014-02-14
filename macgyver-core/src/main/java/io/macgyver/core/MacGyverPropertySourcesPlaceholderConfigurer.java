@@ -17,7 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
@@ -181,43 +183,55 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 	}
 
 	protected void autoRegisterBean(String name, String serviceType,
-			Properties props, BeanDefinitionRegistry x) {
+			Properties props, BeanDefinitionRegistry beanDefinitionRegistry) {
 		try {
 			logger.info("autoRegister name={} serviceType={} props={}", name,
 					serviceType, props.keySet());
-			String serviceTypeClass = CoreConfig.class.getPackage().getName()
+			String serviceFactoryBeanClassName = CoreConfig.class.getPackage().getName()
 					+ "." + serviceType.substring(0, 1).toUpperCase()
 					+ serviceType.substring(1) + "FactoryBean";
 
-			Map<Object, Object> mpm = Maps.newHashMap();
-			mpm.put("properties", props);
+			BeanDefinition beanDefinition = null;
+			boolean useBuilder = true;
 			Class<ServiceFactoryBean> xx = (Class<ServiceFactoryBean>) getClass()
-					.getClassLoader().loadClass(serviceTypeClass);
+					.getClassLoader().loadClass(serviceFactoryBeanClassName);
+			if (useBuilder) {
+				beanDefinition = BeanDefinitionBuilder
+						.rootBeanDefinition(serviceFactoryBeanClassName)
+						.addPropertyValue("properties", props)
+						.getBeanDefinition();
 
-			MutablePropertyValues mpv = new MutablePropertyValues(mpm);
-			SimpleMetadataReaderFactory mf = new SimpleMetadataReaderFactory();
-			MetadataReader mdr = mf.getMetadataReader(serviceTypeClass);
-			ScannedGenericBeanDefinition bd = new ScannedGenericBeanDefinition(
-					mdr);
+			} else {
+				Map<Object, Object> mpm = Maps.newHashMap();
+				mpm.put("properties", props);
 
-			ServiceFactoryBean sfb = xx.newInstance();
 
-			Optional<CollaboratorRegistrationCallback> reg = sfb
+				MutablePropertyValues mpv = new MutablePropertyValues(mpm);
+				SimpleMetadataReaderFactory mf = new SimpleMetadataReaderFactory();
+				MetadataReader mdr = mf.getMetadataReader(serviceFactoryBeanClassName);
+				ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(mdr);
+				sbd.setPropertyValues(mpv);
+				sbd.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+				sbd.setAutowireCandidate(true);
+				beanDefinition = sbd;
+			}
+
+			ServiceFactoryBean serviceFactoryBean = xx.newInstance();
+
+			Optional<CollaboratorRegistrationCallback> reg = serviceFactoryBean
 					.getCollaboratorRegistrationCallback();
+			
+			beanDefinitionRegistry.registerBeanDefinition(name, beanDefinition);
 			if (reg.isPresent()) {
 				CollaboratorRegistrationCallback.RegistrationDetail detail = new CollaboratorRegistrationCallback.RegistrationDetail();
-				detail.setPrimaryBeanDefinition(bd);
+				detail.setPrimaryBeanDefinition(beanDefinition);
 				detail.setPrimaryBeanName(name);
 				detail.setProperties(props);
-				detail.setRegistry(x);
+				detail.setRegistry(beanDefinitionRegistry);
 				reg.get().registerCollaborators(detail);
 			}
-	
-			bd.setPropertyValues(mpv);
-			bd.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
-			bd.setAutowireCandidate(true);
 
-			x.registerBeanDefinition(name, bd);
+
 		} catch (IOException e) {
 			throw new MacGyverException(e);
 		} catch (InstantiationException e) {

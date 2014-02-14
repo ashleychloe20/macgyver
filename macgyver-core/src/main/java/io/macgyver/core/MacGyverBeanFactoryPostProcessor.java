@@ -46,7 +46,7 @@ public class MacGyverBeanFactoryPostProcessor implements
 			Binding b = new Binding();
 			
 			PropertiesAccessor pa = new PropertiesAccessor((AbstractBeanFactory)beanFactory);
-			b.setProperty("prop", pa);
+			b.setProperty("properties", pa);
 			gbdr.setBinding(b);
 			gbdr.loadBeanDefinitions(new FileSystemResource(beansGroovyFile));
 			
