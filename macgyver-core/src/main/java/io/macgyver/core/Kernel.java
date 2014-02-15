@@ -1,6 +1,5 @@
 package io.macgyver.core;
 
-import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
 import io.macgyver.config.CoreConfig;
 
@@ -9,11 +8,9 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
-import org.codehaus.groovy.runtime.metaclass.MissingMethodExceptionNoStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -66,14 +63,13 @@ public class Kernel implements ApplicationContextAware {
 			Kernel k = new Kernel(Kernel.determineExtensionDir());
 			kernelRef.set(k);
 			AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-			
 
 			k.applicationContext = ctx;
 
 			File gbf = new File(Kernel.determineExtensionDir(),
 					"conf/beans.groovy");
 			if (gbf.exists()) {
-				
+
 				// Need to move all of this into a BeanFactoryPostProcessor
 				logger.info("loading spring java config from: {}", gbf);
 
@@ -81,28 +77,26 @@ public class Kernel implements ApplicationContextAware {
 					GroovyShell gs = new GroovyShell(Thread.currentThread()
 							.getContextClassLoader());
 					Object x = gs.evaluate(gbf);
-					if (x==null || (! (x instanceof Class))) {
-						throw new IllegalStateException(gbf+" must return a java.lang.Class");
+					if (x == null || (!(x instanceof Class))) {
+						throw new IllegalStateException(gbf
+								+ " must return a java.lang.Class");
 					}
 					ctx.setClassLoader((((Class) x).getClassLoader()));
 					ctx.scan(CoreConfig.class.getPackage().getName());
-					
+
 					ctx.register((Class) x);
-				
 
 				} catch (IOException e) {
 					throw new IllegalStateException(e);
-				}
-				catch (MultipleCompilationErrorsException e) {
+				} catch (MultipleCompilationErrorsException e) {
 					throw e;
+				} catch (RuntimeException e) {
+					throw new IllegalStateException(gbf
+							+ " must return a java.lang.Class", e);
 				}
-				catch (RuntimeException e) {
-					throw new IllegalStateException(gbf+" must return a java.lang.Class",e);
-				}
-			}
-			else {
+			} else {
 				ctx.scan(CoreConfig.class.getPackage().getName());
-				
+
 			}
 			ctx.refresh();
 			kernelRef.set(k);
@@ -114,7 +108,7 @@ public class Kernel implements ApplicationContextAware {
 		if (startupError != null) {
 			throw new MacGyverException(startupError);
 		}
-		
+
 	}
 
 	public synchronized static Kernel getInstance() {
@@ -122,7 +116,7 @@ public class Kernel implements ApplicationContextAware {
 		if (k == null) {
 			Kernel.initialize();
 			k = kernelRef.get();
-			
+
 		}
 		return k;
 	}
@@ -145,9 +139,11 @@ public class Kernel implements ApplicationContextAware {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
-		if (this.applicationContext != null && this.applicationContext!=applicationContext) {
+		if (this.applicationContext != null
+				&& this.applicationContext != applicationContext) {
 
-			throw new IllegalStateException("application context already set: "+this.applicationContext);
+			throw new IllegalStateException("application context already set: "
+					+ this.applicationContext);
 		}
 		this.applicationContext = applicationContext;
 
@@ -156,27 +152,27 @@ public class Kernel implements ApplicationContextAware {
 	static Optional<String> profile = null;
 
 	public static synchronized Optional<String> getExecutionProfile() {
-		if (profile!=null) {
+		if (profile != null) {
 			return profile;
 		}
 		StandardEnvironment standardEnvironment = new StandardEnvironment();
-		
-		String [] activeProfiles = standardEnvironment.getActiveProfiles();
-		if (activeProfiles==null) {
+
+		String[] activeProfiles = standardEnvironment.getActiveProfiles();
+		if (activeProfiles == null) {
 			profile = Optional.absent();
 		}
-		for (String p: activeProfiles) {
-			if (p!=null && p.endsWith("_env")) {
-				p = p.substring(0,p.length()-"_env".length());
+		for (String p : activeProfiles) {
+			if (p != null && p.endsWith("_env")) {
+				p = p.substring(0, p.length() - "_env".length());
 				profile = Optional.of(p);
 			}
 		}
 		if (profile == null) {
 			logger.info("no profile selected");
-			profile=Optional.absent();
+			profile = Optional.absent();
 		}
 		return profile;
-		
+
 	}
 
 	public static File determineExtensionDir() {
