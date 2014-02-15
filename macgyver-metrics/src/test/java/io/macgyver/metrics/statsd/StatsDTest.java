@@ -61,7 +61,7 @@ public class StatsDTest extends MacgyverIntegrationTest{
 
 	@Test
 	public void testStatsD() throws Exception {
-		StatsD sd = new StatsD("localhost", socket.getLocalPort());
+		StatsD sd = new StatsD("localhost", socket.getLocalPort(), null);
 
 		for (int i = 0; i < 10000; i++) {
 			sd.record("metricName", i);

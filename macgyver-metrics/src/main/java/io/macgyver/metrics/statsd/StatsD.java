@@ -38,10 +38,11 @@ public class StatsD implements Recorder {
 
 	}
 
-	public StatsD(String host, int port) {
+	public StatsD(String host, int port, String prefix) {
 		this.host = host;
 		this.port = port;
-
+		this.prefix = prefix;
+		
 		linkedBlockingQueue = new LinkedBlockingDeque<Runnable>(50000);
 		sender = new ThreadPoolExecutor(2, 2, 5, TimeUnit.SECONDS,
 				linkedBlockingQueue, new RejectionHandler());

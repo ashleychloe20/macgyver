@@ -31,7 +31,7 @@ public class HostedGraphite extends Graphite {
 	}
 
 	public void setApiKey(String accessKey) {
-		this.accessKey = accessKey;
+		this.accessKey = accessKey == null ? "" : accessKey;
 	}
 
 	public String getPrefix() {
@@ -52,7 +52,7 @@ public class HostedGraphite extends Graphite {
 
 	@Override
 	public void record(String metric, long val) {
-		
+
 		try {
 
 			String data = qualifyStreamName(metric) + " " + val;
@@ -68,7 +68,15 @@ public class HostedGraphite extends Graphite {
 
 				@Override
 				public String onCompleted(Response response) throws Exception {
-					logger.debug("sent metric to graphite");
+					int rc = response.getStatusCode();
+
+					if (logger.isDebugEnabled()) {
+						logger.debug("sent metric to graphite rc={}", rc);
+					}
+					if (rc > 299) {
+						logger.warn("graphite response: rc={} body={}", rc,
+								response.getResponseBody());
+					}
 					return null;
 				}
 			};

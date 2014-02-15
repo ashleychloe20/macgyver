@@ -11,7 +11,7 @@ public class StatsDFactoryBean extends ServiceFactoryBean<StatsD> {
 	@Override
 	public StatsD createObject() throws Exception {
 		StatsD s = new StatsD(getProperties().getProperty("host"),
-				Integer.parseInt(getProperties().getProperty("port", "8125")));
+				Integer.parseInt(getProperties().getProperty("port", "8125")), getProperties().getProperty("prefix"));
 		return s;
 
 	}
