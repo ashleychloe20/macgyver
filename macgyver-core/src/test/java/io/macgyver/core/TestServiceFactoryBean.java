@@ -1,7 +1,6 @@
-package io.macgyver.config;
+package io.macgyver.core;
 
 import io.macgyver.core.ServiceFactoryBean;
-import io.macgyver.core.TestBean;
 import io.macgyver.core.crypto.Crypto;
 
 import org.springframework.beans.factory.annotation.Autowired;
