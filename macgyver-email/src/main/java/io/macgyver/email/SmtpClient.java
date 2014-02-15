@@ -1,6 +1,5 @@
 package io.macgyver.email;
 
-import io.macgyver.config.SmtpFactoryBean;
 import io.macgyver.core.MacGyverException;
 
 import java.net.InetAddress;

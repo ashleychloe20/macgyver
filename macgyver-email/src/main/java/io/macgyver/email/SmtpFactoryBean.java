@@ -1,8 +1,7 @@
-package io.macgyver.config;
+package io.macgyver.email;
 
 import io.macgyver.core.CollaboratorRegistrationCallback;
 import io.macgyver.core.ServiceFactoryBean;
-import io.macgyver.email.SmtpClient;
 
 import java.util.Properties;
 

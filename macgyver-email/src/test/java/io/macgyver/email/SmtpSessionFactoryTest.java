@@ -1,5 +1,4 @@
 package io.macgyver.email;
-import io.macgyver.config.SmtpFactoryBean;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import java.util.Properties;
