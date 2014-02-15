@@ -1,6 +1,6 @@
 package io.macgyver.email;
 
-import io.macgyver.config.SmtpSessionFactoryBean;
+import io.macgyver.config.SmtpFactoryBean;
 import io.macgyver.core.MacGyverException;
 
 import java.net.InetAddress;
@@ -16,21 +16,21 @@ import com.google.common.collect.Lists;
 
 public class SmtpClient {
 
-	SmtpSessionFactoryBean smtpSessionFactory;
+	SmtpFactoryBean smtpSessionFactory;
 
 	public SmtpClient() {
 
 	}
 
-	public SmtpClient(SmtpSessionFactoryBean factory) {
+	public SmtpClient(SmtpFactoryBean factory) {
 		this.smtpSessionFactory = factory;
 	}
 
-	public SmtpSessionFactoryBean getSmtpSessionFactory() {
+	public SmtpFactoryBean getSmtpSessionFactory() {
 		return smtpSessionFactory;
 	}
 
-	public void setSmtpSessionFactory(SmtpSessionFactoryBean smtpSessionFactory) {
+	public void setSmtpSessionFactory(SmtpFactoryBean smtpSessionFactory) {
 		this.smtpSessionFactory = smtpSessionFactory;
 	}
 

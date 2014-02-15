@@ -15,7 +15,6 @@ import com.google.common.base.Optional;
 import com.jolbox.bonecp.BoneCPConfig;
 import com.jolbox.bonecp.BoneCPDataSource;
 
-
 public class DataSourceFactoryBean extends ServiceFactoryBean<DataSource> {
 
 	public DataSourceFactoryBean() {
@@ -25,21 +24,20 @@ public class DataSourceFactoryBean extends ServiceFactoryBean<DataSource> {
 
 	@Override
 	public DataSource createObject() throws Exception {
-		
+
 		Properties props = new Properties();
-		//set some defaults
-		props.put("defaultAutoCommit","true");
-		
+		// set some defaults
+		props.put("defaultAutoCommit", "true");
+
 		props.putAll(getProperties());
-		
+
 		BoneCPConfig cp = new BoneCPConfig(props);
-		
-		
+
 		return new BoneCPDataSource(cp);
 	}
 
 	@Override
-	public Optional<CollaboratorRegistrationCallback> getCollaboratorRegistrationCallback() {
+	public CollaboratorRegistrationCallback getCollaboratorRegistrationCallback() {
 		CollaboratorRegistrationCallback cb = new CollaboratorRegistrationCallback() {
 
 			@Override
@@ -55,7 +53,7 @@ public class DataSourceFactoryBean extends ServiceFactoryBean<DataSource> {
 			}
 		};
 
-		return Optional.of(cb);
+		return cb;
 	}
 
 }

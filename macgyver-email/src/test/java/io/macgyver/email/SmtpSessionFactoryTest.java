@@ -1,31 +1,63 @@
 package io.macgyver.email;
-import javax.mail.Message;
-import javax.mail.MessagingException;
+import io.macgyver.config.SmtpFactoryBean;
+import io.macgyver.test.MacgyverIntegrationTest;
+
+import java.util.Properties;
+
 import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
-import io.macgyver.config.SmtpSessionFactoryBean;
-
+import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 
-public class SmtpSessionFactoryTest {
+public class SmtpSessionFactoryTest extends MacgyverIntegrationTest{
 
+	@Autowired
+	Session session;
+	
+	@Autowired
+	SmtpClient client;
+	
+	@Autowired
+	ApplicationContext ctx;
 	
 	@Test
-	public void testMail() {
-		SmtpSessionFactoryBean f = new SmtpSessionFactoryBean();
-	/*	f.setHost("smtp.gmail.com");
-		f.setPort(587);
-		f.setAuthEnabled(true);
-		f.setStartTlsEnabled(true);
-		f.setUsername("xxxx@xxxx.com");
-		f.setPassword("xxxxx");
-		*/
+	public void testMailAutoRegister() {
+		
+		Assert.assertNotNull(session);
+		
+		Assert.assertNotNull(client);
+		
+		
+		Assert.assertNotNull(ctx.getBean("testMailSession"));
+		Assert.assertNotNull(ctx.getBean("testMailSessionClient"));
+		
+	}
 	
+	@Test(expected=IllegalArgumentException.class)
+	public void testFactoryBeanMissingHost() {
+		
+		SmtpFactoryBean f = new SmtpFactoryBean();
+		
+		Session s = f.createObject();
+	
+		Assert.assertNotNull(s);
+
+	}
+	@Test
+	public void testFactoryBean() {
+		
+		SmtpFactoryBean f = new SmtpFactoryBean();
+		
+		java.util.Properties props = new Properties();
+		props.put("host", "smtp.gmail.com");
+		f.setProperties(props);
+		
+		Session s = f.createObject();
+	
+		Assert.assertNotNull(s);
 
 	}
 }

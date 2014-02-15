@@ -218,17 +218,17 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 
 			ServiceFactoryBean serviceFactoryBean = xx.newInstance();
 
-			Optional<CollaboratorRegistrationCallback> reg = serviceFactoryBean
+			CollaboratorRegistrationCallback reg = serviceFactoryBean
 					.getCollaboratorRegistrationCallback();
 			
 			beanDefinitionRegistry.registerBeanDefinition(name, beanDefinition);
-			if (reg.isPresent()) {
+			if (reg!=null) {
 				CollaboratorRegistrationCallback.RegistrationDetail detail = new CollaboratorRegistrationCallback.RegistrationDetail();
 				detail.setPrimaryBeanDefinition(beanDefinition);
 				detail.setPrimaryBeanName(name);
 				detail.setProperties(props);
 				detail.setRegistry(beanDefinitionRegistry);
-				reg.get().registerCollaborators(detail);
+				reg.registerCollaborators(detail);
 			}
 
 

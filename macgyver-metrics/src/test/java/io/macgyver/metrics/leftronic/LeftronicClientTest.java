@@ -14,7 +14,7 @@ public class LeftronicClientTest {
 		Leftronic c = new Leftronic();
 		c.setApiKey("xxx");
 		
-		c.send("sandboxTestStream", 150);
+		c.record("sandboxTestStream", 150);
 		
 		
 		Thread.sleep(5000);

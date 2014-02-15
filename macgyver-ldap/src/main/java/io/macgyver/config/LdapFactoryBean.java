@@ -41,7 +41,7 @@ public class LdapFactoryBean extends ServiceFactoryBean<LdapContextSource> {
 	
 	
 	@Override
-	public Optional<CollaboratorRegistrationCallback> getCollaboratorRegistrationCallback() {
+	public CollaboratorRegistrationCallback getCollaboratorRegistrationCallback() {
 		
 	
 		CollaboratorRegistrationCallback reg = new CollaboratorRegistrationCallback() {
@@ -54,8 +54,7 @@ public class LdapFactoryBean extends ServiceFactoryBean<LdapContextSource> {
 				
 			}
 		};
-		return Optional.of(reg);
+		return reg;
+
 	}
-
-
 }

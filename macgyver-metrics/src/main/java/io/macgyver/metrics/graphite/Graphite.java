@@ -1,6 +1,8 @@
 package io.macgyver.metrics.graphite;
 
-public abstract class Graphite {
+import io.macgyver.metrics.Recorder;
 
-	public abstract void send(String metric, long val);
+public abstract class Graphite implements Recorder {
+
+	public abstract void record(String metric, long val);
 }

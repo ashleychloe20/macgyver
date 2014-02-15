@@ -51,8 +51,8 @@ public class HostedGraphite extends Graphite {
 	}
 
 	@Override
-	public void send(String metric, long val) {
-		AsyncHttpClient asyncHttpClient = null;
+	public void record(String metric, long val) {
+		
 		try {
 
 			String data = qualifyStreamName(metric) + " " + val;

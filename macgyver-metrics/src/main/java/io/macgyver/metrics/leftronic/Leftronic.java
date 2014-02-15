@@ -1,6 +1,8 @@
 package io.macgyver.metrics.leftronic;
 
+import io.macgyver.config.MetricsConfig;
 import io.macgyver.core.MacGyverException;
+import io.macgyver.metrics.Recorder;
 
 import java.io.IOException;
 
@@ -17,7 +19,7 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.HttpResponseStatus;
 import com.ning.http.client.Response;
 
-public class Leftronic {
+public class Leftronic implements Recorder {
 
 	public static Logger logger = LoggerFactory.getLogger(Leftronic.class);
 	public static final String DEFAULT_URL = "https://www.leftronic.com/customSend/";
@@ -54,7 +56,7 @@ public class Leftronic {
 			return stream;
 		}
 	}
-	public void send(String streamName, long val) {
+	public void record(String streamName, long val) {
 
 	
 		try {

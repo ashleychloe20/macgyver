@@ -1,10 +1,15 @@
 package io.macgyver.config;
 
+import io.macgyver.core.CollaboratorRegistrationCallback;
 import io.macgyver.core.ConfigurationException;
 import io.macgyver.core.ServiceFactoryBean;
 
 import java.net.UnknownHostException;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.mongodb.DB;
@@ -32,6 +37,30 @@ public class MongoDBFactoryBean extends ServiceFactoryBean<MongoClient> {
 		return c.getDB(c.getDatabaseName());
 		
 	}
+	
+	
+	@Override
+	public CollaboratorRegistrationCallback getCollaboratorRegistrationCallback() {
+		CollaboratorRegistrationCallback cb = new CollaboratorRegistrationCallback() {
+
+			@Override
+			public void registerCollaborators(RegistrationDetail detail) {
+
+				
+				String name = detail.getPrimaryBeanName() + "DB";
+				logger.info("registering {}");
+				BeanDefinition bd = BeanDefinitionBuilder
+						.rootBeanDefinition(DBFactoryShim.class).addConstructorArgReference(detail.getPrimaryBeanName()).getBeanDefinition();
+				
+				detail.getRegistry().registerBeanDefinition(name, bd);
+
+			}
+		};
+
+		return cb;
+	}
+
+
 	public class ExtendedMongoClient extends MongoClient {
 
 		MongoClientURI mongoClientUri;

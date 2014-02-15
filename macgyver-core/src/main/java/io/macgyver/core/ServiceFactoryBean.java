@@ -75,8 +75,8 @@ public abstract class ServiceFactoryBean<T> implements FactoryBean<T>,
 				obj);
 	}
 
-	public Optional<CollaboratorRegistrationCallback> getCollaboratorRegistrationCallback() {
-		return Optional.absent();
+	public CollaboratorRegistrationCallback getCollaboratorRegistrationCallback() {
+		return null;
 	}
 	
 
