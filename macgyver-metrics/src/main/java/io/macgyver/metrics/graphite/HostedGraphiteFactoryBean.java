@@ -1,7 +1,6 @@
-package io.macgyver.config;
+package io.macgyver.metrics.graphite;
 
 import io.macgyver.core.ServiceFactoryBean;
-import io.macgyver.metrics.graphite.HostedGraphite;
 
 public class HostedGraphiteFactoryBean extends ServiceFactoryBean<HostedGraphite> {
 

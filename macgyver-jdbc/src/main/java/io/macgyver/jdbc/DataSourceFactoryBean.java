@@ -1,4 +1,4 @@
-package io.macgyver.config;
+package io.macgyver.jdbc;
 
 import java.util.Properties;
 

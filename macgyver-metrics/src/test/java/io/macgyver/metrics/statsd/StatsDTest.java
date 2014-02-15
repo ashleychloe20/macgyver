@@ -1,5 +1,7 @@
 package io.macgyver.metrics.statsd;
 
+import io.macgyver.test.MacgyverIntegrationTest;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -14,7 +16,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StatsDTest {
+public class StatsDTest extends MacgyverIntegrationTest{
 
 	static Logger logger = LoggerFactory.getLogger(StatsDTest.class);
 	static volatile boolean running = true;
@@ -74,5 +76,10 @@ public class StatsDTest {
 		Assert.assertTrue(val.startsWith("metricName:"));
 		logger.info("after {} ms, recv'd {} datagrams", sleepDelay,
 				recvList.size());
+	}
+	
+	@Test
+	public void testConfig() {
+		Assert.assertNotNull(applicationContext.getBean("testStatsD"));
 	}
 }

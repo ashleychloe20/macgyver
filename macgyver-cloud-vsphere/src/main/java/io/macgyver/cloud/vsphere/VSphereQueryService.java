@@ -1,7 +1,5 @@
 package io.macgyver.cloud.vsphere;
 
-import io.macgyver.config.VSphereFactoryBean;
-
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;

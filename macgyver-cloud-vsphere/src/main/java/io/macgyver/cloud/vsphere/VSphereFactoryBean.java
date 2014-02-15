@@ -1,4 +1,4 @@
-package io.macgyver.config;
+package io.macgyver.cloud.vsphere;
 
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.ServiceFactoryBean;

@@ -1,4 +1,4 @@
-package io.macgyver.config;
+package io.macgyver.mongodb;
 
 import io.macgyver.core.CollaboratorRegistrationCallback;
 import io.macgyver.core.ConfigurationException;
@@ -6,6 +6,7 @@ import io.macgyver.core.ServiceFactoryBean;
 
 import java.net.UnknownHostException;
 
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 
@@ -111,5 +112,33 @@ public class MongoDBFactoryBean extends ServiceFactoryBean<MongoClient> {
 		} else {
 			return uri;
 		}
+	}
+	
+	public static class DBFactoryShim implements FactoryBean<DB>  {
+
+		MongoClient client;
+		
+		DBFactoryShim(MongoClient client) {
+			this.client = client;
+		}
+		@Override
+		public DB getObject() throws Exception {
+			
+			
+			ExtendedMongoClient extendedMongoClient = (ExtendedMongoClient) client;
+			return extendedMongoClient.getDB(extendedMongoClient.getDatabaseName());
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return DB.class;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return true;
+		}
+
+
 	}
 }

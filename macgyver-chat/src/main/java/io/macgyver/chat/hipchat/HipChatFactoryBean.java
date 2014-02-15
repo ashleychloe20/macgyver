@@ -1,11 +1,10 @@
-package io.macgyver.config;
+package io.macgyver.chat.hipchat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.ning.http.client.AsyncHttpClient;
 
-import io.macgyver.chat.hipchat.HipChat;
 import io.macgyver.core.ServiceFactoryBean;
 
 public class HipChatFactoryBean extends ServiceFactoryBean<HipChat> {

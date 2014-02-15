@@ -1,7 +1,6 @@
-package io.macgyver.config;
+package io.macgyver.metrics.leftronic;
 
 import io.macgyver.core.ServiceFactoryBean;
-import io.macgyver.metrics.leftronic.Leftronic;
 
 public class LeftronicFactoryBean extends ServiceFactoryBean<Leftronic> {
 

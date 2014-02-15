@@ -1,11 +1,10 @@
-package io.macgyver.config;
+package io.macgyver.metrics.statsd;
 
 import io.macgyver.core.ServiceFactoryBean;
-import io.macgyver.metrics.statsd.StatsD;
 
-public class StatsdFactoryBean extends ServiceFactoryBean<StatsD> {
+public class StatsDFactoryBean extends ServiceFactoryBean<StatsD> {
 
-	public StatsdFactoryBean() {
+	public StatsDFactoryBean() {
 		super(StatsD.class);
 	}
 

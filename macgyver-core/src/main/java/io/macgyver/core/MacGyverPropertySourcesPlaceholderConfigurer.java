@@ -44,6 +44,7 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 	Crypto crypto = null;
 
 	Properties effectiveProperties = new Properties();
+	ServiceFactoryClassFinder locator = null;
 
 	public MacGyverPropertySourcesPlaceholderConfigurer() {
 
@@ -182,47 +183,41 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		return val;
 	}
 
+	protected ServiceFactoryClassFinder getLocator() {
+		if (locator == null) {
+			locator = new ServiceFactoryClassFinder();
+		}
+		return locator;
+	}
+
 	protected void autoRegisterBean(String name, String serviceType,
 			Properties props, BeanDefinitionRegistry beanDefinitionRegistry) {
 		try {
 			logger.info("autoRegister name={} serviceType={} props={}", name,
 					serviceType, props.keySet());
-			String serviceFactoryBeanClassName = CoreConfig.class.getPackage().getName()
-					+ "." + serviceType.substring(0, 1).toUpperCase()
-					+ serviceType.substring(1) + "FactoryBean";
 
 			BeanDefinition beanDefinition = null;
 			boolean useBuilder = true;
-			Class<ServiceFactoryBean> xx = (Class<ServiceFactoryBean>) getClass()
-					.getClassLoader().loadClass(serviceFactoryBeanClassName);
-			if (useBuilder) {
-				beanDefinition = BeanDefinitionBuilder
-						.rootBeanDefinition(serviceFactoryBeanClassName)
-						.addPropertyValue("properties", props)
-						.getBeanDefinition();
+			ServiceFactoryClassFinder locator = getLocator();
 
-			} else {
-				Map<Object, Object> mpm = Maps.newHashMap();
-				mpm.put("properties", props);
+			Class<ServiceFactoryBean> clazz = locator
+					.forServiceType(serviceType);
 
-
-				MutablePropertyValues mpv = new MutablePropertyValues(mpm);
-				SimpleMetadataReaderFactory mf = new SimpleMetadataReaderFactory();
-				MetadataReader mdr = mf.getMetadataReader(serviceFactoryBeanClassName);
-				ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(mdr);
-				sbd.setPropertyValues(mpv);
-				sbd.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
-				sbd.setAutowireCandidate(true);
-				beanDefinition = sbd;
+			if (clazz==null) {
+				logger.warn("no ServiceFactoryBean registered for serviceType='{}'",serviceType);
+				return;
 			}
-
-			ServiceFactoryBean serviceFactoryBean = xx.newInstance();
+			beanDefinition = BeanDefinitionBuilder
+					.rootBeanDefinition(clazz.getName())
+					.addPropertyValue("properties", props).getBeanDefinition();
+			
+			ServiceFactoryBean serviceFactoryBean = clazz.newInstance();
 
 			CollaboratorRegistrationCallback reg = serviceFactoryBean
 					.getCollaboratorRegistrationCallback();
-			
+
 			beanDefinitionRegistry.registerBeanDefinition(name, beanDefinition);
-			if (reg!=null) {
+			if (reg != null) {
 				CollaboratorRegistrationCallback.RegistrationDetail detail = new CollaboratorRegistrationCallback.RegistrationDetail();
 				detail.setPrimaryBeanDefinition(beanDefinition);
 				detail.setPrimaryBeanName(name);
@@ -231,9 +226,6 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 				reg.registerCollaborators(detail);
 			}
 
-
-		} catch (IOException e) {
-			throw new MacGyverException(e);
 		} catch (InstantiationException e) {
 			throw new MacGyverException(e);
 		} catch (ClassNotFoundException e) {

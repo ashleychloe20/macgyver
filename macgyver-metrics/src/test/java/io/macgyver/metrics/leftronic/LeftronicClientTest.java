@@ -1,22 +1,19 @@
 package io.macgyver.metrics.leftronic;
 
+import io.macgyver.test.MacgyverIntegrationTest;
+
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class LeftronicClientTest {
+public class LeftronicClientTest extends MacgyverIntegrationTest {
 
-	
 	@Test
-	@Ignore
 	public void testX() throws Exception {
-		
-		
-		Leftronic c = new Leftronic();
-		c.setApiKey("xxx");
-		
-		c.record("sandboxTestStream", 150);
-		
-		
-		Thread.sleep(5000);
+
+		Leftronic leftronic = applicationContext.getBean("testLeftronic",
+				Leftronic.class);
+
+		Assert.assertNotNull(leftronic);
 	}
 }

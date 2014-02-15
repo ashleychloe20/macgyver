@@ -1,4 +1,4 @@
-package io.macgyver.config;
+package io.macgyver.github;
 
 import io.macgyver.core.ServiceFactoryBean;
 

@@ -1,4 +1,4 @@
-package io.macgyver.config;
+package io.macgyver.ldap;
 
 import io.macgyver.core.CollaboratorRegistrationCallback;
 import io.macgyver.core.ServiceFactoryBean;

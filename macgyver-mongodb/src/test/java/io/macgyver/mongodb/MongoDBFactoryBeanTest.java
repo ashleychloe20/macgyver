@@ -2,8 +2,8 @@ package io.macgyver.mongodb;
 
 import java.net.UnknownHostException;
 
-import io.macgyver.config.MongoDBFactoryBean;
-import io.macgyver.config.MongoDBFactoryBean.ExtendedMongoClient;
+import io.macgyver.core.ServiceFactoryClassFinder;
+import io.macgyver.mongodb.MongoDBFactoryBean.ExtendedMongoClient;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;
@@ -16,7 +16,7 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
-public class MongoDBFactoryBeanTest  {
+public class MongoDBFactoryBeanTest  extends MacgyverIntegrationTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testCredentialInjectorIllegalArgument() {
@@ -45,5 +45,18 @@ public class MongoDBFactoryBeanTest  {
 	}
 
 
+	@Test
+	public void testConfig() {
+		Assert.assertNotNull(applicationContext.getBean("testMongo"));
+		
+		Assert.assertNotNull(applicationContext.getBean("testMongoDB"));
+	}
+	
+	@Test
+	public void testFinder() throws ClassNotFoundException {
+		ServiceFactoryClassFinder f = new ServiceFactoryClassFinder();
+		Assert.assertEquals(MongoDBFactoryBean.class,f.forServiceType("mongo"));
+		Assert.assertEquals(MongoDBFactoryBean.class,f.forServiceType("mongodb"));
+	}
 
 }
