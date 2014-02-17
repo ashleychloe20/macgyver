@@ -62,7 +62,7 @@ public class SmtpFactoryBean extends ServiceFactoryBean<Session> {
 			@Override
 			public void registerCollaborators(RegistrationDetail detail) {
 				String beanName = detail.getPrimaryBeanName()+"Client";
-				BeanDefinition b = BeanDefinitionBuilder.rootBeanDefinition(SmtpClient.class).getBeanDefinition();
+				BeanDefinition b = BeanDefinitionBuilder.rootBeanDefinition(SmtpClient.class).addConstructorArgReference(detail.getPrimaryBeanName()).getBeanDefinition();
 				
 				detail.getRegistry().registerBeanDefinition(beanName, b);
 			}

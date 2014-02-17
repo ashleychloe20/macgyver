@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -15,26 +16,21 @@ import com.google.common.collect.Lists;
 
 public class SmtpClient {
 
-	SmtpFactoryBean smtpSessionFactory;
+	Session session;
 
 	public SmtpClient() {
 
 	}
 
-	public SmtpClient(SmtpFactoryBean factory) {
-		this.smtpSessionFactory = factory;
+	public SmtpClient(Session session) {
+		this.session = session;
 	}
 
-	public SmtpFactoryBean getSmtpSessionFactory() {
-		return smtpSessionFactory;
-	}
 
-	public void setSmtpSessionFactory(SmtpFactoryBean smtpSessionFactory) {
-		this.smtpSessionFactory = smtpSessionFactory;
-	}
 
 	public void sendMail(String from, String to, String subject, String body) {
-		List<String> recipientList = Lists.newArrayList(to);
+		List<String> recipientList = Lists.newArrayList();
+		recipientList.add(to);
 		sendMail(from, recipientList, subject, body);
 	}
 
@@ -42,7 +38,8 @@ public class SmtpClient {
 			String body) {
 		try {
 			 
-			Message message = new MimeMessage(smtpSessionFactory.createObject());
+			System.out.println("SENDING");
+			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(from));
 			List<InternetAddress> addressList = Lists.newArrayList();
 			for (String addr: to) {
@@ -50,6 +47,7 @@ public class SmtpClient {
 				if (address!=null) {
 					for (InternetAddress x: address) {
 						addressList.add(x);
+					
 					}
 				}
 			}
@@ -60,6 +58,7 @@ public class SmtpClient {
  
 			Transport.send(message);
  
+			
  
 		} catch (MessagingException e) {
 			throw new MailException(e);
