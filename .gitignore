@@ -18,3 +18,4 @@ logs/
 *.jceks
 *.swp
 *~
+dump.rdb
