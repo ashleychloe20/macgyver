@@ -3,6 +3,7 @@ package io.macgyver.redis;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +17,7 @@ public class RedisFactoryBeanTest extends MacgyverIntegrationTest {
 	@Autowired
 	JedisPool pool;
 	
+	@Ignore
 	@Test
 	public void testIt() {
 	
@@ -27,5 +29,7 @@ public class RedisFactoryBeanTest extends MacgyverIntegrationTest {
 		j.hset("a", "b","2");
 		
 		pool.returnResource(j);
+		
+		
 	}
 }
