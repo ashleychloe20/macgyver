@@ -82,7 +82,7 @@ public class Leftronic implements Recorder {
 
 				@Override
 				public String onCompleted(Response response) throws Exception {
-					logger.debug("sent metric to leftronic");
+					logger.debug("sent metric to leftronic rc={}",response.getStatusCode());
 					return null;
 				}
 			};

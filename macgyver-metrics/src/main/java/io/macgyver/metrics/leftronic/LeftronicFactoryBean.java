@@ -14,7 +14,7 @@ public class LeftronicFactoryBean extends ServiceFactoryBean<Leftronic> {
 		
 		Leftronic leftronic = new Leftronic();
 		leftronic.setApiKey(getProperties().getProperty("apiKey"));
-		leftronic.setApiKey(getProperties().getProperty("prefix"));
+		leftronic.setPrefix(getProperties().getProperty("prefix"));
 		return leftronic;
 		
 	}
