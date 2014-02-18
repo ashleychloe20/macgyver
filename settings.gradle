@@ -1,5 +1,7 @@
 include     'macgyver-metrics',
             'macgyver-core',
+            'macgyver-jruby',
+            'macgyver-jython',
             'macgyver-ldap',
             'macgyver-email',
             'macgyver-cloud',
