@@ -1,6 +1,7 @@
 package io.macgyver.scheduler;
 
 import io.macgyver.core.Kernel;
+import io.macgyver.core.script.ScriptExecutor;
 
 import java.io.File;
 import java.io.IOException;
@@ -112,6 +113,8 @@ public class AutoScheduler implements InitializingBean {
 		final List<ScheduledScript> list = Lists.newArrayList();
 		final FileVisitor fv = new SimpleFileVisitor<Path>() {
 
+			ScriptExecutor se = new ScriptExecutor();
+			
 			@Override
 			public FileVisitResult preVisitDirectory(final Path dir,
 					BasicFileAttributes attrs) throws IOException {
@@ -125,7 +128,7 @@ public class AutoScheduler implements InitializingBean {
 				// TODO Auto-generated method stub
 				Optional<JsonObject> schedule = extractCronExpression(file
 						.toFile());
-				if (schedule.isPresent()) {
+				if (schedule.isPresent() && se.isSupportedScript(file.toFile())) {
 					JsonObject descriptor = schedule.get();
 
 					if (descriptor.containsKey("cron")) {

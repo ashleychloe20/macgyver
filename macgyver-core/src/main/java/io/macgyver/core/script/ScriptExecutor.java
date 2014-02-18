@@ -100,7 +100,18 @@ public class ScriptExecutor implements ApplicationContextAware {
 	public void run(String arg) {
 		run(arg, null, true);
 	}
+	public boolean isSupportedScript(File f) {
+		try {
+			ScriptEngineManager m = new ScriptEngineManager();
+			String extension = Files.getFileExtension(f.getName());
+			ScriptEngine engine = m.getEngineByExtension(extension);
 
+			return engine != null;
+		} catch (Exception e) {
+			return false;
+		}
+
+	}
 	public void run(String arg, Map<String, Object> vars, boolean failIfNotFound) {
 		File scriptDir = new File(kernel.getExtensionDir(), "scripts");
 

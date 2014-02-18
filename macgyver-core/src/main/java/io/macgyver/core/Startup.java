@@ -3,7 +3,11 @@ package io.macgyver.core;
 import io.macgyver.core.script.ScriptExecutor;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Iterator;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +33,7 @@ public class Startup implements InitializingBean {
 
 	@Subscribe
 	public void onStart(Kernel.KernelStartedEvent event) {
-		logger.info("STARTED: {}",event);
+		logger.info("STARTED: {}", event);
 		runInitScripts();
 
 	}
@@ -59,15 +63,17 @@ public class Startup implements InitializingBean {
 
 	}
 
+
+
 	public void runInitScript(File f) {
 		if (f.isDirectory()) {
 			return;
 		}
-		if (f.exists() && f.getName().endsWith(".groovy")) {
+		ScriptExecutor se = new ScriptExecutor();
+		if (se.isSupportedScript(f)) {
 			try {
-				new ScriptExecutor().run(f, null, false);
-			}
-			catch (RuntimeException e) {
+				se.run(f, null, false);
+			} catch (RuntimeException e) {
 				Kernel.registerStartupError(e);
 			}
 		} else {
