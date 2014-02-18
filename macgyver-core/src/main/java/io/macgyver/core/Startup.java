@@ -28,8 +28,8 @@ public class Startup implements InitializingBean {
 	Kernel kernel;
 
 	@Subscribe
-	public void onStart(ContextRefreshedEvent event) {
-		logger.info("STARTED: event");
+	public void onStart(Kernel.KernelStartedEvent event) {
+		logger.info("STARTED: {}",event);
 		runInitScripts();
 
 	}

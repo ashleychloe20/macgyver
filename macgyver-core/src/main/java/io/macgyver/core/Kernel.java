@@ -2,6 +2,7 @@ package io.macgyver.core;
 
 import groovy.lang.GroovyShell;
 import io.macgyver.config.CoreConfig;
+import io.macgyver.core.eventbus.MacGyverEventBus;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,8 +100,10 @@ public class Kernel implements ApplicationContextAware {
 
 			}
 			ctx.refresh();
+			
+			MacGyverEventBus bus = ctx.getBean(MacGyverEventBus.class);		
 			kernelRef.set(k);
-
+			bus.post(new KernelStartedEvent());
 		} else {
 			throw new IllegalStateException(
 					"spring context already initialized");
@@ -192,5 +195,9 @@ public class Kernel implements ApplicationContextAware {
 			throw new ConfigurationException(e);
 		}
 
+	}
+	
+	public static class KernelStartedEvent {
+		
 	}
 }
