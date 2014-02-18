@@ -12,13 +12,13 @@ public class ScheduledScript {
 	String cronExpression;
 
 	public ScheduledScript(File f, String cron) {
-		this.scriptFile = f;
+		this.scriptFile = f!=null ? f.getAbsoluteFile() : f;
 		this.cronExpression = cron;
 	}
 
 	public String toString() {
 		return Objects.toStringHelper(this)
-				.add("scriptFile", scriptFile.getAbsolutePath())
+				.add("scriptFile", scriptFile)
 				.add("cronExpression", cronExpression).toString();
 	}
 

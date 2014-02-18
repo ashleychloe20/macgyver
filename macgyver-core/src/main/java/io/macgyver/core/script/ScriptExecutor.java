@@ -152,7 +152,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 			collectBindings(bindings, Optional.fromNullable(engine.getFactory().getLanguageName()));
 
-			logger.info("invoking script");
+		
 			Object val = engine.eval(fr, bindings);
 
 			fr.close();

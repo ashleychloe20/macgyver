@@ -23,7 +23,7 @@ public class BindingSupplierManager implements BindingSupplier{
 		for (Map.Entry<String, BindingSupplier> m: map.entrySet()) {
 			try {
 				if (m.getValue()!=this) {
-					logger.debug("obtaining bindings from supplier: {}",m.getKey());
+					logger.trace("obtaining bindings from supplier: {}",m.getKey());
 					m.getValue().collect(c,lang);
 				}
 				
