@@ -27,13 +27,7 @@ public class LdapFactoryBean extends ServiceFactoryBean<LdapContextSource> {
 		org.springframework.beans.BeanWrapper gw = new BeanWrapperImpl(cs);
 		
 		assignProperties(cs, getProperties(), true);
-		/*System.out.println(getProperties());
-		cs.setUrl(getProperties().getProperty("url"));
-		cs.setUserDn(getProperties().getProperty("userDn"));
-		cs.setPassword(getProperties().getProperty("password"));
-		cs.setReferral(getProperties().getProperty("referral"));
-		cs.setBase(getProperties().getProperty("base"));
-		*/
+
 		cs.afterPropertiesSet();
 		return cs;
 	}

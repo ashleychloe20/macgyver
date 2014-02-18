@@ -12,10 +12,14 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Lists;
 
 public class SmtpClient {
 
+	Logger logger = LoggerFactory.getLogger(SmtpClient.class);
 	Session session;
 
 	public SmtpClient() {
@@ -38,7 +42,7 @@ public class SmtpClient {
 			String body) {
 		try {
 			 
-			System.out.println("SENDING");
+			logger.debug("sending email from:{} to:{}",from,to);
 			Message message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(from));
 			List<InternetAddress> addressList = Lists.newArrayList();
