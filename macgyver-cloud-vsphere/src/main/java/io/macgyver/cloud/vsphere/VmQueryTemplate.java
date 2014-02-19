@@ -12,14 +12,18 @@ import com.vmware.vim25.mo.ManagedEntity;
 import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
 
-public class VSphereQueryService {
+public class VmQueryTemplate {
 
-	VSphereFactoryBean vSphereClientFactory;
+	ServiceInstance serviceInstance;
 
 	Gson gson = VSphereGsonBuilder.createBuilder().setPrettyPrinting().create();
 
+	public VmQueryTemplate(ServiceInstance serviceInstance) {
+		this.serviceInstance = serviceInstance;
+	}
+	
 	ServiceInstance getServiceInstance() {
-		return vSphereClientFactory.createObject();
+		return serviceInstance;
 	}
 
 	public JsonElement asJson(VirtualMachine vm) {
@@ -83,13 +87,6 @@ public class VSphereQueryService {
 
 	}
 
-	public VSphereFactoryBean getVsphereClientFactory() {
-		return vSphereClientFactory;
-	}
 
-	public void setVSphereClientFactory(
-			VSphereFactoryBean vsphereClientFactory) {
-		this.vSphereClientFactory = vsphereClientFactory;
-	}
 
 }
