@@ -166,7 +166,7 @@ public class AutoScheduler implements InitializingBean {
 				
 				scheduleScript(ss, validJobKeySet);
 			} catch (Exception e) {
-				logger.error("problem scheduling {} - ", ss,e.toString());
+				logger.error("problem scheduling {} - {}", ss,e.toString());
 			}
 		}
 		prune(validJobKeySet);

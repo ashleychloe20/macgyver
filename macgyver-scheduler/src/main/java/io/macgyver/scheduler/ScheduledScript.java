@@ -24,6 +24,9 @@ public class ScheduledScript {
 
 	JobKey getJobKey() {
 		try {
+			if (scriptFile==null) {
+				return null;
+			}
 			return JobKey.jobKey(scriptFile.getCanonicalPath(),
 					AutoScheduler.AUTO_SCHEDULER_GROUP);
 		} catch (IOException e) {
