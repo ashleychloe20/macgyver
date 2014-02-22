@@ -77,10 +77,7 @@ public class Librato extends AbstractMetricRecorder {
 
 				@Override
 				public String onCompleted(Response response) throws Exception {
-					if (logger.isDebugEnabled()) {
-						logger.debug("sent metric to librato: "
-								+ response.getStatusCode());
-					}
+					
 					if (response.getStatusCode() > 299) {
 						logger.warn("librato response code: {} body: {}",
 								response.getStatusCode(),

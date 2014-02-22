@@ -29,8 +29,7 @@ public class Leftronic extends AbstractMetricRecorder {
 
 	@Autowired
 	AsyncHttpClient client;
-	
-	
+
 	public String getApiKey() {
 		return apiKey;
 	}
@@ -39,12 +38,8 @@ public class Leftronic extends AbstractMetricRecorder {
 		this.apiKey = apiKey;
 	}
 
-
-
-
 	public void doRecord(String streamName, long val) {
 
-	
 		try {
 			Gson gson = new Gson();
 
@@ -52,35 +47,36 @@ public class Leftronic extends AbstractMetricRecorder {
 			data.addProperty("accessKey", apiKey);
 			data.addProperty("streamName", streamName);
 			data.addProperty("point", val);
-			logger.trace("sending data leftronic: {}",data);
-		
+
+			if (logger.isTraceEnabled()) {
+				logger.trace("sending data leftronic: {}", data);
+			}
 
 			AsyncCompletionHandler<String> h = new AsyncCompletionHandler<String>() {
 
-			
-
 				@Override
 				public void onThrowable(Throwable t) {
-					logger.warn("",t);
+					logger.warn("", t);
 					super.onThrowable(t);
-					
+
 				}
 
 				@Override
 				public String onCompleted(Response response) throws Exception {
-					logger.debug("sent metric to leftronic rc={}",response.getStatusCode());
+					int sc = response.getStatusCode();
+					if (sc >= 300) {
+						logger.warn("leftronic response code: {} body: {}", sc,response.getResponseBody());
+					}
 					return null;
 				}
 			};
 
-			client.preparePost(url).setBody(data.toString())
-					.execute(h);
+			client.preparePost(url).setBody(data.toString()).execute(h);
 
 		} catch (IOException e) {
 			throw new MacGyverException(e);
-		}
-		finally {
-		
+		} finally {
+
 		}
 
 	}

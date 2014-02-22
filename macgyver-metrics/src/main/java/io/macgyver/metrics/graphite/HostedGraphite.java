@@ -66,9 +66,7 @@ public class HostedGraphite extends Graphite {
 				public String onCompleted(Response response) throws Exception {
 					int rc = response.getStatusCode();
 
-					if (logger.isDebugEnabled()) {
-						logger.debug("sent metric to graphite rc={}", rc);
-					}
+	
 					if (rc > 299) {
 						logger.warn("graphite response: rc={} body={}", rc,
 								response.getResponseBody());
