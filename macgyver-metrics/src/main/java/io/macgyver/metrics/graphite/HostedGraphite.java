@@ -4,6 +4,7 @@ import io.macgyver.core.MacGyverException;
 
 import java.io.IOException;
 
+import org.glassfish.jersey.client.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,14 @@ public class HostedGraphite extends Graphite {
 	@Autowired
 	AsyncHttpClient client;
 
+	
+	public HostedGraphite() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public HostedGraphite(ClientConfig cc) {
+		super(cc);
+	}
 	public String getApiKey() {
 		return accessKey;
 	}
@@ -34,28 +43,15 @@ public class HostedGraphite extends Graphite {
 		this.accessKey = accessKey == null ? "" : accessKey;
 	}
 
-	public String getPrefix() {
-		return prefix;
-	}
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
 
-	public String qualifyStreamName(String stream) {
-		if (!Strings.isNullOrEmpty(prefix)) {
-			return prefix + "." + stream;
-		} else {
-			return stream;
-		}
-	}
 
 	@Override
-	public void record(String metric, long val) {
+	public void doRecord(String metric, long val) {
 
 		try {
 
-			String data = qualifyStreamName(metric) + " " + val;
+			String data = metric + " " + val;
 
 			AsyncCompletionHandler<String> h = new AsyncCompletionHandler<String>() {
 

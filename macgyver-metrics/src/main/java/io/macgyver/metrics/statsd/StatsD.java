@@ -1,6 +1,6 @@
 package io.macgyver.metrics.statsd;
 
-import io.macgyver.metrics.Recorder;
+import io.macgyver.metrics.MetricRecorder;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StatsD implements Recorder {
+public class StatsD implements MetricRecorder {
 
 	static Logger logger = LoggerFactory.getLogger(StatsD.class);
 	String host;
@@ -26,7 +26,6 @@ public class StatsD implements Recorder {
 	ExecutorService sender;
 	BlockingQueue<Runnable> linkedBlockingQueue;
 	AtomicReference<DatagramSocket> clientSocket = new AtomicReference<>();
-	String prefix = null;
 
 	public static class RejectionHandler implements RejectedExecutionHandler {
 
@@ -41,8 +40,7 @@ public class StatsD implements Recorder {
 	public StatsD(String host, int port, String prefix) {
 		this.host = host;
 		this.port = port;
-		this.prefix = prefix;
-		
+
 		linkedBlockingQueue = new LinkedBlockingDeque<Runnable>(50000);
 		sender = new ThreadPoolExecutor(2, 2, 5, TimeUnit.SECONDS,
 				linkedBlockingQueue, new RejectionHandler());
@@ -85,18 +83,15 @@ public class StatsD implements Recorder {
 			try {
 				ensure();
 				String payload = null;
-				if (prefix == null) {
-					payload = String.format("%s:%d|g", key, val);
-				} else {
-					payload = String.format("%s.%s:%d|g", prefix, key, val);
-				}
-			
+
+				payload = String.format("%s:%d|g", key, val);
+
 				final byte[] data = payload.getBytes();
 				final DatagramPacket sendPacket = new DatagramPacket(data,
 						data.length);
 				clientSocket.get().send(sendPacket);
 			} catch (IOException e) {
-				logger.debug("problem sending", e);
+				logger.warn("problem sending: {}",e.toString());
 			}
 		}
 

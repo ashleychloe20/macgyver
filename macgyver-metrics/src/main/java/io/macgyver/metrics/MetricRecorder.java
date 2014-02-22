@@ -1,6 +1,7 @@
 package io.macgyver.metrics;
 
-public interface Recorder {
+public interface MetricRecorder {
 
+	
 	public void record(String name, long value);
 }

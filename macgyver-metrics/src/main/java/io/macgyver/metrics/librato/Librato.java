@@ -17,9 +17,10 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
 
 import io.macgyver.core.MacGyverException;
-import io.macgyver.metrics.Recorder;
+import io.macgyver.metrics.AbstractMetricRecorder;
+import io.macgyver.metrics.MetricRecorder;
 
-public class Librato implements Recorder {
+public class Librato extends AbstractMetricRecorder {
 
 	String URL = "https://metrics-api.librato.com/v1/metrics";
 	Logger logger = LoggerFactory.getLogger(Librato.class);
@@ -28,7 +29,6 @@ public class Librato implements Recorder {
 
 	String username;
 	String apiKey;
-	String prefix = null;
 
 	public Librato(String username, String apiKey, AsyncHttpClient client,
 			String prefix) {
@@ -36,7 +36,7 @@ public class Librato implements Recorder {
 		this.client = client;
 		this.username = username;
 		this.apiKey = apiKey;
-		this.prefix = prefix;
+		setPrefix(prefix);
 		if (Strings.isNullOrEmpty(username)) {
 			logger.warn("username not set");
 		}
@@ -46,7 +46,7 @@ public class Librato implements Recorder {
 	}
 
 	@Override
-	public void record(String name, long longVal) {
+	public void doRecord(String name, long longVal) {
 
 		JsonObject payload = new JsonObject();
 		JsonObject gauges = new JsonObject();
@@ -54,11 +54,10 @@ public class Librato implements Recorder {
 		JsonObject value = new JsonObject();
 		value.addProperty("value", longVal);
 
-		String qualifiedName = Strings.isNullOrEmpty(prefix) ? name : prefix
-				+ "." + name;
 
-		qualifiedName = qualifiedName.replace(" ", "_");
-		gauges.add(qualifiedName, value);
+
+		name = name.replace(" ", "_");
+		gauges.add(name, value);
 
 		sendMetric(payload);
 	}

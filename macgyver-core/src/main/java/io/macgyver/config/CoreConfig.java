@@ -8,10 +8,12 @@ import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
+import io.macgyver.core.jaxrs.GsonMessageBodyProvider;
 import io.macgyver.core.script.BindingSupplierManager;
 
 import java.util.Properties;
 
+import org.glassfish.jersey.client.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +36,10 @@ public class CoreConfig {
 	@Value("${macgyver.ext.location:.}")
 	public String extLocation;
 
-	
 	@Bean(name = "macgyverConfigurer")
 	static public MacGyverPropertySourcesPlaceholderConfigurer macgyverConfigurer() {
 		return new MacGyverPropertySourcesPlaceholderConfigurer();
 	}
-
-	
 
 	@Bean
 	public ContextRefreshApplicationListener contextRefreshApplicationListener() {
@@ -63,7 +62,7 @@ public class CoreConfig {
 		return new EventBusPostProcessor();
 	}
 
-	@Bean(name="macgyverKernel")
+	@Bean(name = "macgyverKernel")
 	public Kernel createKernel() {
 
 		logger.info("macgyver.ext.location: {}", extLocation);
@@ -85,7 +84,6 @@ public class CoreConfig {
 		return new CoreBindingSupplier();
 	}
 
-
 	@Bean
 	public Crypto crypto() {
 		return Crypto.instance;
@@ -101,10 +99,14 @@ public class CoreConfig {
 	@Bean
 	public static AutowiredAnnotationBeanPostProcessor autowiredPostProcessor() {
 		return new AutowiredAnnotationBeanPostProcessor();
-		
+
 	}
 
-
-	
+	@Bean(name = "macgyverJerseyClientConfig")
+	public ClientConfig jerseyClientConfig() {
+		ClientConfig cc = new ClientConfig();
+		cc.register(GsonMessageBodyProvider.class);
+		return cc;
+	}
 
 }

@@ -2,7 +2,8 @@ package io.macgyver.metrics.leftronic;
 
 import io.macgyver.config.MetricsConfig;
 import io.macgyver.core.MacGyverException;
-import io.macgyver.metrics.Recorder;
+import io.macgyver.metrics.AbstractMetricRecorder;
+import io.macgyver.metrics.MetricRecorder;
 
 import java.io.IOException;
 
@@ -19,13 +20,12 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.HttpResponseStatus;
 import com.ning.http.client.Response;
 
-public class Leftronic implements Recorder {
+public class Leftronic extends AbstractMetricRecorder {
 
 	public static Logger logger = LoggerFactory.getLogger(Leftronic.class);
 	public static final String DEFAULT_URL = "https://www.leftronic.com/customSend/";
 	String url = DEFAULT_URL;
 	String apiKey;
-	String prefix;
 
 	@Autowired
 	AsyncHttpClient client;
@@ -39,24 +39,10 @@ public class Leftronic implements Recorder {
 		this.apiKey = apiKey;
 	}
 
-	public String getPrefix() {
-		return prefix;
-	}
-
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
 
 
-	public String qualifyStreamName(String stream) {
-		if (!Strings.isNullOrEmpty(prefix)) {
-			return prefix+"."+stream;
-		}
-		else {
-			return stream;
-		}
-	}
-	public void record(String streamName, long val) {
+
+	public void doRecord(String streamName, long val) {
 
 	
 		try {
@@ -64,7 +50,7 @@ public class Leftronic implements Recorder {
 
 			JsonObject data = new JsonObject();
 			data.addProperty("accessKey", apiKey);
-			data.addProperty("streamName", qualifyStreamName(streamName));
+			data.addProperty("streamName", streamName);
 			data.addProperty("point", val);
 			logger.trace("sending data leftronic: {}",data);
 		
