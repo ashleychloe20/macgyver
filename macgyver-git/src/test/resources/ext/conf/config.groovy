@@ -1,0 +1,7 @@
+
+
+testRedisPool {
+	
+	serviceType="redis"
+	
+}
