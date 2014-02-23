@@ -30,6 +30,7 @@ public class VSphereGsonBuilder {
 			VirtualMachineConfigInfo ci = src.getConfig();
 			
 			obj.add("config", context.serialize(ci));
+			obj.add("guest",context.serialize(src.getGuest()));
 			obj.addProperty("canonicalId", ci.getUuid());
 			
 			return obj;
