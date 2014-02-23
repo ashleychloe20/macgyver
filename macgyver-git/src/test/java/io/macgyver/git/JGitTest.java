@@ -31,6 +31,7 @@ public class JGitTest extends MacgyverIntegrationTest {
 
 	
 
+	@Test
 	public void testIt() throws IOException, GitAPIException {
 		// http://stackoverflow.com/questions/6861881/jgit-cannot-find-a-tutorial-or-simple-example
 		
