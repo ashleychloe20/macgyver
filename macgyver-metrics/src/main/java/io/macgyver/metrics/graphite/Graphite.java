@@ -51,11 +51,11 @@ public abstract class Graphite extends AbstractMetricRecorder {
 	 * 
 	 * @return
 	 */
-	public String getGraphiteQueryBaseUrl() {
+	public String getQueryBaseUrl() {
 		return graphiteQueryBaseUrl;
 	}
 
-	public void setGraphiteQueryBaseUrl(String url) {
+	public void setQueryBaseUrl(String url) {
 		this.graphiteQueryBaseUrl = url;
 	}
 
@@ -127,7 +127,7 @@ public abstract class Graphite extends AbstractMetricRecorder {
 	protected JsonArray queryJsonArray(Map<String, String> m) {
 		Preconditions.checkNotNull(m);
 		m.put("format", "json");
-		WebTarget target = getQueryClient().target(getGraphiteQueryBaseUrl())
+		WebTarget target = getQueryClient().target(getQueryBaseUrl())
 				.path("render");
 		for (Map.Entry<String, String> entry : m.entrySet()) {
 			target = target.queryParam(entry.getKey(), entry.getValue());

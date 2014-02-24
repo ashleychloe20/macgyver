@@ -15,6 +15,7 @@ public class HostedGraphiteFactoryBean extends ServiceFactoryBean<HostedGraphite
 		HostedGraphite hg = new HostedGraphite();
 		hg.setPrefix(getProperties().getProperty("prefix"));
 		hg.setApiKey(getProperties().getProperty("apiKey"));
+		hg.setQueryBaseUrl(getProperties().getProperty("queryBaseUrl"));
 		return hg;
 	}
 }
