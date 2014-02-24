@@ -44,15 +44,17 @@ public class Ssh {
 		return exec(new StringResponseCallback());
 	}
 
-	public void connectTimeout(int timeout) {
+	public Ssh connectTimeout(int timeout) {
 		this.connectTimeout = timeout;
+		return this;
 	}
 
-	public void hostKeyVerifier(HostKeyVerifier v) {
+	public Ssh hostKeyVerifier(HostKeyVerifier v) {
 		this.verifier = v;
+		return this;
 	}
 
-	public void withoutHostKeyVerification() {
+	public Ssh disableHostKeyVerification() {
 		verifier = new HostKeyVerifier() {
 
 			@Override
@@ -61,6 +63,7 @@ public class Ssh {
 				return true;
 			}
 		};
+		return this;
 	}
 
 	public <T> T exec(ResponseCallback<T> cb) throws IOException {
