@@ -14,16 +14,15 @@ import com.vmware.vim25.mo.VirtualMachine;
 
 public class VmQueryTemplate {
 
-	ServiceInstance serviceInstance;
-
+	ServiceInstanceFactory factory;
 	Gson gson = VSphereGsonBuilder.createBuilder().setPrettyPrinting().create();
 
-	public VmQueryTemplate(ServiceInstance serviceInstance) {
-		this.serviceInstance = serviceInstance;
+	public VmQueryTemplate(ServiceInstanceFactory factory) {
+		this.factory = factory;
 	}
 	
 	ServiceInstance getServiceInstance() {
-		return serviceInstance;
+		return factory.getServiceInstance();
 	}
 
 	public JsonElement asJson(VirtualMachine vm) {

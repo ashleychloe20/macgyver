@@ -6,32 +6,32 @@ import io.macgyver.core.ServiceFactoryBean;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vmware.vim25.mo.ServiceInstance;
 
-public class VSphereFactoryBean extends ServiceFactoryBean<ServiceInstance> {
-
+public class VSphereFactoryBean extends
+		ServiceFactoryBean<ServiceInstanceFactory> {
 
 	public VSphereFactoryBean() {
-		super(ServiceInstance.class);
+		super(ServiceInstanceFactory.class);
 	}
 
 	@Override
-	public ServiceInstance createObject() {
+	public ServiceInstanceFactory createObject() {
 
-		try {
+		ServiceInstanceFactory f = new ServiceInstanceFactory();
+		Properties p = getProperties();
+		f.setUrl(p.getProperty("url"));
+		f.setUsername(p.getProperty("username"));
+		f.setPassword(p.getProperty("password"));
+		f.setIgnoreCert(Boolean.parseBoolean(p
+				.getProperty("ignoreCert", "true")));
 
-			ServiceInstance si = new ServiceInstance(new URL(getProperties().getProperty("url")), getProperties().getProperty("username"),
-					getProperties().getProperty("password"), true);
-			return si;
-		} catch (MalformedURLException e) {
-			throw new MacGyverException(e);
-		} catch (IOException e) {
-			throw new MacGyverException(e);
-		}
+		return f;
+
 	}
-
 
 }
