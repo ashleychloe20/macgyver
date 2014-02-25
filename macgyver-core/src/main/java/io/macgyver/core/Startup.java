@@ -32,10 +32,12 @@ public class Startup implements InitializingBean {
 	Kernel kernel;
 
 	@Subscribe
-	public void onStart(Kernel.KernelStartedEvent event) {
+	public void onStart(ContextRefreshedEvent event) {
+		if (Kernel.getInstance().getApplicationContext()!=event.getSource()) {
+			return;
+		}
 		logger.info("STARTED: {}", event);
 		runInitScripts();
-
 	}
 
 	@Override

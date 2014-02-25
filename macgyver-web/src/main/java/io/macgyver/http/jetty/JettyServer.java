@@ -98,20 +98,16 @@ public class JettyServer extends Server {
 	 * @param event
 	 */
 	@Subscribe
-	public void startAfterSpringContextInitialized(ContextRefreshedEvent event)
+	public void startAfterSpringContextInitialized(Kernel.KernelStartedEvent event)
 			throws Exception {
 
 		if (!enabled) {
 			log.info("not starting jetty because it is disabled");
 			return;
 		}
-		log.info("starting jetty " + event.getApplicationContext());
-		if (event.getApplicationContext() != io.macgyver.core.Kernel
-				.getInstance().getApplicationContext()) {
-			// We are only interested context refresh events from the parent
-			// Spring Context.
-			return;
-		}
+		log.info("starting jetty ");
+		
+	
 
 		if (isStarted() || isStarting()) {
 
@@ -127,7 +123,7 @@ public class JettyServer extends Server {
 	
 		
 
-		servletContextHandler.addServlet(StatcResourceServlet.class,"/*");
+		servletContextHandler.addServlet(StaticResourceServlet.class,"/*");
 
 	
 	
@@ -178,7 +174,7 @@ public class JettyServer extends Server {
 		servletContextHandler.addFilter(sparkFilterHolder, "/*",
 				EnumSet.of(DispatcherType.REQUEST));
 	
-		Spark.staticFileLocation("/public");
+	//	Spark.staticFileLocation("/public");
 
 		
 		start();
