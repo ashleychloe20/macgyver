@@ -1,5 +1,8 @@
 package io.macgyver.http.jetty;
 
+import io.macgyver.core.Kernel;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
 
-public class StatcResourceServlet extends HttpServlet {
+public class StaticResourceServlet extends HttpServlet {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -50,7 +53,14 @@ public class StatcResourceServlet extends HttpServlet {
 			if (isExcluded(req)) {
 				// do not serve
 			} else {
-				URL urx = getClass().getClassLoader().getResource(resourcePath);
+				URL urx = null;
+				File f = new File( new File(Kernel.getInstance().getExtensionDir(),"web"),
+						uri);
+				if (f.exists()) {
+					urx = f.toURI().toURL();
+				} else {
+					urx = getClass().getClassLoader().getResource(resourcePath);
+				}
 				if (urx != null) {
 					input = urx.openStream();
 					if (input != null) {
