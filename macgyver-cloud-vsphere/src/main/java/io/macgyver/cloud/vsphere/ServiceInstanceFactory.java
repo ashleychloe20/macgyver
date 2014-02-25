@@ -7,10 +7,14 @@ import java.net.URL;
 
 import javax.naming.ConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vmware.vim25.mo.ServiceInstance;
 
 public class ServiceInstanceFactory {
 
+	Logger logger = LoggerFactory.getLogger(ServiceInstanceFactory.class);
 	ServiceInstance serviceInstance = null;
 
 	private String url;
@@ -21,11 +25,11 @@ public class ServiceInstanceFactory {
 	public synchronized ServiceInstance getServiceInstance() {
 		if (serviceInstance == null) {
 			try {
-			ServiceInstance si = new ServiceInstance(new URL(url), username,
-					password, ignoreCert);
-			this.serviceInstance = si;
-			}
-			catch (IOException e) {
+				logger.info("connecting to vcenter at: {}", url);
+				ServiceInstance si = new ServiceInstance(new URL(url),
+						username, password, ignoreCert);
+				this.serviceInstance = si;
+			} catch (IOException e) {
 				throw new MacGyverException(e);
 			}
 		}
@@ -47,7 +51,6 @@ public class ServiceInstanceFactory {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
 
 	public void setPassword(String password) {
 		this.password = password;
