@@ -7,22 +7,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.util.resource.ResourceCollection;
+import org.glassfish.jersey.message.internal.MediaTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closer;
 
 public class StaticResourceServlet extends HttpServlet {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
+	MimeTypes mimeTypes;
 
 	boolean isExcluded(HttpServletRequest req) {
 		String path = req.getRequestURI();
@@ -54,18 +63,30 @@ public class StaticResourceServlet extends HttpServlet {
 				// do not serve
 			} else {
 				URL urx = null;
-				File f = new File( new File(Kernel.getInstance().getExtensionDir(),"web"),
-						uri);
+				File f = new File(new File(Kernel.getInstance()
+						.getExtensionDir(), "web"), uri);
+				if (f.isDirectory()) {
+					resp.sendError(404);
+					return;
+				}
+
 				if (f.exists()) {
 					urx = f.toURI().toURL();
+
 				} else {
 					urx = getClass().getClassLoader().getResource(resourcePath);
 				}
 				if (urx != null) {
+					Optional<String> contentType = chooseContentType(uri);
+					if (contentType.isPresent()) {
+						resp.setContentType(contentType.get());
+					}
 					input = urx.openStream();
 					if (input != null) {
 						found = true;
-						logger.debug("serving: {}", urx);
+						if (logger.isDebugEnabled()) {
+							logger.debug("serving {} from {}", uri, urx);
+						}
 						closer.register(closer);
 
 						OutputStream output = resp.getOutputStream();
@@ -85,6 +106,27 @@ public class StaticResourceServlet extends HttpServlet {
 			closer.close();
 		}
 
+	}
+
+	Optional<String> chooseContentType(String path) {
+		try {
+
+			String contentType = mimeTypes.getMimeByExtension(path);
+			return Optional.fromNullable(contentType);
+		} catch (RuntimeException e) {
+			return Optional.absent();
+		}
+
+	}
+
+	@Override
+	public void init() throws ServletException {
+
+		super.init();
+
+		this.mimeTypes = Kernel.getInstance().getApplicationContext()
+				.getBean("io.macgyver.web.MimeTypes", MimeTypes.class);
+		Preconditions.checkNotNull(mimeTypes);
 	}
 
 }
