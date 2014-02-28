@@ -6,7 +6,9 @@ import io.macgyver.config.CoreConfig;
 import io.macgyver.core.crypto.Crypto;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
@@ -54,10 +56,12 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 	}
 
 	protected Properties processProperties() {
-
+		ConfigObject configObject = new ConfigObject();
 		try {
 			File f = findGroovyConfigFile();
-
+			
+			
+			
 			if (f.exists()) {
 
 				Optional<String> profile = Kernel.getExecutionProfile();
@@ -71,15 +75,36 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 					logger.info("sourcing {} with no profile", f);
 				}
 				ConfigObject co = cs.parse(f.toURI().toURL());
-				Properties p = co.toProperties();
-				return p;
+				
+				configObject.merge(co);
+				
+			
 			} else {
 				logger.warn("config not found: {}", f.getAbsolutePath());
 			}
-			return new Properties();
+		
 		} catch (MalformedURLException e) {
 			throw new ConfigurationException(e);
 		}
+		
+
+		
+		Properties props = configObject.toProperties();
+		
+		File propsFile = findPropertiesConfigFile();
+		if (propsFile!=null && propsFile.exists()) {
+			try {
+			Properties localProps = new Properties();
+			InputStream is = new FileInputStream(propsFile);
+			props.load(is);
+			}
+			catch (IOException e) {
+				throw new ConfigurationException(e);
+			}
+		}
+		props.putAll(props);
+		
+		return props;
 	}
 
 	private Optional<File> findConfigFileViaSystemProperty(String sysprop) {
@@ -98,7 +123,7 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		return Optional.of(f);
 	}
 
-	public File findGroovyConfigFile() {
+	protected File findGroovyConfigFile() {
 		File groovyConfig = new File(Kernel.determineExtensionDir(),
 				"conf/config.groovy");
 		Optional<File> of = findConfigFileViaSystemProperty(MACGYVER_GROOVY_CONFIG_SYSTEM_PROPERTY);
@@ -107,7 +132,7 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		return groovyConfig;
 	}
 
-	public File findPropertiesConfigFile() {
+	protected File findPropertiesConfigFile() {
 		File propertiesFile = new File(Kernel.determineExtensionDir(),
 				"conf/config.properties");
 		Optional<File> of = findConfigFileViaSystemProperty(MACGYVER_PROPERTIES_CONFIG_SYSTEM_PROPERTY);
@@ -122,11 +147,6 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		FileSystemResource testResource = new FileSystemResource(new File(".",
 				"src/test/resources/macgyver-test.properties"));
 		List<Resource> rlist = Lists.newArrayList();
-
-		File configFile = findPropertiesConfigFile();
-		if (configFile.exists()) {
-			rlist.add(new FileSystemResource(configFile));
-		}
 
 		if (testResource.exists()) {
 
