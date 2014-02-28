@@ -2,6 +2,7 @@ package io.macgyver.http.shiro;
 
 import io.macgyver.core.Kernel;
 
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class DelegatingAuthorizingRealm extends AuthorizingRealm {
 			}
 			realmList = list;
 		}
-		
+
 		return realmList;
 	}
 
@@ -72,7 +73,23 @@ public class DelegatingAuthorizingRealm extends AuthorizingRealm {
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(
 			PrincipalCollection principals) {
-		// TODO Auto-generated method stub
+		for (AuthorizingRealm realm : findRealms()) {
+			try {
+				
+				Method method=AuthorizingRealm.class.getDeclaredMethod("getAuthorizationInfo", PrincipalCollection.class);
+				method.setAccessible(true);
+				
+				AuthorizationInfo obj = (AuthorizationInfo) method.invoke(realm,
+						principals);
+				
+			
+				return obj;
+		
+			} catch (Exception e) {
+				logger.info("", e);
+			}
+
+		}
 		return null;
 	}
 
@@ -81,15 +98,16 @@ public class DelegatingAuthorizingRealm extends AuthorizingRealm {
 			AuthenticationToken token) throws AuthenticationException {
 
 		Object principal = token.getPrincipal();
-		
+
 		for (AuthorizingRealm realm : findRealms()) {
-			logger.debug("authenticating using realm: {}",realm);
+			logger.debug("authenticating using realm: {}", realm);
 			AuthenticationInfo info = realm.getAuthenticationInfo(token);
 			if (info != null) {
 				return info;
 			}
 		}
-		throw new UnknownAccountException(principal!=null ?  principal.toString(): null);
+		throw new UnknownAccountException(
+				principal != null ? principal.toString() : null);
 
 	}
 
