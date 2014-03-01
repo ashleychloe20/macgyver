@@ -15,7 +15,6 @@ import com.vmware.vim25.mo.VirtualMachine;
 public class VmQueryTemplate {
 
 	ServiceInstanceFactory factory;
-	Gson gson = VSphereGsonBuilder.createBuilder().setPrettyPrinting().create();
 
 	public VmQueryTemplate(ServiceInstanceFactory factory) {
 		this.factory = factory;
@@ -25,52 +24,16 @@ public class VmQueryTemplate {
 		return factory.getServiceInstance();
 	}
 
-	public JsonElement asJson(VirtualMachine vm) {
 
-		return (JsonElement) gson.toJsonTree(vm);
-	}
 
-	public Iterable<JsonElement> findAllVirtualMachinesAsJson() {
 
-		final Iterator<VirtualMachine> innerT = findAllVirtualMachines()
-				.iterator();
-
-		final Iterator<JsonElement> t = new Iterator<JsonElement>() {
-
-			@Override
-			public boolean hasNext() {
-				return innerT.hasNext();
-			}
-
-			@Override
-			public JsonElement next() {
-				VirtualMachine vm = innerT.next();
-				return asJson(vm);
-			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
-
-		return new Iterable<JsonElement>() {
-
-			@Override
-			public Iterator<JsonElement> iterator() {
-				return t;
-			}
-
-		};
-
-	}
 
 	public Iterable<VirtualMachine> findAllVirtualMachines() {
 		try {
 
 			InventoryNavigator nav = new InventoryNavigator(
 					getServiceInstance().getRootFolder());
-
+			
 			ManagedEntity[] entitites = nav
 					.searchManagedEntities("VirtualMachine");
 			List<VirtualMachine> vmList = Lists.newArrayList();
