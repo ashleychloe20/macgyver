@@ -114,7 +114,7 @@ public class AutoScheduler implements InitializingBean {
 		final FileVisitor fv = new SimpleFileVisitor<Path>() {
 
 			ScriptExecutor se = new ScriptExecutor();
-			
+
 			@Override
 			public FileVisitResult preVisitDirectory(final Path dir,
 					BasicFileAttributes attrs) throws IOException {
@@ -163,10 +163,10 @@ public class AutoScheduler implements InitializingBean {
 
 		for (ScheduledScript ss : list) {
 			try {
-				
+
 				scheduleScript(ss, validJobKeySet);
 			} catch (Exception e) {
-				logger.error("problem scheduling {} - {}", ss,e.toString());
+				logger.error("problem scheduling {} - {}", ss, e.toString());
 			}
 		}
 		prune(validJobKeySet);
@@ -199,8 +199,7 @@ public class AutoScheduler implements InitializingBean {
 				}
 			}
 			return;
-		}
-		if (jd == null) {
+		} else {
 			validSet.add(s.getJobKey());
 			jd = JobBuilder
 					.newJob()
