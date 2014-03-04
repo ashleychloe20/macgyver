@@ -20,3 +20,5 @@ logs/
 *.swp
 *~
 dump.rdb
+.cache
+*-local.properties

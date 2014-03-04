@@ -1,26 +1,26 @@
 package io.macgyver.config;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
-import io.macgyver.core.ConfigurationException;
 import io.macgyver.http.jetty.JettyServer;
 import io.macgyver.http.shiro.DelegatingAuthorizingRealm;
 import io.macgyver.http.shiro.StaticAuthorizingRealm;
-import io.macgyver.http.spark.AuthSparklet;
+import io.macgyver.web.rythm.MacGyverRythmResourceLoader;
 
-import org.apache.shiro.realm.Realm;
+import java.util.Map;
+
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.eclipse.jetty.http.MimeTypes;
+import org.rythmengine.RythmEngine;
+import org.rythmengine.conf.RythmConfigurationKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.io.ClassPathResource;
+
+import com.google.common.collect.Maps;
+
 
 @Configuration
 public class WebConfig {
@@ -36,10 +36,7 @@ public class WebConfig {
 		return new JettyServer(httpPort);
 	}
 
-	@Bean
-	public AuthSparklet adminSparklet() {
-		return new AuthSparklet();
-	}
+
 
 	@Bean(name = "defaultWebSecurityManager")
 	public DefaultWebSecurityManager defaultWebSecurityManager() {
@@ -72,4 +69,17 @@ public class WebConfig {
 	public MimeTypes macgyverWebMimeTypes() {
 		return new MimeTypes();
 	}
+	
+	
+	@Bean(name="io.macgyver.web.RythmEngine")
+	public RythmEngine macgyverRythmEngine() {
+		Map<String,String> cfg = Maps.newHashMap();	
+		cfg.put(RythmConfigurationKey.RESOURCE_LOADER_IMPLS.getKey(), MacGyverRythmResourceLoader.class.getName());
+		cfg.put(RythmConfigurationKey.ENGINE_MODE.getKey(), "dev");
+		RythmEngine re = new RythmEngine(cfg);
+		
+		MacGyverRythmResourceLoader.setRhythmEngine(re);
+		return re;
+	}
+
 }

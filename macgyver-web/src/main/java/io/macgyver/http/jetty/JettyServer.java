@@ -1,53 +1,40 @@
 package io.macgyver.http.jetty;
 
-import static spark.Spark.get;
 import io.macgyver.core.Kernel;
 import io.macgyver.http.shiro.MacGyverFilter;
-import io.macgyver.http.spark.SparkletBuilder;
+import io.macgyver.web.rythm.TestController;
+import io.macgyver.webconfig.MacWebConfig;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.io.File;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.resource.ResourceCollection;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.GenericWebApplicationContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.filter.DelegatingFilterProxy;
-
-import spark.Request;
-import spark.Response;
-import spark.Route;
-import spark.Spark;
-import spark.servlet.SparkApplication;
-import spark.servlet.SparkFilter;
+import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 
 import com.google.common.eventbus.Subscribe;
 
 public class JettyServer extends Server {
 
+	Logger logger = LoggerFactory.getLogger(JettyServer.class);
+	
 	@Value("${macgyver.web.enabled:true}")
 	boolean enabled = true;
 
@@ -65,28 +52,30 @@ public class JettyServer extends Server {
 
 	public void doStart() throws Exception {
 		super.doStart();
+		
 	}
 
 	public void addHandler(ServletContextHandler h) throws Exception {
 		log.info("adding ServletContextHandler for deferred startup: {}", h);
+	
+		FilterHolder fh = new FilterHolder();
 
-	       FilterHolder fh = new FilterHolder();
+		h.setResourceBase(new File(Kernel.getInstance().getExtensionDir(),
+				"web").getAbsolutePath());
+		fh.setName("shiroFilter");
 
-	   
-	        fh.setName("shiroFilter");
+		fh.setFilter(new DelegatingFilterProxy());
 
-	        fh.setFilter(new DelegatingFilterProxy());
+		fh.setInitParameter("targetFilterLifecycle", Boolean.TRUE.toString());
+		h.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
+				DispatcherType.ERROR, DispatcherType.FORWARD,
+				DispatcherType.INCLUDE));
 
-	        fh.setInitParameter("targetFilterLifecycle", Boolean.TRUE.toString());
-	        h.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
-	                DispatcherType.ERROR, DispatcherType.FORWARD,
-	                DispatcherType.INCLUDE));
-
-	        fh = new FilterHolder();
-	        fh.setFilter(new MacGyverFilter());
-	        h.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
-	                DispatcherType.ERROR, DispatcherType.FORWARD,
-	                DispatcherType.INCLUDE));	
+		fh = new FilterHolder();
+		fh.setFilter(new MacGyverFilter());
+		h.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
+				DispatcherType.ERROR, DispatcherType.FORWARD,
+				DispatcherType.INCLUDE));
 
 		contextHandlerCollection.addHandler(h);
 
@@ -98,16 +87,14 @@ public class JettyServer extends Server {
 	 * @param event
 	 */
 	@Subscribe
-	public void startAfterSpringContextInitialized(Kernel.KernelStartedEvent event)
-			throws Exception {
+	public void startAfterSpringContextInitialized(
+			Kernel.KernelStartedEvent event) throws Exception {
 
 		if (!enabled) {
 			log.info("not starting jetty because it is disabled");
 			return;
 		}
 		log.info("starting jetty ");
-		
-	
 
 		if (isStarted() || isStarting()) {
 
@@ -115,68 +102,67 @@ public class JettyServer extends Server {
 			return;
 		}
 
-		
 		ServletContextHandler servletContextHandler = new ServletContextHandler();
 		servletContextHandler.setSessionHandler(new SessionHandler());
 		servletContextHandler.setContextPath("/");
+		servletContextHandler.setResourceBase(new File(Kernel.getInstance().getExtensionDir(),"web").getAbsolutePath());
 		setHandler(servletContextHandler);
+
+
+		
+		
+
+		FilterHolder fh = new FilterHolder();
+
+		fh.setName("shiroFilter");
+
+		fh.setFilter(new DelegatingFilterProxy());
+
+		fh.setInitParameter("targetFilterLifecycle", Boolean.TRUE.toString());
+		servletContextHandler.addFilter(fh, "/*", EnumSet.of(
+				DispatcherType.REQUEST, DispatcherType.ERROR,
+				DispatcherType.FORWARD, DispatcherType.INCLUDE));
+
+		fh = new FilterHolder();
+		fh.setFilter(new MacGyverFilter());
+		servletContextHandler.addFilter(fh, "/*", EnumSet.of(
+				DispatcherType.REQUEST, DispatcherType.ERROR,
+				DispatcherType.FORWARD, DispatcherType.INCLUDE));
+
+		
+		
+		
+		// Now bind to applicationContext
+		
+		AnnotationConfigWebApplicationContext gwac = new AnnotationConfigWebApplicationContext();
+		gwac.setParent(Kernel.getInstance().getApplicationContext());
+		gwac.setServletContext(servletContextHandler.getServletContext());
+		gwac.register(MacWebConfig.class);
+		logger.info("creating WebApplicationContext: {}",gwac ,Kernel.getInstance().getApplicationContext());
+		servletContextHandler.getServletContext().setAttribute(
+				WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
+				gwac);
+		gwac.refresh();
+		// End binding to GWAC
+
+		
+		ServletHolder sh = new ServletHolder(StaticResourceServlet.class);
+		logger.info("registering default servlet: {}",sh);
+		sh.setName(StaticResourceServlet.class.getName());
+		servletContextHandler.addServlet(sh, "/"+UUID.randomUUID().toString());
 	
 		
-
-		servletContextHandler.addServlet(StaticResourceServlet.class,"/*");
-
+		DispatcherServlet dispatcher = new DispatcherServlet(gwac);
+		logger.info("registering Spring MVC Dispatcher: {}",dispatcher);
+		dispatcher.getWebApplicationContext().getBean(TestController.class);
+		ServletHolder dispatcherServletHolder = new ServletHolder(dispatcher);
+		dispatcherServletHolder.setName(DispatcherServlet.class.getName());
+		servletContextHandler.addServlet(dispatcherServletHolder, "/");
+		
 	
 	
-		Filter sparkFilter = new SparkFilter();
-
-		FilterHolder sparkFilterHolder = new FilterHolder();
-		sparkFilterHolder.setInitParameter("targetFilterLifecycle",
-				Boolean.TRUE.toString());
-		sparkFilterHolder.setName("spark");
-		SparkFilter sf = new SparkFilter();
-		sparkFilterHolder.setFilter(sf);
-		sparkFilterHolder.setInitParameter("applicationClass",
-				SparkletBuilder.class.getName());
-
-		
-	       FilterHolder fh = new FilterHolder();
-
-		   
-	        fh.setName("shiroFilter");
-
-	        fh.setFilter(new DelegatingFilterProxy());
-
-	        fh.setInitParameter("targetFilterLifecycle", Boolean.TRUE.toString());
-	        servletContextHandler.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
-	                DispatcherType.ERROR, DispatcherType.FORWARD,
-	                DispatcherType.INCLUDE));
-
-	        fh = new FilterHolder();
-	        fh.setFilter(new MacGyverFilter());
-	        servletContextHandler.addFilter(fh, "/*", EnumSet.of(DispatcherType.REQUEST,
-	                DispatcherType.ERROR, DispatcherType.FORWARD,
-	                DispatcherType.INCLUDE));	
-		
-	        
-	        // Now bind to applicationContext
-	        GenericWebApplicationContext gwac = new GenericWebApplicationContext();
-            gwac.setParent(Kernel.getInstance().getApplicationContext());
-            gwac.setServletContext(servletContextHandler
-                    .getServletContext());
-            servletContextHandler
-            .getServletContext()
-            .setAttribute(
-                    WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-                    gwac);
-            gwac.refresh();
-            // End binding to GWAC
-		
-		servletContextHandler.addFilter(sparkFilterHolder, "/*",
-				EnumSet.of(DispatcherType.REQUEST));
 	
-	//	Spark.staticFileLocation("/public");
 
-		
 		start();
 
 		Connector[] connectors = getConnectors();

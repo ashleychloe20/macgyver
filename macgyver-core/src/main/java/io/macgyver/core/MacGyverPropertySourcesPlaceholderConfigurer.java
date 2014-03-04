@@ -107,6 +107,7 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		return props;
 	}
 
+	
 	private Optional<File> findConfigFileViaSystemProperty(String sysprop) {
 
 		String configLocation = System.getProperty(sysprop);
@@ -288,5 +289,12 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 			scoped.remove("serviceType");
 			autoRegisterBean(unqualifiedName, serviceType, scoped, registry);
 		}
+	}
+	
+	public PropertySourcesPlaceholderConfigurer getSlavePropertySourcesPlaceholderConfigurer() {
+		PropertySourcesPlaceholderConfigurer pc = new PropertySourcesPlaceholderConfigurer();
+		pc.setLocalOverride(true);
+		pc.setProperties(effectiveProperties);
+		return pc;
 	}
 }
