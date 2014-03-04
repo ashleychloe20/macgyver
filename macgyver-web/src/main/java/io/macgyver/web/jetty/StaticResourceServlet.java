@@ -34,7 +34,6 @@ public class StaticResourceServlet extends HttpServlet {
 	MimeTypes mimeTypes;
 
 	boolean isExcluded(String path) {
-		
 		if (path == null) {
 			return true;
 		}
@@ -47,7 +46,7 @@ public class StaticResourceServlet extends HttpServlet {
 		return false;	
 	}
 	boolean isExcluded(HttpServletRequest req) {
-		return isExcluded(req.getPathInfo());
+		return isExcluded(req.getRequestURI());
 	}
 
 	@Override
@@ -58,7 +57,7 @@ public class StaticResourceServlet extends HttpServlet {
 
 		String uri = req.getRequestURI();
 		InputStream input = null;
-		String resourcePath = "io/macgyver/web" + uri;
+		String resourcePath = uri;
 
 		Closer closer = Closer.create();
 
@@ -66,22 +65,19 @@ public class StaticResourceServlet extends HttpServlet {
 
 		try {
 			if (isExcluded(req)) {
-				// do not serve
+				resp.sendError(404);
+				return;
 			} else {
 				URL urx = null;
 				File f = new File(new File(Kernel.getInstance()
 						.getExtensionDir(), "web"), uri);
-				if (f.isDirectory()) {
-					resp.sendError(404);
-					return;
-				}
-
-				if (f.exists()) {
+				if (!f.isDirectory() && f.exists()) {
 					urx = f.toURI().toURL();
 
 				} else {
 					urx = getClass().getClassLoader().getResource(resourcePath);
 				}
+				
 				if (urx != null) {
 					Optional<String> contentType = chooseContentType(uri);
 					if (contentType.isPresent()) {

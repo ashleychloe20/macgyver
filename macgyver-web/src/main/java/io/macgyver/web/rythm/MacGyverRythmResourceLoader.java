@@ -33,7 +33,7 @@ public class MacGyverRythmResourceLoader extends ResourceLoaderBase {
 	public ITemplateResource load(String path) {
 
 		File templateDir = new File(Kernel.getInstance().getExtensionDir(),
-				"web/views");
+				"web");
 
 		
 
@@ -76,7 +76,7 @@ public class MacGyverRythmResourceLoader extends ResourceLoaderBase {
 		path = stripLeadingSlash((path));
 		logger.info("searching classpath for " + path);
 		CustomClasspathTemplateResource ctr = new CustomClasspathTemplateResource(
-				"web/views/" + stripLeadingSlash(path), this);
+				"web/" + stripLeadingSlash(path), this);
 		if (ctr.exists()) {
 			return ctr;
 		} else {
