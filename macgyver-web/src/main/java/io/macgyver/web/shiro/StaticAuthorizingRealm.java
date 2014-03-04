@@ -1,4 +1,4 @@
-package io.macgyver.http.shiro;
+package io.macgyver.web.shiro;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;

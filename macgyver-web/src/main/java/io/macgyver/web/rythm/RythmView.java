@@ -35,7 +35,7 @@ public class RythmView extends AbstractTemplateView {
     }
 
     protected String getTemplatePath() {
-    	System.out.println("URLX: "+getUrl());
+  
     	return getUrl();
     	
     }

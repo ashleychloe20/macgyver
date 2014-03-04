@@ -1,9 +1,9 @@
 package io.macgyver.config;
 
-import io.macgyver.http.jetty.JettyServer;
-import io.macgyver.http.shiro.DelegatingAuthorizingRealm;
-import io.macgyver.http.shiro.StaticAuthorizingRealm;
+import io.macgyver.web.jetty.JettyServer;
 import io.macgyver.web.rythm.MacGyverRythmResourceLoader;
+import io.macgyver.web.shiro.DelegatingAuthorizingRealm;
+import io.macgyver.web.shiro.StaticAuthorizingRealm;
 
 import java.util.Map;
 

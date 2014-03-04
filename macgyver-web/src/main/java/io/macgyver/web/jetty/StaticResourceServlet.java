@@ -1,4 +1,4 @@
-package io.macgyver.http.jetty;
+package io.macgyver.web.jetty;
 
 import io.macgyver.core.Kernel;
 
@@ -33,15 +33,21 @@ public class StaticResourceServlet extends HttpServlet {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	MimeTypes mimeTypes;
 
-	boolean isExcluded(HttpServletRequest req) {
-		String path = req.getRequestURI();
+	boolean isExcluded(String path) {
+		
 		if (path == null) {
 			return true;
 		}
-		if (path.endsWith(".ftl")) {
+		if (path.endsWith(".rythm")) {
+		//	return true;
+		}
+		if (path.startsWith("/views")) {
 			return true;
 		}
-		return false;
+		return false;	
+	}
+	boolean isExcluded(HttpServletRequest req) {
+		return isExcluded(req.getPathInfo());
 	}
 
 	@Override

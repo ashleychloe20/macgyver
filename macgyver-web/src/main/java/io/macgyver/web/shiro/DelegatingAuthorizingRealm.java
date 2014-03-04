@@ -1,4 +1,4 @@
-package io.macgyver.http.shiro;
+package io.macgyver.web.shiro;
 
 import io.macgyver.core.Kernel;
 

@@ -1,8 +1,8 @@
-package io.macgyver.http.jetty;
+package io.macgyver.web.jetty;
 
 import io.macgyver.core.Kernel;
-import io.macgyver.http.shiro.MacGyverFilter;
 import io.macgyver.web.rythm.TestController;
+import io.macgyver.web.shiro.MacGyverFilter;
 import io.macgyver.webconfig.MacWebConfig;
 
 import java.io.File;

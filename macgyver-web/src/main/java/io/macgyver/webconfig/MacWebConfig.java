@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
-import io.macgyver.http.jetty.StaticResourceServlet;
+import io.macgyver.web.jetty.StaticResourceServlet;
 import io.macgyver.web.rythm.RythmViewResolver;
 import io.macgyver.web.rythm.TestController;
 

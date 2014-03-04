@@ -25,9 +25,9 @@ public class RythmViewResolver extends AbstractTemplateViewResolver {
 
 	@Override
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
-		// TODO Auto-generated method stub
+
 		AbstractUrlBasedView v = super.buildView(viewName);
-		System.out.println("URL: "+v.getUrl());
+		
 		return v;
 	}
 	
