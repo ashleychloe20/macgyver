@@ -1,4 +1,4 @@
-#@Schedule {"cron":"*/5 * * * * ?"}
+#@Schedule {"cron":"0 * * * * ?"}
 
 
 print "go python"
