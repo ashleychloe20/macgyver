@@ -2,40 +2,46 @@ package io.macgyver.jdbc;
 
 import java.util.Properties;
 
-import io.macgyver.core.CollaboratorRegistrationCallback;
-import io.macgyver.core.ServiceFactoryBean;
-
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.google.common.base.Optional;
+import com.alibaba.fastjson.serializer.ExceptionSerializer;
+import com.google.common.base.Throwables;
 import com.jolbox.bonecp.BoneCPConfig;
 import com.jolbox.bonecp.BoneCPDataSource;
 
-public class DataSourceFactoryBean extends ServiceFactoryBean<DataSource> {
+import io.macgyver.core.CollaboratorRegistrationCallback;
+import io.macgyver.core.CollaboratorRegistrationCallback.RegistrationDetail;
+import io.macgyver.core.MacGyverException;
+import io.macgyver.core.factory.ServiceFactory;
 
-	public DataSourceFactoryBean() {
-		super(DataSource.class);
+public class DataSourceFactory extends ServiceFactory<DataSource> {
 
+	public DataSourceFactory() {
+		super("dataSource");
 	}
-
 	@Override
-	public DataSource createObject() throws Exception {
-
-		Properties props = new Properties();
+	protected DataSource createObjecct(Properties props) {
+		try {
+		Properties p = new Properties();
 		// set some defaults
-		props.put("defaultAutoCommit", "true");
+		p.put("defaultAutoCommit", "true");
 
-		props.putAll(getProperties());
+		props.putAll(props);
 
-		BoneCPConfig cp = new BoneCPConfig(props);
+		BoneCPConfig cp = new BoneCPConfig(p);
 
 		return new BoneCPDataSource(cp);
+		}
+		catch (Exception e) {
+			throw new MacGyverException(e);
+		}
 	}
 
+	/*
 	@Override
 	public CollaboratorRegistrationCallback getCollaboratorRegistrationCallback() {
 		CollaboratorRegistrationCallback cb = new CollaboratorRegistrationCallback() {
@@ -55,5 +61,5 @@ public class DataSourceFactoryBean extends ServiceFactoryBean<DataSource> {
 
 		return cb;
 	}
-
+	*/
 }

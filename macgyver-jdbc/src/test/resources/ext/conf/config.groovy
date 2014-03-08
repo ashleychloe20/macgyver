@@ -1,9 +1,6 @@
 
 
 
-services {
-    datasources {
-    
         testds {
 			serviceType="dataSource"
         	jdbcUrl="jdbc:h2:mem:testdb"
@@ -11,6 +8,3 @@ services {
 			username="sa"
 			password=""
         }
-    
-    }
-}

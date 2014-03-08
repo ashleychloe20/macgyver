@@ -24,7 +24,6 @@ public class KernelTest extends CoreIntegrationTestCase {
 		Assert.assertNotNull(lm);
 		
 		Assert.assertSame(lm, applicationContext.getBean(Kernel.class));
-		Assert.assertSame(lm.getApplicationContext().getBean(TestBean.class), applicationContext.getBean(TestBean.class));
 	}
 	
 

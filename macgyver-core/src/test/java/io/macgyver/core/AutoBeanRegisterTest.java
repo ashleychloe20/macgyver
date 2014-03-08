@@ -1,5 +1,6 @@
 package io.macgyver.core;
 
+import io.macgyver.core.factory.ServiceInstanceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;
@@ -11,14 +12,12 @@ public class AutoBeanRegisterTest extends MacgyverIntegrationTest {
 
 	
 	@Autowired
-	ApplicationContext applicationContext;
+	ServiceInstanceRegistry registry;
 	
 	
 	@Test
 	public void testRegistration() {
-		Assert.assertNotNull(applicationContext.getBean("testBeanName"));
 		
-		
-		Assert.assertNotNull(applicationContext.getBean(TestBean.class).getCrypto());
+		Assert.assertNotNull(registry);
 	}
 }
