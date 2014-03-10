@@ -1,5 +1,5 @@
 package io.macgyver.email;
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;
@@ -14,7 +14,7 @@ public class SmtpSessionFactoryTest extends MacgyverIntegrationTest{
 	@Autowired
 	ApplicationContext ctx;
 	
-	@Autowired ServiceInstanceRegistry registry;
+	@Autowired ServiceRegistry registry;
 	
 	@Test
 	public void testSmtpSessionFactory() {

@@ -2,7 +2,7 @@ package io.macgyver.ldap;
 
 import io.macgyver.core.service.ServiceDefinition;
 import io.macgyver.core.service.ServiceFactory;
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 
 import java.util.Properties;
 import java.util.Set;
@@ -30,26 +30,23 @@ public class LdapServiceFactory extends ServiceFactory<LdapContextSource> {
 		return cs;
 	}
 
-	
-
-
-
 	@Override
-	protected void doCreateCollaboratorInstances(
-			ServiceInstanceRegistry registry,
+	protected void doCreateCollaboratorInstances(ServiceRegistry registry,
 			ServiceDefinition primaryDefinition, LdapContextSource primaryBean) {
-		LdapTemplate template = new LdapTemplate((LdapContextSource) primaryBean);
-		registry.registerCollaborator(primaryDefinition.getName()+"Template", template);
-		
+		LdapTemplate template = new LdapTemplate(
+				(LdapContextSource) primaryBean);
+		registry.registerCollaborator(primaryDefinition.getName() + "Template",
+				template);
+
 	}
 
 	@Override
 	public void doCreateCollaboratorDefinitions(Set<ServiceDefinition> defSet,
 			ServiceDefinition def) {
-		ServiceDefinition templateDef = new ServiceDefinition(def.getName()+"Template", def.getName(), def.getProperties(), this);
+		ServiceDefinition templateDef = new ServiceDefinition(def.getName()
+				+ "Template", def.getName(), def.getProperties(), this);
 		defSet.add(templateDef);
-		
-	}
 
+	}
 
 }

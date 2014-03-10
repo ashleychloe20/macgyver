@@ -1,7 +1,7 @@
 package io.macgyver.jdbc;
 
 import io.macgyver.core.Kernel;
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import java.sql.SQLException;
@@ -23,7 +23,7 @@ public class DataSourceFactoryTest extends MacgyverIntegrationTest {
 	Kernel kernel;
 
 	@Autowired
-	ServiceInstanceRegistry registry;
+	ServiceRegistry registry;
 
 	@Test
 	public void testApplicationContextIntegrity() {

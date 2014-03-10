@@ -1,6 +1,6 @@
 package io.macgyver.mongodb;
 
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MongoDBFactoryBeanTest extends MacgyverIntegrationTest {
 
 	@Autowired
-	ServiceInstanceRegistry reg;
+	ServiceRegistry reg;
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testCredentialInjectorIllegalArgument() {

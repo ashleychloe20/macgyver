@@ -14,9 +14,9 @@ import com.google.common.collect.Sets;
  */
 public class ServiceMapAdapter implements Map<String, Object> {
 
-	protected ServiceInstanceRegistry ctx;
+	protected ServiceRegistry ctx;
 	
-	public ServiceMapAdapter(ServiceInstanceRegistry ctx) {
+	public ServiceMapAdapter(ServiceRegistry ctx) {
 		this.ctx = ctx;
 	}
 	@Override

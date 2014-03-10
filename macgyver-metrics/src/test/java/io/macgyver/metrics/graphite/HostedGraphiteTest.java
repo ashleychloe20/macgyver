@@ -1,6 +1,6 @@
 package io.macgyver.metrics.graphite;
 
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.glassfish.jersey.client.ClientConfig;
@@ -14,7 +14,7 @@ public class HostedGraphiteTest extends MacgyverIntegrationTest {
 	ClientConfig clientConfig;
 
 	@Autowired
-	ServiceInstanceRegistry registry;
+	ServiceRegistry registry;
 
 	@Test
 	public void testHostedGraphite() throws Exception {

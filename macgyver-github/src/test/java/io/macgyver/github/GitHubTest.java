@@ -1,6 +1,6 @@
 package io.macgyver.github;
 
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import java.io.IOException;
@@ -13,15 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class GitHubTest extends MacgyverIntegrationTest {
 
 	@Autowired
-	ServiceInstanceRegistry reg;
-	
+	ServiceRegistry reg;
+
 	@Test
 	public void testX() throws IOException {
 		GitHub gh = (GitHub) reg.get("testGitHub");
-		
-	
+
 		Assert.assertNotNull(gh);
 	}
-
 
 }

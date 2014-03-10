@@ -5,7 +5,7 @@ import java.util.Set;
 import io.macgyver.core.TestBean;
 import io.macgyver.core.service.ServiceDefinition;
 import io.macgyver.core.service.ServiceFactory;
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 
 public class TestBeanServiceFactory extends ServiceFactory<TestBean> {
 
@@ -18,7 +18,7 @@ public class TestBeanServiceFactory extends ServiceFactory<TestBean> {
 		return new TestBean();
 	}
 	@Override
-	protected void doCreateCollaboratorInstances(ServiceInstanceRegistry registry,
+	protected void doCreateCollaboratorInstances(ServiceRegistry registry,
 			ServiceDefinition primaryDefinition, TestBean primaryBean) {
 
 	}

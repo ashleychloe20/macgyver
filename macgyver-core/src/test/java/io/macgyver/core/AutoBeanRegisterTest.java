@@ -1,6 +1,6 @@
 package io.macgyver.core;
 
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,7 +10,7 @@ public class AutoBeanRegisterTest extends CoreIntegrationTestCase {
 
 	
 	@Autowired
-	ServiceInstanceRegistry registry;
+	ServiceRegistry registry;
 	
 	
 	@Test

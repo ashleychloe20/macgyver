@@ -32,7 +32,7 @@ import com.ning.http.client.AsyncHttpClient;
 
 public abstract class Graphite extends AbstractMetricRecorder {
 
-	@Autowired(required = true)
+
 	ClientConfig jerseyClientConfig;
 
 	private String graphiteQueryBaseUrl;
@@ -45,6 +45,9 @@ public abstract class Graphite extends AbstractMetricRecorder {
 	}
 
 	public Graphite(ClientConfig cc, AsyncHttpClient client) {
+		Preconditions.checkNotNull(cc);
+		Preconditions.checkNotNull(client);
+		
 		this.jerseyClientConfig = cc;
 		this.asyncClient = client;
 	}

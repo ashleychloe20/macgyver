@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import io.macgyver.core.Kernel.KernelStartedEvent;
+import io.macgyver.core.service.ServiceCreatedEvent;
 import io.macgyver.metrics.MetricRecorder;
 
 import com.google.common.eventbus.Subscribe;
@@ -14,11 +15,14 @@ public class AllMetricRecorders extends CompositeRecorder {
 	ApplicationContext ctx;
 
 	@Subscribe
-	public void receiveStartup(KernelStartedEvent event) {
-		for (MetricRecorder recorder : ctx.getBeansOfType(MetricRecorder.class).values()) {
-			if (recorder != this) {
-				addRecorder(recorder);
+	public void receiveStartup(ServiceCreatedEvent event) {
+		Object instance = event.getServiceInstance();
+		if (instance != null && instance instanceof MetricRecorder) {
+			MetricRecorder r = (MetricRecorder) instance;
+			if (r != this) {
+				addRecorder(r);
 			}
 		}
+
 	}
 }

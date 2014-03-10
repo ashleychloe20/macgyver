@@ -3,7 +3,9 @@ package io.macgyver.core.service;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
 import io.macgyver.core.ServiceNotFoundException;
+import io.macgyver.core.eventbus.MacGyverEventBus;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -16,12 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-public class ServiceInstanceRegistry {
+public class ServiceRegistry {
 
-	Logger logger = LoggerFactory.getLogger(ServiceInstanceRegistry.class);
+	Logger logger = LoggerFactory.getLogger(ServiceRegistry.class);
 
 	@SuppressWarnings("rawtypes")
 	protected Map<String, ServiceFactory> serviceFactoryMap = Maps
@@ -35,6 +38,9 @@ public class ServiceInstanceRegistry {
 
 	@Autowired
 	MacGyverPropertySourcesPlaceholderConfigurer cfg;
+
+	@Autowired
+	MacGyverEventBus syncBus;
 
 	@SuppressWarnings("unchecked")
 	public <T> T get(String name, Class<T> t) {
@@ -72,6 +78,7 @@ public class ServiceInstanceRegistry {
 	}
 
 	private void registerServiceDefintion(ServiceDefinition def) {
+		logger.info("registering service definition: {}", def);
 		definitions.put(def.getName(), def);
 
 	}
@@ -113,6 +120,22 @@ public class ServiceInstanceRegistry {
 				}
 			}
 		}
+		autoInit();
+	}
+
+	void autoInit() {
+		List<ServiceDefinition> defList = Lists.newArrayList();
+
+		defList.addAll(definitions.values());
+		for (ServiceDefinition def : defList) {
+			try {
+				logger.info("starting service: {}",def);
+				get(def.getName());
+			} catch (Exception e) {
+				logger.warn("problem starting service: {}", def);
+			}
+		}
+
 	}
 
 	protected boolean isServiceTypeKey(String key) {
@@ -149,6 +172,7 @@ public class ServiceInstanceRegistry {
 	public void registerCollaborator(String name, Object collaborator) {
 		instances.put(name, collaborator);
 	}
+
 	@SuppressWarnings("rawtypes")
 	public ServiceFactory getServiceFactory(String name) {
 		ServiceFactory sf = serviceFactoryMap.get(name.toLowerCase());
@@ -161,5 +185,9 @@ public class ServiceInstanceRegistry {
 
 	public ServiceMapAdapter mapAdapter() {
 		return new ServiceMapAdapter(this);
+	}
+
+	public void publish(ServiceCreatedEvent event) {
+		syncBus.post(event);
 	}
 }

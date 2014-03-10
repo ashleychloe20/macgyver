@@ -1,6 +1,6 @@
 package io.macgyver.chat.hipchat;
 
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import java.net.InetAddress;
@@ -19,7 +19,7 @@ public class HipChatClientTest extends MacgyverIntegrationTest {
 	AsyncHttpClient client;
 
 	@Autowired
-	ServiceInstanceRegistry factory;
+	ServiceRegistry factory;
 	
 	
 	@Test

@@ -27,7 +27,7 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 	Map<String, String> colloboratorNameMap = Maps.newConcurrentMap();
 
 	@Autowired
-	protected ServiceInstanceRegistry registry;
+	protected ServiceRegistry registry;
 
 	protected ApplicationContext applicationContext;
 
@@ -75,7 +75,8 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 			registry.instances.put(name, newInstance);
 
 			createCollaboratorInstances(registry, def, newInstance);
-
+			ServiceCreatedEvent event = new ServiceCreatedEvent(def,newInstance);
+			registry.publish(event);
 			return newInstance;
 
 		}
@@ -83,13 +84,13 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 	}
 
 	protected final void createCollaboratorInstances(
-			ServiceInstanceRegistry registry,
+			ServiceRegistry registry,
 			ServiceDefinition primaryDefinition, T primaryBean) {
 		doCreateCollaboratorInstances(registry, primaryDefinition, primaryBean);
 	}
 
 	protected abstract void doCreateCollaboratorInstances(
-			ServiceInstanceRegistry registry,
+			ServiceRegistry registry,
 			ServiceDefinition primaryDefinition, T primaryBean);
 
 	protected final void createServiceDefintions(Set<ServiceDefinition> defSet,

@@ -1,6 +1,6 @@
 package io.macgyver.metrics.statsd;
 
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class StatsDTest extends MacgyverIntegrationTest{
 	static ConcurrentLinkedQueue<String> recvList = new java.util.concurrent.ConcurrentLinkedQueue<String>();
 
 	@Autowired
-	ServiceInstanceRegistry registry;
+	ServiceRegistry registry;
 	
 	public static class ConsumerRunnable implements Runnable {
 

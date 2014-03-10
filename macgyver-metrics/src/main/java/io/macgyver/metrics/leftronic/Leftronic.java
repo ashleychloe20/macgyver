@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -26,9 +27,13 @@ public class Leftronic extends AbstractMetricRecorder {
 	public static final String DEFAULT_URL = "https://www.leftronic.com/customSend/";
 	String url = DEFAULT_URL;
 	String apiKey;
-
-	@Autowired
+	
 	AsyncHttpClient client;
+	
+	public Leftronic(AsyncHttpClient client) {
+		Preconditions.checkNotNull(client);
+		this.client = client;
+	}
 
 	public String getApiKey() {
 		return apiKey;

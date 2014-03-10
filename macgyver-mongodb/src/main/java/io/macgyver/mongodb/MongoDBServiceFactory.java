@@ -1,10 +1,9 @@
 package io.macgyver.mongodb;
 
 import io.macgyver.core.ConfigurationException;
-import io.macgyver.core.service.BasicServiceFactory;
 import io.macgyver.core.service.ServiceDefinition;
 import io.macgyver.core.service.ServiceFactory;
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 
 import java.net.UnknownHostException;
 import java.util.Properties;
@@ -117,7 +116,7 @@ public class MongoDBServiceFactory extends ServiceFactory<MongoClient> {
 
 	@Override
 	protected void doCreateCollaboratorInstances(
-			ServiceInstanceRegistry registry,
+			ServiceRegistry registry,
 			ServiceDefinition primaryDefinition, MongoClient primaryBean) {
 		
 		ExtendedMongoClient c = (ExtendedMongoClient) primaryBean;

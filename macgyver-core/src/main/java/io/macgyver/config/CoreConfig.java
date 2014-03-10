@@ -10,7 +10,7 @@ import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 import io.macgyver.core.jaxrs.GsonMessageBodyProvider;
 import io.macgyver.core.script.BindingSupplierManager;
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 
 import java.util.Properties;
 
@@ -111,8 +111,8 @@ public class CoreConfig {
 	}
 	
 	@Bean
-	public ServiceInstanceRegistry serviceInstanceRegistry() {
-		return new ServiceInstanceRegistry();
+	public ServiceRegistry serviceInstanceRegistry() {
+		return new ServiceRegistry();
 	}
 
 }

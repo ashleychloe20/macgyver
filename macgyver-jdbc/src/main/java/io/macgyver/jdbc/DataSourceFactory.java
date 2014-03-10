@@ -3,7 +3,7 @@ package io.macgyver.jdbc;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.service.ServiceDefinition;
 import io.macgyver.core.service.ServiceFactory;
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 
 import java.util.Properties;
 import java.util.Set;
@@ -51,7 +51,7 @@ public class DataSourceFactory extends ServiceFactory<DataSource> {
 
 	@Override
 	protected void doCreateCollaboratorInstances(
-			ServiceInstanceRegistry registry,
+			ServiceRegistry registry,
 			ServiceDefinition primaryDefinition, DataSource primaryBean) {
 		JdbcTemplate t = new JdbcTemplate(primaryBean, true);
 		registry.registerCollaborator(primaryDefinition.getPrimaryName()+"Template", t);

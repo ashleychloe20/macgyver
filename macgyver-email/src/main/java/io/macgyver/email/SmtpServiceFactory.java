@@ -1,7 +1,7 @@
 package io.macgyver.email;
 
 import io.macgyver.core.service.ServiceDefinition;
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 
 import java.util.Properties;
 import java.util.Set;
@@ -57,7 +57,7 @@ public class SmtpServiceFactory extends
 
 	@Override
 	protected void doCreateCollaboratorInstances(
-			ServiceInstanceRegistry registry,
+			ServiceRegistry registry,
 			ServiceDefinition primaryDefinition, Session primaryBean) {
 		
 		registry.registerCollaborator(primaryDefinition.getName()+"Client", new SmtpClient(primaryBean));

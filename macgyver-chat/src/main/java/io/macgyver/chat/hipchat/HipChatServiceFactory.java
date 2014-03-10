@@ -1,7 +1,7 @@
 package io.macgyver.chat.hipchat;
 
 import io.macgyver.core.service.ServiceDefinition;
-import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceRegistry;
 
 import java.util.Set;
 
@@ -10,18 +10,17 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.ning.http.client.AsyncHttpClient;
 
-public class HipChatServiceFactory extends io.macgyver.core.service.ServiceFactory<HipChat> {
+public class HipChatServiceFactory extends
+		io.macgyver.core.service.ServiceFactory<HipChat> {
 
 	@Autowired
 	@Qualifier("macgyverAsyncHttpClient")
 	AsyncHttpClient client;
-	
+
 	public HipChatServiceFactory() {
 		super("hipchat");
-	
+
 	}
-
-
 
 	@Override
 	protected HipChat doCreateInstance(ServiceDefinition def) {
@@ -30,16 +29,11 @@ public class HipChatServiceFactory extends io.macgyver.core.service.ServiceFacto
 		return c;
 	}
 
-
-
 	@Override
-	protected void doCreateCollaboratorInstances(
-			ServiceInstanceRegistry registry,
+	protected void doCreateCollaboratorInstances(ServiceRegistry registry,
 			ServiceDefinition primaryDefinition, HipChat primaryBean) {
 		// Not required
 	}
-
-
 
 	@Override
 	public void doCreateCollaboratorDefinitions(Set<ServiceDefinition> defSet,

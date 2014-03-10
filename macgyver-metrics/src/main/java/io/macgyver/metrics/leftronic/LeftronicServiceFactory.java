@@ -5,6 +5,8 @@ import io.macgyver.core.service.ServiceDefinition;
 
 import org.springframework.stereotype.Component;
 
+import com.ning.http.client.AsyncHttpClient;
+
 @Component
 public class LeftronicServiceFactory extends BasicServiceFactory<Leftronic> {
 
@@ -13,10 +15,11 @@ public class LeftronicServiceFactory extends BasicServiceFactory<Leftronic> {
 
 	}
 
+	
 	@Override
 	public Leftronic doCreateInstance(ServiceDefinition def) {
 
-		Leftronic leftronic = new Leftronic();
+		Leftronic leftronic = new Leftronic(new AsyncHttpClient());
 		leftronic.setApiKey(def.getProperties().getProperty("apiKey"));
 		leftronic.setPrefix(def.getProperties().getProperty("prefix"));
 		return leftronic;
