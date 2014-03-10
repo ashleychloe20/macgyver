@@ -1,7 +1,6 @@
 package io.macgyver.metrics.librato;
 
-import io.macgyver.core.factory.ServiceInstanceRegistry;
-import io.macgyver.metrics.graphite.HostedGraphite;
+import io.macgyver.core.service.ServiceInstanceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;

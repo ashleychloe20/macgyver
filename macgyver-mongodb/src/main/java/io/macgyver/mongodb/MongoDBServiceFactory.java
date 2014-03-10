@@ -1,15 +1,16 @@
 package io.macgyver.mongodb;
 
-import io.macgyver.core.CollaboratorRegistrationCallback;
 import io.macgyver.core.ConfigurationException;
-import io.macgyver.core.factory.ServiceFactory;
+import io.macgyver.core.service.BasicServiceFactory;
+import io.macgyver.core.service.ServiceDefinition;
+import io.macgyver.core.service.ServiceFactory;
+import io.macgyver.core.service.ServiceInstanceRegistry;
 
 import java.net.UnknownHostException;
 import java.util.Properties;
+import java.util.Set;
 
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Preconditions;
@@ -21,25 +22,14 @@ import com.mongodb.MongoClientURI;
 @Component
 public class MongoDBServiceFactory extends ServiceFactory<MongoClient> {
 
-	@Override
-	public void configure(String name, Properties props) {
-		super.configure(name, props);
-		addCollaboratorRelationship(name+"DB", name);
-	}
-
-	@Override
-	protected void registerCollaborators(String name, Object primary) {
-		super.registerCollaborators(name, primary);
-		ExtendedMongoClient client = (ExtendedMongoClient) primary;
-		
-		registry.registerCollaborator(name+"DB", client.getDB(client.getDatabaseName()));
-	}
+	
 
 	public MongoDBServiceFactory() {
 		super("mongodb");
 	}
 
-	public MongoClient createObject(Properties props) {
+	public MongoClient doCreateInstance(ServiceDefinition def) {
+		Properties props = def.getProperties();
 		try {
 			return new ExtendedMongoClient(new MongoClientURI(
 					injectCredentials(props.getProperty("uri"),
@@ -119,5 +109,28 @@ public class MongoDBServiceFactory extends ServiceFactory<MongoClient> {
 			return true;
 		}
 
+	}
+
+
+
+
+
+	@Override
+	protected void doCreateCollaboratorInstances(
+			ServiceInstanceRegistry registry,
+			ServiceDefinition primaryDefinition, MongoClient primaryBean) {
+		
+		ExtendedMongoClient c = (ExtendedMongoClient) primaryBean;
+		DB db = c.getDB(c.getDatabaseName());
+		
+		registry.registerCollaborator(primaryDefinition.getName()+"DB", db);
+		
+	}
+
+	@Override
+	public void doCreateCollaboratorDefinitions(Set<ServiceDefinition> defSet,
+			ServiceDefinition def) {
+		ServiceDefinition dbDef = new ServiceDefinition(def.getName()+"DB", def.getName(), def.getProperties(), this);
+		defSet.add(dbDef);
 	}
 }

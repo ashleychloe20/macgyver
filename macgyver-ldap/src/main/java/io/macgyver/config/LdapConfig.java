@@ -1,6 +1,6 @@
 package io.macgyver.config;
 
-import io.macgyver.ldap.LdapFactoryBean;
+import io.macgyver.ldap.LdapServiceFactory;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,12 +9,12 @@ import org.springframework.context.annotation.Configuration;
 public class LdapConfig {
 
 	@Bean
-	public LdapFactoryBean ldapServiceFactory() {
-		return new LdapFactoryBean("ldap");
+	public LdapServiceFactory ldapServiceFactory() {
+		return new LdapServiceFactory("ldap");
 	}
 
 	@Bean
-	public LdapFactoryBean activeDirectoryServiceFactory() {
-		return new LdapFactoryBean("activedirectory");
+	public LdapServiceFactory activeDirectoryServiceFactory() {
+		return new LdapServiceFactory("activedirectory");
 	}
 }

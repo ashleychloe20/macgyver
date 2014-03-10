@@ -1,6 +1,7 @@
 package io.macgyver.metrics.librato;
 
-import io.macgyver.core.factory.ServiceFactory;
+import io.macgyver.core.service.BasicServiceFactory;
+import io.macgyver.core.service.ServiceDefinition;
 
 import java.util.Properties;
 
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.ning.http.client.AsyncHttpClient;
 
 @Component
-public class LibratoServiceFactory extends ServiceFactory<Librato> {
+public class LibratoServiceFactory extends BasicServiceFactory<Librato> {
 
 	public LibratoServiceFactory() {
 		super("librato");
@@ -17,10 +18,10 @@ public class LibratoServiceFactory extends ServiceFactory<Librato> {
 	}
 
 	@Override
-	public Librato createObject(Properties props)  {
-		return new Librato(props.getProperty("username"),
-				props.getProperty("apiKey"), new AsyncHttpClient(),
-				props.getProperty("prefix"));
+	public Librato doCreateInstance(ServiceDefinition def)  {
+		return new Librato(def.getProperties().getProperty("username"),
+				def.getProperties().getProperty("apiKey"), new AsyncHttpClient(),
+				def.getProperties().getProperty("prefix"));
 	}
 
 }

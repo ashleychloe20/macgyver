@@ -1,8 +1,6 @@
 package io.macgyver.mongodb;
 
-import javax.imageio.spi.ServiceRegistry;
-
-import io.macgyver.core.factory.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceInstanceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;

@@ -1,10 +1,9 @@
 package io.macgyver.metrics.leftronic;
 
-import io.macgyver.core.factory.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceInstanceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

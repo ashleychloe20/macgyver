@@ -1,6 +1,6 @@
 package io.macgyver.metrics.statsd;
 
-import io.macgyver.core.factory.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceInstanceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import java.io.IOException;

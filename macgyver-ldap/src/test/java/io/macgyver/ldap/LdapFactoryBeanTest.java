@@ -1,6 +1,6 @@
 package io.macgyver.ldap;
 
-import io.macgyver.core.factory.ServiceInstanceRegistry;
+import io.macgyver.core.service.ServiceInstanceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;
@@ -18,8 +18,8 @@ public class LdapFactoryBeanTest extends MacgyverIntegrationTest {
 	@Test
 	public void testLocator() throws ClassNotFoundException {
 		
-		Assert.assertEquals(LdapFactoryBean.class, registry.getServiceFactory("ldap").getClass());
-		Assert.assertEquals(LdapFactoryBean.class, registry.getServiceFactory("activedirectory").getClass());
+		Assert.assertEquals(LdapServiceFactory.class, registry.getServiceFactory("ldap").getClass());
+		Assert.assertEquals(LdapServiceFactory.class, registry.getServiceFactory("activedirectory").getClass());
 	}
 	
 

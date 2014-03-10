@@ -1,13 +1,12 @@
 package io.macgyver.metrics.leftronic;
 
-import java.util.Properties;
+import io.macgyver.core.service.BasicServiceFactory;
+import io.macgyver.core.service.ServiceDefinition;
 
 import org.springframework.stereotype.Component;
 
-import io.macgyver.core.factory.ServiceFactory;
-
 @Component
-public class LeftronicServiceFactory extends ServiceFactory<Leftronic> {
+public class LeftronicServiceFactory extends BasicServiceFactory<Leftronic> {
 
 	public LeftronicServiceFactory() {
 		super("leftronic");
@@ -15,13 +14,13 @@ public class LeftronicServiceFactory extends ServiceFactory<Leftronic> {
 	}
 
 	@Override
-	public Leftronic createObject(Properties props)  {
-		
+	public Leftronic doCreateInstance(ServiceDefinition def) {
+
 		Leftronic leftronic = new Leftronic();
-		leftronic.setApiKey(props.getProperty("apiKey"));
-		leftronic.setPrefix(props.getProperty("prefix"));
+		leftronic.setApiKey(def.getProperties().getProperty("apiKey"));
+		leftronic.setPrefix(def.getProperties().getProperty("prefix"));
 		return leftronic;
-		
+
 	}
 
 }

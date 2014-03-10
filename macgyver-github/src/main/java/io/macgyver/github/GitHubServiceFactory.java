@@ -1,21 +1,23 @@
 package io.macgyver.github;
 
-import io.macgyver.core.factory.ServiceFactory;
+import io.macgyver.core.service.BasicServiceFactory;
+import io.macgyver.core.service.ServiceDefinition;
 
 import java.io.IOException;
 import java.util.Properties;
 
 import org.kohsuke.github.GitHub;
 
-public class GitHubServiceFactory extends ServiceFactory<GitHub> {
+public class GitHubServiceFactory extends BasicServiceFactory<GitHub> {
 
 	public GitHubServiceFactory() {
 		super("github");
 	}
 
 	@Override
-	public GitHub createObject(Properties props) {
+	protected GitHub doCreateInstance(ServiceDefinition def) {
 		try {
+			Properties props = def.getProperties();
 			String url = props.getProperty("url");
 			String oauthToken = props.getProperty("oauthToken");
 			GitHub gh = null;
