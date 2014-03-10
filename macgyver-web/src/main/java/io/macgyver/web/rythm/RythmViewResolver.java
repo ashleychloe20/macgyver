@@ -4,7 +4,6 @@ import javax.servlet.ServletContext;
 
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerView;
 
 public class RythmViewResolver extends AbstractTemplateViewResolver {
 

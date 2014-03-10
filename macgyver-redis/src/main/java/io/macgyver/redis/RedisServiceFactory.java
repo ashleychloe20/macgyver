@@ -1,6 +1,6 @@
 package io.macgyver.redis;
 
-import io.macgyver.core.ServiceFactoryBean;
+import io.macgyver.core.factory.ServiceFactory;
 
 import java.util.Properties;
 
@@ -10,19 +10,19 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
 
-public class RedisFactoryBean extends ServiceFactoryBean<JedisPool> {
+public class RedisServiceFactory extends ServiceFactory<JedisPool> {
 
-	public RedisFactoryBean() {
-		super(JedisPool.class);
+	public RedisServiceFactory() {
+		super("redis");
 	}
 
 	@Override
-	public JedisPool createObject() throws Exception {
+	public JedisPool createObject(Properties props) {
 
 		
 		
 		
-		JedisPool pool = createPoolForProperties(getProperties());
+		JedisPool pool = createPoolForProperties(props);
 		
 	
 		return pool;

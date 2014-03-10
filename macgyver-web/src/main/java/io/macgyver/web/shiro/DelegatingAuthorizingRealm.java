@@ -1,7 +1,5 @@
 package io.macgyver.web.shiro;
 
-import io.macgyver.core.Kernel;
-
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
@@ -10,10 +8,7 @@ import java.util.Map;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;

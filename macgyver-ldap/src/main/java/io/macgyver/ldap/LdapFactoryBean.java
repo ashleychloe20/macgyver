@@ -1,54 +1,43 @@
 package io.macgyver.ldap;
 
-import io.macgyver.core.CollaboratorRegistrationCallback;
-import io.macgyver.core.ServiceFactoryBean;
+import io.macgyver.core.factory.ServiceFactory;
 
 import java.util.Properties;
 
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
-import com.google.common.base.Optional;
+public class LdapFactoryBean extends ServiceFactory<LdapContextSource> {
 
-public class LdapFactoryBean extends ServiceFactoryBean<LdapContextSource> {
-
-	public LdapFactoryBean() {
-		super(LdapContextSource.class);
+	public LdapFactoryBean(String name) {
+		super(name);
 	}
 
 	@Override
-	public LdapContextSource createObject() throws Exception {
+	public LdapContextSource createObject(Properties props) {
 		LdapContextSource cs = new LdapContextSource();
-		
+
 		org.springframework.beans.BeanWrapper gw = new BeanWrapperImpl(cs);
-		
-		assignProperties(cs, getProperties(), true);
+
+		assignProperties(cs, props, true);
 
 		cs.afterPropertiesSet();
 		return cs;
 	}
 
-	
-	
 	@Override
-	public CollaboratorRegistrationCallback getCollaboratorRegistrationCallback() {
-		
-	
-		CollaboratorRegistrationCallback reg = new CollaboratorRegistrationCallback() {
-			
-			@Override
-			public void registerCollaborators(CollaboratorRegistrationCallback.RegistrationDetail detail) {
-				String name = detail.getPrimaryBeanName()+"Template";
-				BeanDefinition bd = BeanDefinitionBuilder.rootBeanDefinition(LdapTemplate.class).addConstructorArgReference(detail.getPrimaryBeanName()).getBeanDefinition();
-				detail.getRegistry().registerBeanDefinition(name, bd);
-				
-			}
-		};
-		return reg;
-
+	public void configure(String name, Properties props) {
+		super.configure(name, props);
+		addCollaboratorRelationship(name + "Template", name);
 	}
+
+	@Override
+	protected void registerCollaborators(String name, Object primary) {
+		super.registerCollaborators(name, primary);
+		LdapTemplate template = new LdapTemplate((LdapContextSource) primary);
+		super.registry.registerCollaborator(name+"Template", template);
+	}
+
+
 }

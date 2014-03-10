@@ -29,11 +29,9 @@ dependencies {
 
     compile 'commons-cli:commons-cli:1.2'
     compile 'com.ning:async-http-client:1.7.23'
-	provided "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
+	compile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
 	testCompile "org.springframework:spring-test:${SPRING_VERSION}"
-    testCompile project(":macgyver-test")
-
-
+	testCompile group: "junit", name: "junit", version: "${JUNIT_VERSION}"
 
 }
 

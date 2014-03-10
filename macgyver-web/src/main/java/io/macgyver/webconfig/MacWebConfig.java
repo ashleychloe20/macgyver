@@ -1,11 +1,5 @@
 package io.macgyver.webconfig;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
 import io.macgyver.web.jetty.StaticResourceServlet;
@@ -21,7 +15,6 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler;
 
 @EnableWebMvc
 @Configuration

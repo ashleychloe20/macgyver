@@ -1,14 +1,12 @@
 package io.macgyver.core;
 
-import io.macgyver.core.factory.ServiceInstanceRegistry;
-import io.macgyver.test.MacgyverIntegrationTest;
+import io.macgyver.core.service.ServiceInstanceRegistry;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
-public class AutoBeanRegisterTest extends MacgyverIntegrationTest {
+public class AutoBeanRegisterTest extends CoreIntegrationTestCase {
 
 	
 	@Autowired

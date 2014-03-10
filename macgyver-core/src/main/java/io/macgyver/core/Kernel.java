@@ -58,11 +58,13 @@ public class Kernel implements ApplicationContextAware {
 		return startupError == null;
 	}
 
+	@SuppressWarnings({ "resource", "rawtypes" })
 	public synchronized static void initialize() {
 		if (kernelRef.get() == null) {
 
 			Kernel k = new Kernel(Kernel.determineExtensionDir());
 			kernelRef.set(k);
+
 			AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 
 			k.applicationContext = ctx;
@@ -82,10 +84,11 @@ public class Kernel implements ApplicationContextAware {
 						throw new IllegalStateException(gbf
 								+ " must return a java.lang.Class");
 					}
-					ctx.setClassLoader((((Class) x).getClassLoader()));
+					Class theClass = (Class) x;
+					ctx.setClassLoader((theClass.getClassLoader()));
 					ctx.scan(CoreConfig.class.getPackage().getName());
 
-					ctx.register((Class) x);
+					ctx.register(theClass);
 
 				} catch (IOException e) {
 					throw new IllegalStateException(e);
@@ -100,8 +103,8 @@ public class Kernel implements ApplicationContextAware {
 
 			}
 			ctx.refresh();
-			
-			MacGyverEventBus bus = ctx.getBean(MacGyverEventBus.class);		
+
+			MacGyverEventBus bus = ctx.getBean(MacGyverEventBus.class);
 			kernelRef.set(k);
 			bus.post(new KernelStartedEvent());
 		} else {
@@ -144,9 +147,9 @@ public class Kernel implements ApplicationContextAware {
 			throws BeansException {
 		if (this.applicationContext != null
 				&& this.applicationContext != applicationContext) {
-
+			new RuntimeException().printStackTrace();
 			throw new IllegalStateException("application context already set: "
-					+ this.applicationContext);
+					+ this.applicationContext+" ;new: "+applicationContext);
 		}
 		this.applicationContext = applicationContext;
 
@@ -196,8 +199,8 @@ public class Kernel implements ApplicationContextAware {
 		}
 
 	}
-	
+
 	public static class KernelStartedEvent {
-		
+
 	}
 }

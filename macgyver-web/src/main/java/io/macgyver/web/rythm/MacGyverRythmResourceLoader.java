@@ -5,7 +5,6 @@ import io.macgyver.core.Kernel;
 import java.io.File;
 
 import org.rythmengine.RythmEngine;
-import org.rythmengine.resource.ClasspathTemplateResource;
 import org.rythmengine.resource.ITemplateResource;
 import org.rythmengine.resource.ResourceLoaderBase;
 import org.rythmengine.resource.TemplateResourceBase;
@@ -41,6 +40,9 @@ public class MacGyverRythmResourceLoader extends ResourceLoaderBase {
 		logger.info("looking for: {}", finalTemplate);
 		if (finalTemplate.exists()) {
 			return new TemplateResourceBase() {
+
+			
+				private static final long serialVersionUID = -8139914562941211801L;
 
 				public boolean isValid() {
 					return null != finalTemplate

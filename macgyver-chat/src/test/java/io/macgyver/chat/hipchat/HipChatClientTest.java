@@ -1,8 +1,6 @@
 package io.macgyver.chat.hipchat;
 
-import io.macgyver.core.Kernel;
-import io.macgyver.core.ServiceFactoryBean;
-import io.macgyver.core.ServiceFactoryClassFinder;
+import io.macgyver.core.service.ServiceInstanceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import java.net.InetAddress;
@@ -21,14 +19,15 @@ public class HipChatClientTest extends MacgyverIntegrationTest {
 	AsyncHttpClient client;
 
 	@Autowired
-	HipChat hipChat;
+	ServiceInstanceRegistry factory;
+	
 	
 	@Test
 	public void testIt() throws Exception {
 
-		Assert.assertNotNull(hipChat);
 		
-		Assert.assertSame(hipChat,Kernel.getInstance().getApplicationContext().getBean("hipchatTest"));
+		Assert.assertNotNull(factory.get("hipchatTest"));
+		
 		
 		HipChat client = new HipChat(this.client);
 		client.setApiKey("");
@@ -40,11 +39,5 @@ public class HipChatClientTest extends MacgyverIntegrationTest {
 
 	}
 	
-	@Test
-	public void testServiceTypes() throws ClassNotFoundException {
-		ServiceFactoryClassFinder locator = new ServiceFactoryClassFinder();
-		Class<ServiceFactoryBean> clazz = locator.forServiceType("HiPcHaT");
-		
-		Assert.assertEquals(HipChatFactoryBean.class,clazz);
-	}
+	
 }

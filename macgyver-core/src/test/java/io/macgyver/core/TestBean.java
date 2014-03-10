@@ -3,9 +3,8 @@ package io.macgyver.core;
 import io.macgyver.core.crypto.Crypto;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
-public class TestBean {
+public class TestBean  {
 
 	@Autowired
 	Crypto crypto;
@@ -29,4 +28,7 @@ public class TestBean {
 		this.crypto = crypto;
 	}
 	
+	public static void main(String [] args) {
+		Kernel.initialize();
+	}
 }

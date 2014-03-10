@@ -22,8 +22,6 @@ public class MongoDBFactoryBeanIntegrationTest extends MacgyverIntegrationTest {
 	@Autowired
 	ApplicationContext applicationContext;
 	
-	@Autowired
-	DB db;
 	
 	@Test
 	public void testIt() {

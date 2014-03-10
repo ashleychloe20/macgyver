@@ -1,13 +1,12 @@
 package io.macgyver.jdbc;
 
-import java.sql.Connection;
+import io.macgyver.core.Kernel;
+import io.macgyver.core.service.ServiceInstanceRegistry;
+import io.macgyver.test.MacgyverIntegrationTest;
+
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
-
-import io.macgyver.core.Kernel;
-import io.macgyver.core.factory.ServiceInstanceRegistry;
-import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,11 +37,19 @@ public class DataSourceFactoryTest extends MacgyverIntegrationTest {
 	@Test
 	public void testAutoRegistration() throws SQLException {
 
-		DataSource ds1 = (DataSource) registry.get("testds");
-		DataSource ds2 = (DataSource) registry.get("testds");
-		Assert.assertNotNull(ds1);
-		Assert.assertSame(ds1,ds2);
 
+		JdbcTemplate t = (JdbcTemplate) registry.get("testdsTemplate");
+		Assert.assertNotNull(t);
+		Assert.assertSame(t,registry.get("testdsTemplate"));
+		
+		DataSource ds = (DataSource) registry.get("testds");
+		Assert.assertNotNull(ds);
+		
+			DataSource ds1 = (DataSource) registry.get("testds");
+			DataSource ds2 = (DataSource) registry.get("testds");
+			Assert.assertNotNull(ds1);
+			Assert.assertSame(ds1,ds2);
+			Assert.assertSame(ds, t.getDataSource());
 	}
 
 }

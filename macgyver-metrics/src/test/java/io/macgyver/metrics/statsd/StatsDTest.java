@@ -1,5 +1,6 @@
 package io.macgyver.metrics.statsd;
 
+import io.macgyver.core.factory.ServiceInstanceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class StatsDTest extends MacgyverIntegrationTest{
 
@@ -24,6 +26,9 @@ public class StatsDTest extends MacgyverIntegrationTest{
 
 	static ConcurrentLinkedQueue<String> recvList = new java.util.concurrent.ConcurrentLinkedQueue<String>();
 
+	@Autowired
+	ServiceInstanceRegistry registry;
+	
 	public static class ConsumerRunnable implements Runnable {
 
 		@Override
@@ -79,6 +84,6 @@ public class StatsDTest extends MacgyverIntegrationTest{
 	
 	@Test
 	public void testConfig() {
-		Assert.assertNotNull(applicationContext.getBean("testStatsD"));
+		Assert.assertNotNull(registry.get("testStatsD",StatsD.class));
 	}
 }

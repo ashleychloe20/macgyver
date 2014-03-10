@@ -1,6 +1,7 @@
 package io.macgyver.core.script;
 
 import io.macgyver.core.Kernel;
+import io.macgyver.core.service.ServiceInstanceRegistry;
 
 import java.io.File;
 import java.io.FileReader;
@@ -60,7 +61,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 		b.put("log", LoggerFactory.getLogger("io.macgyver.script"));
 		b.put("beans", new SpringMapAdapter(Kernel.getInstance()
 				.getApplicationContext()));
-
+		b.put("services", Kernel.getInstance().getApplicationContext().getBean(ServiceInstanceRegistry.class).mapAdapter());
 		BindingSupplierManager bsm = Kernel.getInstance()
 				.getApplicationContext().getBean(BindingSupplierManager.class);
 		Map<String, Object> m = bsm.collect(lang);
@@ -153,7 +154,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 			collectBindings(bindings, Optional.fromNullable(engine.getFactory().getLanguageName()));
 
 		
-			Object val = engine.eval(fr, bindings);
+			engine.eval(fr, bindings);
 
 			fr.close();
 

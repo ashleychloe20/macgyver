@@ -11,10 +11,11 @@ import org.rythmengine.utils.IO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.UrlResource;
 
 public class CustomClasspathTemplateResource extends TemplateResourceBase
 		implements ITemplateResource {
+
+	private static final long serialVersionUID = -6349332717233870055L;
 
 	private URL url;
 	private String key;

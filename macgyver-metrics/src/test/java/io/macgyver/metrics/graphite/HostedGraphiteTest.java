@@ -2,6 +2,7 @@ package io.macgyver.metrics.graphite;
 
 import java.util.Map;
 
+import io.macgyver.core.factory.ServiceInstanceRegistry;
 import io.macgyver.metrics.TSV;
 import io.macgyver.test.MacgyverIntegrationTest;
 
@@ -17,10 +18,14 @@ public class HostedGraphiteTest extends MacgyverIntegrationTest{
 	@Autowired
 	ClientConfig clientConfig;
 	
+	@Autowired
+	ServiceInstanceRegistry registry;
+	
 	@Test
 	public void testHostedGraphite() throws Exception {
-		HostedGraphite g = applicationContext.getBean("testHostedGraphite",
-				HostedGraphite.class);
+		HostedGraphite g = (HostedGraphite) registry.get("testHostedGraphite");
+		
+	
 		g.record("macgyver.abc", 123);
 		Assert.assertNotNull(g);
 

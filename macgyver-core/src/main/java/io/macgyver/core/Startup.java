@@ -3,11 +3,7 @@ package io.macgyver.core;
 import io.macgyver.core.script.ScriptExecutor;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.Iterator;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

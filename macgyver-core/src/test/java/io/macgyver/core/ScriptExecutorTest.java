@@ -1,12 +1,8 @@
 package io.macgyver.core;
 
 import io.macgyver.core.script.ScriptExecutor;
-import io.macgyver.test.MacgyverIntegrationTest;
-import groovy.lang.Closure;
-import groovy.lang.GroovyShell;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ScriptExecutorTest extends CoreIntegrationTestCase {

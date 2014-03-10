@@ -1,6 +1,6 @@
 package io.macgyver.github;
 
-import io.macgyver.core.ServiceFactoryClassFinder;
+import io.macgyver.core.factory.ServiceInstanceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
 import java.io.IOException;
@@ -8,20 +8,20 @@ import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kohsuke.github.GitHub;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class GitHubTest extends MacgyverIntegrationTest {
 
+	@Autowired
+	ServiceInstanceRegistry reg;
+	
 	@Test
 	public void testX() throws IOException {
-		GitHub gh = applicationContext.getBean("testGitHub",GitHub.class);
+		GitHub gh = (GitHub) reg.get("testGitHub");
+		
+	
 		Assert.assertNotNull(gh);
 	}
 
-	@Test
-	public void serviceLocatorTest() throws ClassNotFoundException {
-		ServiceFactoryClassFinder locator = new ServiceFactoryClassFinder();
 
-		Assert.assertEquals(GitHubFactoryBean.class,
-				locator.forServiceType("github"));
-	}
 }

@@ -28,6 +28,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.ning.http.client.AsyncHttpClient;
 
 public abstract class Graphite extends AbstractMetricRecorder {
 
@@ -37,13 +38,15 @@ public abstract class Graphite extends AbstractMetricRecorder {
 	private String graphiteQueryBaseUrl;
 
 	private Client client;
-
+	protected AsyncHttpClient asyncClient;
+	
 	public Graphite() {
 
 	}
 
-	public Graphite(ClientConfig cc) {
+	public Graphite(ClientConfig cc, AsyncHttpClient client) {
 		this.jerseyClientConfig = cc;
+		this.asyncClient = client;
 	}
 
 	/**

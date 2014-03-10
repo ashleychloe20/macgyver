@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
@@ -24,17 +25,13 @@ public class HostedGraphite extends Graphite {
 	String url = "https://hostedgraphite.com/api/v1/sink";
 	String accessKey = "";
 	String prefix;
-	@Autowired
-	AsyncHttpClient client;
+	
+	
+	public HostedGraphite(AsyncHttpClient client) {
+		super(new ClientConfig(),client);
+	}
+	
 
-	
-	public HostedGraphite() {
-		// TODO Auto-generated constructor stub
-	}
-	
-	public HostedGraphite(ClientConfig cc) {
-		super(cc);
-	}
 	public String getApiKey() {
 		return accessKey;
 	}
@@ -48,7 +45,7 @@ public class HostedGraphite extends Graphite {
 
 	@Override
 	public void doRecord(String metric, long val) {
-
+		Preconditions.checkNotNull(asyncClient, "client must be initialized");
 		try {
 
 			String data = metric + " " + val;
@@ -75,7 +72,7 @@ public class HostedGraphite extends Graphite {
 				}
 			};
 
-			client.preparePost(url)
+			asyncClient.preparePost(url)
 					.addHeader(
 							"Authorization",
 							"Basic "

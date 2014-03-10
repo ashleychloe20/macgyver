@@ -2,14 +2,12 @@ package io.macgyver.web.rythm;
 
 import io.macgyver.core.Kernel;
 
-import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.rythmengine.Rythm;
 import org.rythmengine.RythmEngine;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 

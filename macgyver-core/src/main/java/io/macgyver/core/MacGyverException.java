@@ -2,6 +2,9 @@ package io.macgyver.core;
 
 public class MacGyverException extends RuntimeException {
 
+
+	private static final long serialVersionUID = -8657450988916494626L;
+
 	public MacGyverException() {
 		super();
 		

@@ -4,7 +4,6 @@ import io.macgyver.test.MacgyverIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 public class RythmViewResolverTest extends MacgyverIntegrationTest {

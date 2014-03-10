@@ -50,6 +50,7 @@ public class CLI {
 		this.commandLine = commandLine;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void run() {
 
 		List<String> x = commandLine.getArgList();

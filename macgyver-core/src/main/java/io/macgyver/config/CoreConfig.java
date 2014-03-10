@@ -8,9 +8,9 @@ import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
-import io.macgyver.core.factory.ServiceInstanceRegistry;
 import io.macgyver.core.jaxrs.GsonMessageBodyProvider;
 import io.macgyver.core.script.BindingSupplierManager;
+import io.macgyver.core.service.ServiceInstanceRegistry;
 
 import java.util.Properties;
 

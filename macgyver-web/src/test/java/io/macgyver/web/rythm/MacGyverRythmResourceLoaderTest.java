@@ -1,14 +1,12 @@
 package io.macgyver.web.rythm;
 
+import io.macgyver.test.MacgyverIntegrationTest;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.rythmengine.RythmEngine;
 import org.rythmengine.resource.ITemplateResource;
-import org.rythmengine.template.ITemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-
-import io.macgyver.test.MacgyverIntegrationTest;
 
 public class MacGyverRythmResourceLoaderTest extends MacgyverIntegrationTest {
 
