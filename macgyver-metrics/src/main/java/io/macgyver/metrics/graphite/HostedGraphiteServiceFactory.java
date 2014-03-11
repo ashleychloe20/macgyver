@@ -27,4 +27,11 @@ public class HostedGraphiteServiceFactory extends BasicServiceFactory<HostedGrap
 		hg.setQueryBaseUrl(props.getProperty("queryBaseUrl"));
 		return hg;
 	}
+
+	@Override
+	public void doConfigureDefinition(ServiceDefinition def) {
+		def.setLazyInit(false);
+	}
+	
+	
 }

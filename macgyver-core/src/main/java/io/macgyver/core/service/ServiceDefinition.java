@@ -11,6 +11,8 @@ public class ServiceDefinition {
 
 	Properties properties = new Properties();
 
+	boolean lazyInit = true;
+
 	@SuppressWarnings("rawtypes")
 	ServiceFactory serviceFactory;
 
@@ -52,5 +54,19 @@ public class ServiceDefinition {
 	public String toString() {
 		return Objects.toStringHelper(this).add("name", name)
 				.add("primaryName", primaryName).toString();
+	}
+
+	public void setLazyInit(boolean b) {
+		this.lazyInit = b;
+	}
+
+	public boolean isLazyInit() {
+		return lazyInit;
+	}
+	
+	public ServiceDefinition createCollaboratorDefintiion(String suffix) {
+		ServiceDefinition def = new ServiceDefinition(getName()+suffix, getName(), getProperties(), getServiceFactory());
+		def.setLazyInit(isLazyInit());
+		return def;
 	}
 }

@@ -22,4 +22,12 @@ public class StatsDServiceFactory extends BasicServiceFactory<StatsD> {
 		return s;
 
 	}
+
+	@Override
+	public void doConfigureDefinition(ServiceDefinition def) {
+		def.setLazyInit(false);
+	}
+	
+	
+	
 }

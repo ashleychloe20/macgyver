@@ -1,5 +1,6 @@
 package io.macgyver.core.service;
 
+import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
 import io.macgyver.core.ServiceNotFoundException;
@@ -21,6 +22,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.Subscribe;
 
 public class ServiceRegistry {
 
@@ -78,14 +80,15 @@ public class ServiceRegistry {
 	}
 
 	private void registerServiceDefintion(ServiceDefinition def) {
+		def.getServiceFactory().doConfigureDefinition(def);
 		logger.info("registering service definition: {}", def);
 		definitions.put(def.getName(), def);
 
 	}
 
-	@SuppressWarnings("unchecked")
-	@PostConstruct
-	public void scanConfig() {
+	@Subscribe
+	public void startAfterSpringContextInitialized(
+			Kernel.KernelStartedEvent event) throws Exception {
 
 		collectServiceFactories();
 
@@ -129,10 +132,17 @@ public class ServiceRegistry {
 		defList.addAll(definitions.values());
 		for (ServiceDefinition def : defList) {
 			try {
-				logger.info("starting service: {}",def);
-				get(def.getName());
+				if (!def.isLazyInit()) {
+					logger.info("starting service: {}", def);
+					get(def.getName());
+				} else {
+					logger.info(
+							"not auto-starting service because lazyInit is true: {}",
+							def);
+				}
 			} catch (Exception e) {
-				logger.warn("problem starting service: {}", def);
+				logger.warn("problem starting service: " + def, e);
+
 			}
 		}
 
@@ -156,6 +166,7 @@ public class ServiceRegistry {
 		}
 		logger.debug("properties for service '" + serviceName + "': {}",
 				scoped.keySet());
+		scoped.remove("serviceType");
 		return scoped;
 	}
 

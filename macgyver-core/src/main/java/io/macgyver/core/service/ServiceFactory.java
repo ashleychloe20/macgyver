@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 public abstract class ServiceFactory<T> implements ApplicationContextAware {
@@ -29,6 +30,7 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 	@Autowired
 	protected ServiceRegistry registry;
 
+	@Autowired
 	protected ApplicationContext applicationContext;
 
 	@Autowired
@@ -47,8 +49,11 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 
 	protected abstract T doCreateInstance(ServiceDefinition def);
 
+	public void doConfigureDefinition(ServiceDefinition def) {}
 	public synchronized Object get(String name) {
-
+		Preconditions.checkNotNull(registry);
+		Preconditions.checkNotNull(name);
+		Preconditions.checkNotNull(registry.instances);
 		Object instance = registry.instances.get(name);
 		if (instance != null) {
 			return instance;

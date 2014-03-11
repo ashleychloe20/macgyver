@@ -26,4 +26,10 @@ public class LeftronicServiceFactory extends BasicServiceFactory<Leftronic> {
 
 	}
 
+
+	@Override
+	public void doConfigureDefinition(ServiceDefinition def) {
+		def.setLazyInit(false);
+	}
+
 }

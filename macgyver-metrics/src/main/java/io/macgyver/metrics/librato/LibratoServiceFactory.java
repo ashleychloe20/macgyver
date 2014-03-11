@@ -24,4 +24,9 @@ public class LibratoServiceFactory extends BasicServiceFactory<Librato> {
 				def.getProperties().getProperty("prefix"));
 	}
 
+	@Override
+	public void doConfigureDefinition(ServiceDefinition def) {
+		def.setLazyInit(true);
+	}
+
 }
