@@ -38,7 +38,8 @@ public class CustomClasspathTemplateResource extends TemplateResourceBase
 			}
 
 		} catch (IOException e) {
-			log.warn("problem resolving template: "+e.toString());
+			// this isn't really a "problem"
+			log.debug("problem resolving template: "+e.toString());
 		}
 		
 		key = path;
