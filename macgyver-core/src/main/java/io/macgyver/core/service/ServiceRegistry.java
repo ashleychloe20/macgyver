@@ -135,11 +135,7 @@ public class ServiceRegistry {
 				if (!def.isLazyInit()) {
 					logger.info("starting service: {}", def);
 					get(def.getName());
-				} else {
-					logger.info(
-							"not auto-starting service because lazyInit is true: {}",
-							def);
-				}
+				} 
 			} catch (Exception e) {
 				logger.warn("problem starting service: " + def, e);
 
@@ -164,8 +160,7 @@ public class ServiceRegistry {
 				scoped.put(scopedKey, val);
 			}
 		}
-		logger.debug("properties for service '" + serviceName + "': {}",
-				scoped.keySet());
+	
 		scoped.remove("serviceType");
 		return scoped;
 	}

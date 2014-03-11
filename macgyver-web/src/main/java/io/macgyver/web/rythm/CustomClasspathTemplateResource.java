@@ -28,13 +28,17 @@ public class CustomClasspathTemplateResource extends TemplateResourceBase
 		path = MacGyverRythmResourceLoader.stripLeadingSlash(path);
 		path = MacGyverRythmResourceLoader.convertDotsToSlash(path);
 		try {
-			log.info("searching classpath for: {}",path);
+			if (log.isDebugEnabled()) {
+				log.debug("searching classpath for: {}",path);
+			}
 			ClassPathResource ur = new ClassPathResource(path,loader.getEngine().classLoader());
 			url = ur.getURL();
-			log.info("resolved {} to {}", path, url);
+			if (log.isDebugEnabled()) {
+				log.debug("resolved {} to {}", path, url);
+			}
 
 		} catch (IOException e) {
-			log.info(""+e);
+			log.warn("problem resolving template: "+e.toString());
 		}
 		
 		key = path;

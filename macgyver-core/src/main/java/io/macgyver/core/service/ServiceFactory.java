@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
@@ -37,12 +38,14 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 	MacGyverPropertySourcesPlaceholderConfigurer cfg;
 
 	protected ServiceFactory(String type) {
-		this.serviceType = type;
+		Preconditions.checkNotNull(type);
+		this.serviceType = type.toLowerCase();
 	}
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
+		Preconditions.checkNotNull(applicationContext);
 		this.applicationContext = applicationContext;
 
 	}
@@ -91,6 +94,10 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 	protected final void createCollaboratorInstances(
 			ServiceRegistry registry,
 			ServiceDefinition primaryDefinition, T primaryBean) {
+		Preconditions.checkNotNull(registry);
+		Preconditions.checkNotNull(primaryDefinition);
+		Preconditions.checkNotNull(primaryBean);
+		
 		doCreateCollaboratorInstances(registry, primaryDefinition, primaryBean);
 	}
 
@@ -100,6 +107,9 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 
 	protected final void createServiceDefintions(Set<ServiceDefinition> defSet,
 			String name, Properties props) {
+		Preconditions.checkNotNull(defSet);
+		Preconditions.checkNotNull(name);
+		Preconditions.checkNotNull(props);
 		ServiceDefinition def = new ServiceDefinition(name, name, props, this);
 		defSet.add(def);
 		doCreateCollaboratorDefinitions(defSet, def);
@@ -133,4 +143,7 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 		}
 	}
 
+	public String toString() {
+		return Objects.toStringHelper(this).add("serviceType", getServiceType()).toString();
+	}
 }
