@@ -27,8 +27,8 @@ public class HostedGraphite extends Graphite {
 	String prefix;
 	
 	
-	public HostedGraphite(AsyncHttpClient client) {
-		super(new ClientConfig(),client);
+	public HostedGraphite(ClientConfig cc, AsyncHttpClient client) {
+		super(cc,client);
 	}
 	
 

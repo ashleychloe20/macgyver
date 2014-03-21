@@ -3,6 +3,6 @@
 
 println "STARTUP"
 
-println services['testds']
+//println services['testds']
 
 //throw new RuntimeException("blarg")

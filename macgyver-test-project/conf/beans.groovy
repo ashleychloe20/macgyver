@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Value
 @Configuration
 class MyConfig {
 
-    @Value('${dataSource.testds.jdbcUrl}')
+    @Value('${testds.jdbcUrl}')
     def testDsUrl
     
     @Bean
-    def testds() {
+    def registeredBean() {
        
         
         def cp = new BoneCPDataSource();
