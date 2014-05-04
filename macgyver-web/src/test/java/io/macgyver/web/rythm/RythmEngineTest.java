@@ -19,6 +19,7 @@ public class RythmEngineTest extends MacgyverIntegrationTest {
 
 		ITemplate t = engine.getTemplate("templateFromFile.rythm");
 		Assert.assertNotNull(t);
+		Assert.assertFalse(t.render().contains("templateFromFile.rythm"));
 		Assert.assertTrue(t.render().contains("template from file"));
 	}
 
