@@ -3,15 +3,11 @@ package io.macgyver.metrics.graphite;
 import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.test.MacgyverIntegrationTest;
 
-import org.glassfish.jersey.client.ClientConfig;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class HostedGraphiteTest extends MacgyverIntegrationTest {
-
-	@Autowired
-	ClientConfig clientConfig;
 
 	@Autowired
 	ServiceRegistry registry;

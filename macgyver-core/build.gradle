@@ -17,7 +17,7 @@ mainClassName = 'io.macgyver.core.CLI'
 
 dependencies {
 
-    compile ('org.glassfish.jersey.core:jersey-client:2.5')
+   
     compile "org.slf4j:jcl-over-slf4j:${SLF4J_VERSION}"
     compile 'org.glassfish.jersey.media:jersey-media-json-processing:2.5'
     compile 'com.google.guava:guava:15.0'
@@ -26,7 +26,7 @@ dependencies {
     compile 'joda-time:joda-time:2.3'
     compile 'commons-cli:commons-cli:1.2'
     compile 'org.codehaus.groovy:groovy-all:2.1.9'
-
+    compile 'org.jboss.resteasy:resteasy-jaxrs-all:3.0.8.Final'
     compile 'commons-cli:commons-cli:1.2'
     compile 'com.ning:async-http-client:1.7.23'
 	compile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"

@@ -4,16 +4,11 @@ import io.macgyver.core.MacGyverException;
 
 import java.io.IOException;
 
-import org.glassfish.jersey.client.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.io.BaseEncoding;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
@@ -25,12 +20,10 @@ public class HostedGraphite extends Graphite {
 	String url = "https://hostedgraphite.com/api/v1/sink";
 	String accessKey = "";
 	String prefix;
-	
-	
-	public HostedGraphite(ClientConfig cc, AsyncHttpClient client) {
-		super(cc,client);
+
+	public HostedGraphite(AsyncHttpClient client) {
+		super(client);
 	}
-	
 
 	public String getApiKey() {
 		return accessKey;
@@ -39,9 +32,6 @@ public class HostedGraphite extends Graphite {
 	public void setApiKey(String accessKey) {
 		this.accessKey = accessKey == null ? "" : accessKey;
 	}
-
-
-
 
 	@Override
 	public void doRecord(String metric, long val) {
@@ -63,7 +53,6 @@ public class HostedGraphite extends Graphite {
 				public String onCompleted(Response response) throws Exception {
 					int rc = response.getStatusCode();
 
-	
 					if (rc > 299) {
 						logger.warn("graphite response: rc={} body={}", rc,
 								response.getResponseBody());
@@ -72,7 +61,8 @@ public class HostedGraphite extends Graphite {
 				}
 			};
 
-			asyncClient.preparePost(url)
+			asyncClient
+					.preparePost(url)
 					.addHeader(
 							"Authorization",
 							"Basic "

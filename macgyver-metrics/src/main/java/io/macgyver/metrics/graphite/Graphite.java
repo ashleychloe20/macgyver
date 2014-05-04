@@ -14,7 +14,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-import org.glassfish.jersey.client.ClientConfig;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,23 +32,19 @@ import com.ning.http.client.AsyncHttpClient;
 
 public abstract class Graphite extends AbstractMetricRecorder {
 
-
-	ClientConfig jerseyClientConfig;
-
 	private String graphiteQueryBaseUrl;
 
 	private Client client;
 	protected AsyncHttpClient asyncClient;
-	
+
 	public Graphite() {
 
 	}
 
-	public Graphite(ClientConfig cc, AsyncHttpClient client) {
-		Preconditions.checkNotNull(cc);
+	public Graphite(AsyncHttpClient client) {
+
 		Preconditions.checkNotNull(client);
-		
-		this.jerseyClientConfig = cc;
+
 		this.asyncClient = client;
 	}
 
@@ -65,17 +61,6 @@ public abstract class Graphite extends AbstractMetricRecorder {
 		this.graphiteQueryBaseUrl = url;
 	}
 
-	public Client getQueryClient() {
-		Preconditions.checkNotNull(jerseyClientConfig);
-		// if not synchronized, we could get double-init race condition, but
-		// that isn't
-		// a huge problem, so leave unsynchronized for now.
-		if (client == null) {
-			client = ClientBuilder.newClient(jerseyClientConfig);
-		}
-		return client;
-
-	}
 
 
 	public Iterable<TSV> queryTimeSeries(String target, String from) {
@@ -123,18 +108,23 @@ public abstract class Graphite extends AbstractMetricRecorder {
 		}
 		return vals;
 	}
+
 	public Optional<TSV> queryMostRecentValue(String target) {
-		return queryMostRecentValue(target,null,null);
+		return queryMostRecentValue(target, null, null);
 	}
-	public Optional<TSV> queryMostRecentValue(String target, String from, String until) {
+
+	public Optional<TSV> queryMostRecentValue(String target, String from,
+			String until) {
 		Iterable<TSV> t = queryTimeSeries(target, from, until);
 		return Optional.fromNullable(Iterables.getLast(t));
 	}
+
 	protected JsonArray queryJsonArray(Map<String, String> m) {
 		Preconditions.checkNotNull(m);
 		m.put("format", "json");
-		WebTarget target = getQueryClient().target(getQueryBaseUrl())
-				.path("render");
+
+		WebTarget target = ClientBuilder.newClient().target(getQueryBaseUrl()).path(
+				"render");
 		for (Map.Entry<String, String> entry : m.entrySet()) {
 			target = target.queryParam(entry.getKey(), entry.getValue());
 		}

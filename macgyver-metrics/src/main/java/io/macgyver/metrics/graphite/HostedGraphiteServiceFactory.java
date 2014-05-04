@@ -5,10 +5,6 @@ import io.macgyver.core.service.ServiceDefinition;
 
 import java.util.Properties;
 
-import javax.inject.Qualifier;
-
-import org.glassfish.jersey.client.ClientConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.ning.http.client.AsyncHttpClient;
@@ -16,10 +12,7 @@ import com.ning.http.client.AsyncHttpClient;
 @Component
 public class HostedGraphiteServiceFactory extends BasicServiceFactory<HostedGraphite> {
 
-	@Autowired
-	@org.springframework.beans.factory.annotation.Qualifier("macgyverJerseyClientConfig")
-	ClientConfig clientConfig;
-	
+
 	public HostedGraphiteServiceFactory() {
 		super("hostedgraphite");
 	}
@@ -29,7 +22,7 @@ public class HostedGraphiteServiceFactory extends BasicServiceFactory<HostedGrap
 		
 		Properties props = def.getProperties();
 		
-		HostedGraphite hg = new HostedGraphite(clientConfig,new AsyncHttpClient());
+		HostedGraphite hg = new HostedGraphite(new AsyncHttpClient());
 		hg.setPrefix(props.getProperty("prefix"));
 		hg.setApiKey(props.getProperty("apiKey"));
 		hg.setQueryBaseUrl(props.getProperty("queryBaseUrl"));

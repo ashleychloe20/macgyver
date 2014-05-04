@@ -14,7 +14,6 @@ import io.macgyver.core.service.ServiceRegistry;
 
 import java.util.Properties;
 
-import org.glassfish.jersey.client.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,14 +101,14 @@ public class CoreConfig {
 		return new AutowiredAnnotationBeanPostProcessor();
 
 	}
-
+	/*
 	@Bean(name = "macgyverJerseyClientConfig")
 	public ClientConfig jerseyClientConfig() {
 		ClientConfig cc = new ClientConfig();
 		cc.register(GsonMessageBodyProvider.class);
 		return cc;
 	}
-	
+	*/
 	@Bean
 	public ServiceRegistry serviceInstanceRegistry() {
 		return new ServiceRegistry();
