@@ -12,7 +12,7 @@ configurations {
     all*.exclude group: 'commons-logging'
 }*/
 
-mainClassName = 'io.macgyver.core.CLI'
+mainClassName = 'io.macgyver.core.ServerMain'
 
 
 dependencies {
@@ -30,6 +30,14 @@ dependencies {
     compile 'commons-cli:commons-cli:1.2'
     compile 'com.ning:async-http-client:1.7.23'
 	compile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
+    compile("org.springframework.boot:spring-boot-starter-web:${SPRING_BOOT_VERSION}")
+   // compile("org.springframework.boot:spring-boot-starter-thymeleaf:${SPRING_BOOT_VERSION}")
+  //  compile("org.springframework.boot:spring-boot-starter-security:${SPRING_BOOT_VERSION}")
+     compile 'org.rythmengine:rythm-engine:1.0'
+         compile "org.apache.shiro:shiro-spring:${SHIRO_VERSION}"
+     compile 'org.webjars:bootstrap:3.1.1-1'
+     compile "org.webjars:jquery:2.1.1"
+    testCompile("org.springframework.boot:spring-boot-starter-test:${SPRING_BOOT_VERSION}")
 	testCompile "org.springframework:spring-test:${SPRING_VERSION}"
 	testCompile group: "junit", name: "junit", version: "${JUNIT_VERSION}"
 

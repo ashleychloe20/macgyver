@@ -15,8 +15,13 @@ public class KernelTest extends CoreIntegrationTestCase {
 	@Value("${SOME_TEST_PROPERTY}")
 	String xxx;
 	
+	@Autowired
+	Kernel wiredKernel;
+	
 	@Test
 	public void testKernel() {
+		
+		Assert.assertNotNull(wiredKernel);
 		Kernel lm = Kernel.getInstance();
 		Assert.assertNotNull(lm);
 		

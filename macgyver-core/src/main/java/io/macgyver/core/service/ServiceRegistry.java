@@ -58,7 +58,7 @@ public class ServiceRegistry {
 		if (instance != null) {
 			return instance;
 		}
-
+		logger.info("defs: {}", definitions);
 		ServiceDefinition def = definitions.get(name);
 
 		if (def == null) {
@@ -93,6 +93,7 @@ public class ServiceRegistry {
 		collectServiceFactories();
 
 		Properties properties = cfg.getEffectiveProperties();
+
 		for (Object keyObj : properties.keySet()) {
 			String key = keyObj.toString();
 			if (isServiceTypeKey(key)) {
@@ -103,23 +104,24 @@ public class ServiceRegistry {
 						.toLowerCase());
 
 				if (factory == null) {
-					throw new MacGyverException(
+					logger.warn(
 							"No ServiceFactory registered for service type: "
 									+ serviceType.toLowerCase());
-				}
+				} else {
 
-				String serviceName = key.substring(0, key.length()
-						- ".serviceType".length());
+					String serviceName = key.substring(0, key.length()
+							- ".serviceType".length());
 
-				Properties scopedProperties = extractScopedPropertiesForService(
-						properties, serviceName);
+					Properties scopedProperties = extractScopedPropertiesForService(
+							properties, serviceName);
 
-				Set<ServiceDefinition> set = Sets.newHashSet();
-				factory.createServiceDefintions(set, serviceName,
-						scopedProperties);
+					Set<ServiceDefinition> set = Sets.newHashSet();
+					factory.createServiceDefintions(set, serviceName,
+							scopedProperties);
 
-				for (ServiceDefinition def : set) {
-					registerServiceDefintion(def);
+					for (ServiceDefinition def : set) {
+						registerServiceDefintion(def);
+					}
 				}
 			}
 		}
@@ -135,7 +137,7 @@ public class ServiceRegistry {
 				if (!def.isLazyInit()) {
 					logger.info("starting service: {}", def);
 					get(def.getName());
-				} 
+				}
 			} catch (Exception e) {
 				logger.warn("problem starting service: " + def, e);
 
@@ -160,7 +162,7 @@ public class ServiceRegistry {
 				scoped.put(scopedKey, val);
 			}
 		}
-	
+
 		scoped.remove("serviceType");
 		return scoped;
 	}

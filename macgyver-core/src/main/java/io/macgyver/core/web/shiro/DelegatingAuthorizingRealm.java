@@ -1,4 +1,4 @@
-package io.macgyver.web.shiro;
+package io.macgyver.core.web.shiro;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -95,7 +95,7 @@ public class DelegatingAuthorizingRealm extends AuthorizingRealm {
 		Object principal = token.getPrincipal();
 
 		for (AuthorizingRealm realm : findRealms()) {
-			logger.debug("authenticating using realm: {}", realm);
+			logger.info("authenticating using realm: {}", realm);
 			AuthenticationInfo info = realm.getAuthenticationInfo(token);
 			if (info != null) {
 				return info;

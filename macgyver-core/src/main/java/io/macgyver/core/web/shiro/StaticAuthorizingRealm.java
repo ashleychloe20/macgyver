@@ -1,4 +1,4 @@
-package io.macgyver.web.shiro;
+package io.macgyver.core.web.shiro;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -26,7 +26,7 @@ public class StaticAuthorizingRealm extends AuthorizingRealm {
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(
 			PrincipalCollection principals) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
@@ -43,7 +43,7 @@ public class StaticAuthorizingRealm extends AuthorizingRealm {
 			
 			String username = usernamePasswordToken.getUsername();
 			char[] password = usernamePasswordToken.getPassword();
-			
+
 			if (username!=null && username.equals(adminUsername)) {
 				
 				if (password!=null && adminPassword.equals(new String(password))) {

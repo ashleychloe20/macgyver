@@ -8,7 +8,6 @@ import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
-import io.macgyver.core.jaxrs.GsonMessageBodyProvider;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
 
@@ -66,7 +65,7 @@ public class CoreConfig {
 	public Kernel createKernel() {
 
 		logger.info("macgyver.ext.location: {}", extLocation);
-		return Kernel.getInstance();
+		return new Kernel(new java.io.File(extLocation));
 	}
 
 	@Bean
@@ -101,17 +100,11 @@ public class CoreConfig {
 		return new AutowiredAnnotationBeanPostProcessor();
 
 	}
-	/*
-	@Bean(name = "macgyverJerseyClientConfig")
-	public ClientConfig jerseyClientConfig() {
-		ClientConfig cc = new ClientConfig();
-		cc.register(GsonMessageBodyProvider.class);
-		return cc;
-	}
-	*/
+
 	@Bean
 	public ServiceRegistry serviceInstanceRegistry() {
 		return new ServiceRegistry();
 	}
 
+	
 }

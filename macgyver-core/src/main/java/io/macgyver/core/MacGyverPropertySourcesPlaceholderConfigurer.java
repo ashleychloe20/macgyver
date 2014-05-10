@@ -111,7 +111,7 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 				"conf/config.groovy");
 		Optional<File> of = findConfigFileViaSystemProperty(MACGYVER_GROOVY_CONFIG_SYSTEM_PROPERTY);
 		groovyConfig = of.isPresent() ? of.get() : groovyConfig;
-
+		logger.info("groovy config: {}",groovyConfig.getAbsolutePath());
 		return groovyConfig;
 	}
 
@@ -122,6 +122,7 @@ public class MacGyverPropertySourcesPlaceholderConfigurer extends
 		if (of.isPresent()) {
 			propertiesFile = of.get();
 		}
+		logger.info("config properties: {}",propertiesFile.getAbsolutePath());
 		return propertiesFile;
 	}
 

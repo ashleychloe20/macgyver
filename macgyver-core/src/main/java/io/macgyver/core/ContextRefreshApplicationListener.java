@@ -24,6 +24,9 @@ public class ContextRefreshApplicationListener implements
 		eventBus.post(event);
 
 		log.info("event post complete");
+		
+		
+		eventBus.post(new Kernel.KernelStartedEvent());
 	}
 
 }

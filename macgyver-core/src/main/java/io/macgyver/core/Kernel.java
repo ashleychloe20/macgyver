@@ -30,7 +30,7 @@ public class Kernel implements ApplicationContextAware {
 	private File extensionDir;
 	private static Throwable startupError = null;
 
-	private Kernel(File extensionDir) {
+	public Kernel(File extensionDir) {
 
 		this.extensionDir = extensionDir.getAbsoluteFile();
 		if (this.extensionDir.exists()) {
@@ -59,7 +59,7 @@ public class Kernel implements ApplicationContextAware {
 	}
 
 	@SuppressWarnings({ "resource", "rawtypes" })
-	public synchronized static void initialize() {
+	public synchronized static void initialize_DEPRECATED() {
 		if (kernelRef.get() == null) {
 
 			Kernel k = new Kernel(Kernel.determineExtensionDir());
@@ -106,7 +106,7 @@ public class Kernel implements ApplicationContextAware {
 
 			MacGyverEventBus bus = ctx.getBean(MacGyverEventBus.class);
 			kernelRef.set(k);
-			bus.post(new KernelStartedEvent());
+			
 		} else {
 			throw new IllegalStateException(
 					"spring context already initialized");
@@ -120,8 +120,7 @@ public class Kernel implements ApplicationContextAware {
 	public synchronized static Kernel getInstance() {
 		Kernel k = kernelRef.get();
 		if (k == null) {
-			Kernel.initialize();
-			k = kernelRef.get();
+			throw new IllegalStateException("Kernel not yet initialized");
 
 		}
 		return k;
@@ -152,6 +151,7 @@ public class Kernel implements ApplicationContextAware {
 					+ this.applicationContext+" ;new: "+applicationContext);
 		}
 		this.applicationContext = applicationContext;
+		kernelRef.set(this);
 
 	}
 

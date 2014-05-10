@@ -1,4 +1,5 @@
-package io.macgyver.web.rythm;
+package io.macgyver.core.web.rythm;
+
 
 import javax.servlet.ServletContext;
 

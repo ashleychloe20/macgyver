@@ -1,4 +1,5 @@
-package io.macgyver.web.rythm;
+package io.macgyver.core.web.rythm;
+
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,7 +23,7 @@ public class CustomClasspathTemplateResource extends TemplateResourceBase
 	Logger log = LoggerFactory.getLogger(CustomClasspathTemplateResource.class);
 
 	public CustomClasspathTemplateResource(String path,
-			ITemplateResourceLoader loader) {
+			ITemplateResourceLoader loader, String key) {
 		super(loader);
 
 		path = MacGyverRythmResourceLoader.stripLeadingSlash(path);
@@ -42,11 +43,12 @@ public class CustomClasspathTemplateResource extends TemplateResourceBase
 			log.debug("problem resolving template: "+e.toString());
 		}
 		
-		key = path;
+		this.key=key;
 	}
 
 	@Override
 	public String getKey() {
+		
 		return key;
 	}
 

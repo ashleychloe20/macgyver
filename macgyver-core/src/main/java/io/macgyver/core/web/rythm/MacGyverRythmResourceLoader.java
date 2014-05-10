@@ -1,4 +1,4 @@
-package io.macgyver.web.rythm;
+package io.macgyver.core.web.rythm;
 
 import io.macgyver.core.Kernel;
 
@@ -29,15 +29,18 @@ public class MacGyverRythmResourceLoader extends ResourceLoaderBase {
 	}
 
 	@Override
-	public ITemplateResource load(String path) {
-
+	public ITemplateResource load(String templateName) {
+		templateName = MacGyverRythmResourceLoader.stripLeadingSlash(templateName);
+	
+		logger.debug("resolving template resource for: "+templateName);
+		
 		File templateDir = new File(Kernel.getInstance().getExtensionDir(),
 				"web");
 
 		
 
-		final File finalTemplate = new File(convertDotsToSlash(new File(templateDir,path).getAbsolutePath()));
-		logger.debug("looking for: {}", finalTemplate);
+		final File finalTemplate = new File(convertDotsToSlash(new File(templateDir,templateName).getAbsolutePath()));
+		logger.info("looking for template file: {}", finalTemplate);
 		if (finalTemplate.exists()) {
 			return new TemplateResourceBase() {
 
@@ -75,14 +78,17 @@ public class MacGyverRythmResourceLoader extends ResourceLoaderBase {
 
 		}
 		
-		path = stripLeadingSlash((path));
-		logger.debug("searching classpath for: {}" , path);
+
+		String classpathResource = "web/"+stripLeadingSlash(templateName);
+		
+		logger.info("searching classpath for: {}" , classpathResource);
 		CustomClasspathTemplateResource ctr = new CustomClasspathTemplateResource(
-				"web/" + stripLeadingSlash(path), this);
+				classpathResource, this,stripLeadingSlash(templateName));
 		if (ctr.exists()) {
+			logger.info("not found");
 			return ctr;
 		} else {
-			logger.debug("did not locate template for: {}",path);
+			logger.info("did not locate template for: {}",templateName);
 		}
 
 		return null;

@@ -1,6 +1,13 @@
 package io.macgyver.core;
 
+import io.macgyver.config.CoreConfig;
+
 import java.util.List;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import com.google.common.collect.Lists;
 
@@ -9,11 +16,13 @@ import com.google.common.collect.Lists;
  * @author rschoening
  *
  */
+
+@Configuration
+@ComponentScan(basePackageClasses={CoreConfig.class})
+@EnableAutoConfiguration
 public class ServerMain {
 
 	public static void main(String [] args) throws Exception {
-		List<String> argList = Lists.newArrayList(args);
-		argList.add(0, "serve");
-		CLI.main(argList.toArray(new String[0]));
+		 SpringApplication.run(ServerMain.class, args);
 	}
 }

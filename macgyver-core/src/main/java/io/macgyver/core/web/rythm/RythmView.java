@@ -1,4 +1,4 @@
-package io.macgyver.web.rythm;
+package io.macgyver.core.web.rythm;
 
 import io.macgyver.core.Kernel;
 
@@ -9,11 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.rythmengine.RythmEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 
 public class RythmView extends AbstractTemplateView {
 
-
+	Logger log = LoggerFactory.getLogger(RythmView.class);
 
     @Override
     public boolean checkResource(Locale locale) throws Exception {
@@ -29,6 +31,7 @@ public class RythmView extends AbstractTemplateView {
                                              HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         final String templatePath = this.getTemplatePath();
+        log.info("rendering: {}",templatePath);
         response.getWriter().append(getRythmEngine().render(templatePath, model));
     }
 

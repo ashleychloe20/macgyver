@@ -29,7 +29,7 @@ public class Startup implements InitializingBean {
 
 	@Subscribe
 	public void onStart(ContextRefreshedEvent event) {
-		if (Kernel.getInstance().getApplicationContext()!=event.getSource()) {
+		if (kernel.getApplicationContext()!=event.getSource()) {
 			return;
 		}
 		logger.info("STARTED: {}", event);
