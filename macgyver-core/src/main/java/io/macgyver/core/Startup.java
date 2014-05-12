@@ -104,7 +104,7 @@ public class Startup implements InitializingBean {
 					int N = 16384;
 			        int r = 8;
 			        int p = 1;
-					String hashed = SCryptUtil.scrypt("admin", N, r, p);
+					String hashed = SCryptUtil.scrypt("admin", N,r,p);
 					adminEntry.put("scryptHash", hashed);
 				
 					m.put("admin", adminEntry);
