@@ -19,17 +19,17 @@ dependencies {
 
    
     compile "org.slf4j:jcl-over-slf4j:${SLF4J_VERSION}"
-    compile 'org.glassfish.jersey.media:jersey-media-json-processing:2.5'
-    compile 'com.google.guava:guava:15.0'
+    
+    compile "com.google.guava:guava:${GUAVA_VERSION}"
     compile 'com.google.code.gson:gson:2.2.4'
     compile "org.springframework:spring-context-support:${SPRING_VERSION}"
     compile 'joda-time:joda-time:2.3'
     compile 'com.lambdaworks:scrypt:1.4.0'
     compile 'org.mapdb:mapdb:1.0.1'
-    
+    compile "org.glassfish:javax.json:1.0.4"
     compile 'org.codehaus.groovy:groovy-all:2.1.9'
     compile 'org.jboss.resteasy:resteasy-jaxrs-all:3.0.8.Final'
-    compile 'commons-cli:commons-cli:1.2'
+    compile 'javax.inject:javax.inject:1'
     compile 'com.ning:async-http-client:1.7.23'
 	compile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
     compile("org.springframework.boot:spring-boot-starter-web:${SPRING_BOOT_VERSION}")
