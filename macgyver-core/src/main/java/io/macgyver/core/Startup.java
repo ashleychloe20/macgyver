@@ -22,6 +22,7 @@ import com.google.common.collect.TreeTraverser;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Files;
+import com.lambdaworks.crypto.SCryptUtil;
 
 public class Startup implements InitializingBean {
 
@@ -100,7 +101,16 @@ public class Startup implements InitializingBean {
 					System.out.println("Addming admin");
 					Map<String,String> adminEntry = Maps.newHashMap();
 					adminEntry.put("username", "admin");
+					int N = 16384;
+			        int r = 8;
+			        int p = 1;
+					String hashed = SCryptUtil.scrypt("admin", N, r, p);
+					adminEntry.put("scryptHash", hashed);
+				
 					m.put("admin", adminEntry);
+				}
+				else {
+					System.out.println(m.get("admin"));
 				}
 				
 			}

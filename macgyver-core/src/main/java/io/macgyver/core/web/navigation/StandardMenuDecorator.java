@@ -23,7 +23,9 @@ public class StandardMenuDecorator implements MenuDecorator {
 		beans.setUriPath("/admin/beans");
 
 		
-		
+		MenuItem script = admin.getChildById("script-eval", true);
+		script.setDisplayName("Eval Script");
+		script.setUriPath("/admin/script");
 		
 		
 	
