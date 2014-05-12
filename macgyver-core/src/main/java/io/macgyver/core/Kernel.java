@@ -174,9 +174,10 @@ public class Kernel implements ApplicationContextAware {
 			}
 		}
 		if (profile == null) {
-			logger.info("no profile selected");
 			profile = Optional.absent();
 		}
+		
+		logger.info("macgyver profile: {}",profile.or("none"));
 		return profile;
 
 	}

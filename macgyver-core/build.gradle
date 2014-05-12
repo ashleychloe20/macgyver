@@ -24,7 +24,9 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     compile "org.springframework:spring-context-support:${SPRING_VERSION}"
     compile 'joda-time:joda-time:2.3'
-    compile 'commons-cli:commons-cli:1.2'
+
+    compile 'org.mapdb:mapdb:1.0.1'
+    
     compile 'org.codehaus.groovy:groovy-all:2.1.9'
     compile 'org.jboss.resteasy:resteasy-jaxrs-all:3.0.8.Final'
     compile 'commons-cli:commons-cli:1.2'

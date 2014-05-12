@@ -1,17 +1,18 @@
 package io.macgyver.core.service;
 
+import groovy.util.ConfigObject;
+import groovy.util.ConfigSlurper;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
-import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
 import io.macgyver.core.ServiceNotFoundException;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
-import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +38,6 @@ public class ServiceRegistry {
 
 	@Autowired
 	ApplicationContext applicationContext;
-
-	@Autowired
-	MacGyverPropertySourcesPlaceholderConfigurer cfg;
 
 	@Autowired
 	MacGyverEventBus syncBus;
@@ -92,7 +90,7 @@ public class ServiceRegistry {
 
 		collectServiceFactories();
 
-		Properties properties = cfg.getEffectiveProperties();
+		Properties properties = reloadProperties();
 
 		for (Object keyObj : properties.keySet()) {
 			String key = keyObj.toString();
@@ -104,9 +102,8 @@ public class ServiceRegistry {
 						.toLowerCase());
 
 				if (factory == null) {
-					logger.warn(
-							"No ServiceFactory registered for service type: "
-									+ serviceType.toLowerCase());
+					logger.warn("No ServiceFactory registered for service type: "
+							+ serviceType.toLowerCase());
 				} else {
 
 					String serviceName = key.substring(0, key.length()
@@ -197,5 +194,24 @@ public class ServiceRegistry {
 
 	public void publish(ServiceCreatedEvent event) {
 		syncBus.post(event);
+	}
+
+	protected Properties reloadProperties() throws MalformedURLException {
+		Properties p = new Properties();
+
+		File extDir = Kernel.determineExtensionDir();
+		File confDir = new File(extDir, "config");
+
+		File configGroovy = new File(confDir, "services.groovy");
+
+		ConfigSlurper slurper = new ConfigSlurper();
+		if (Kernel.getExecutionProfile().isPresent()) {
+			slurper.setEnvironment(Kernel.getExecutionProfile().get());
+		}
+		ConfigObject obj = slurper.parse(configGroovy.toURI().toURL());
+		
+		p = obj.toProperties();
+		System.out.println("PROPS: "+p);
+		return p;
 	}
 }

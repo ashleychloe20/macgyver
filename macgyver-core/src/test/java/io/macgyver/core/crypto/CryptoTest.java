@@ -55,6 +55,7 @@ public class CryptoTest extends CoreIntegrationTestCase {
 	@Test
 	public void testEncrypt() throws GeneralSecurityException,
 			UnsupportedEncodingException {
+		Assert.assertNotNull(crypto);
 		String encodedEnvelope = crypto.encryptString("test", "mac0");
 		String envelope = new String(BaseEncoding.base64().decode(
 				encodedEnvelope), "UTF-8");

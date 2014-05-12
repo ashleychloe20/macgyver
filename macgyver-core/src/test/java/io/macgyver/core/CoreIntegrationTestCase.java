@@ -2,6 +2,7 @@ package io.macgyver.core;
 
 import io.macgyver.core.testconfig.CoreIntegrationTestConfig;
 
+import org.apache.tomcat.jni.File;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public abstract class CoreIntegrationTestCase extends AbstractJUnit4SpringContex
 
 	@BeforeClass 
 	public static void setup() {
+		System.setProperty("macgyver.ext.location", new java.io.File("./src/test/resources/ext").getAbsolutePath());
 		//Kernel.initialize();
 	}
 }
