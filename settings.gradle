@@ -19,5 +19,4 @@ include   'macgyver-core',
             'macgyver-chat',
             'macgyver-newrelic',
             'macgyver-test-project',
-            'macgyver-scheduler',
             'macgyver-test'
