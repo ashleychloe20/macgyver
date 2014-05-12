@@ -17,9 +17,7 @@ import org.mapdb.TxBlock;
 import org.mapdb.TxMaker;
 import org.mapdb.TxRollbackException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.lambdaworks.crypto.SCryptUtil;
 
@@ -58,7 +56,7 @@ public class InternalAuthorizingRealm extends AuthorizingRealm {
 				@Override
 				public void tx(DB db) throws TxRollbackException {
 					Map<String, Map<String, String>> m = db
-							.getTreeMap(SHADOW_MAP_NAME);
+							.get(SHADOW_MAP_NAME);
 					Map<String, String> shadowData = m.get(username);
 					String hashVal = shadowData.get(SCRYPT_FIELD_NAME);
 

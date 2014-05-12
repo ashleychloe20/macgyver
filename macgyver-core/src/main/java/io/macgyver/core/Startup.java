@@ -5,12 +5,8 @@ import io.macgyver.core.web.shiro.InternalAuthorizingRealm;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.Map;
 
-import org.mapdb.DB;
-import org.mapdb.TxBlock;
 import org.mapdb.TxMaker;
-import org.mapdb.TxRollbackException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,12 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Maps;
 import com.google.common.collect.TreeTraverser;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.io.Files;
-import com.lambdaworks.crypto.SCryptUtil;
 
 public class Startup implements InitializingBean {
 
