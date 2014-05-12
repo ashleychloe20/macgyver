@@ -95,6 +95,7 @@ public class AutoScheduler implements InitializingBean {
 		@Override
 		public void execute(JobExecutionContext context)
 				throws JobExecutionException {
+	
 			try {
 				Kernel.getInstance().getApplicationContext()
 						.getBean(AutoScheduler.class).scan();
@@ -125,12 +126,13 @@ public class AutoScheduler implements InitializingBean {
 			@Override
 			public FileVisitResult visitFile(Path file,
 					BasicFileAttributes attrs) throws IOException {
+				logger.debug("scanning: {}",file);
 				// TODO Auto-generated method stub
 				Optional<JsonObject> schedule = extractCronExpression(file
 						.toFile());
 				if (schedule.isPresent() && se.isSupportedScript(file.toFile())) {
 					JsonObject descriptor = schedule.get();
-
+				
 					if (descriptor.containsKey("cron")) {
 						String cronExpression = schedule.get()
 								.getString("cron");
@@ -158,12 +160,13 @@ public class AutoScheduler implements InitializingBean {
 			}
 		};
 
-		Files.walkFileTree(new File(Kernel.getInstance().getExtensionDir(),
-				"scripts/scheduler").toPath(), fv);
+		File scriptsDir = Kernel.getExtensionDir("scripts/scheduler");
+		logger.debug("scanning: {}",scriptsDir);
+		
+		Files.walkFileTree(scriptsDir.toPath(), fv);
 
 		for (ScheduledScript ss : list) {
 			try {
-
 				scheduleScript(ss, validJobKeySet);
 			} catch (Exception e) {
 				logger.error("problem scheduling {} - {}", ss, e.toString());

@@ -23,6 +23,7 @@ dependencies {
     compile "com.google.guava:guava:${GUAVA_VERSION}"
     compile 'com.google.code.gson:gson:2.2.4'
     compile "org.springframework:spring-context-support:${SPRING_VERSION}"
+    compile "org.springframework:spring-tx:${SPRING_VERSION}"
     compile 'joda-time:joda-time:2.3'
     compile 'com.lambdaworks:scrypt:1.4.0'
     compile 'org.mapdb:mapdb:1.0.1'
@@ -32,11 +33,11 @@ dependencies {
     compile 'javax.inject:javax.inject:1'
     compile 'com.ning:async-http-client:1.7.23'
 	compile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
+	compile 'org.quartz-scheduler:quartz:2.2.1'
     compile("org.springframework.boot:spring-boot-starter-web:${SPRING_BOOT_VERSION}")
-   // compile("org.springframework.boot:spring-boot-starter-thymeleaf:${SPRING_BOOT_VERSION}")
-  //  compile("org.springframework.boot:spring-boot-starter-security:${SPRING_BOOT_VERSION}")
+
      compile 'org.rythmengine:rythm-engine:1.0'
-         compile "org.apache.shiro:shiro-spring:${SHIRO_VERSION}"
+     compile "org.apache.shiro:shiro-spring:${SHIRO_VERSION}"
      compile 'org.webjars:bootstrap:3.1.1-1'
      compile "org.webjars:jquery:2.1.1"
      compile "org.webjars:ace:1.1.3"

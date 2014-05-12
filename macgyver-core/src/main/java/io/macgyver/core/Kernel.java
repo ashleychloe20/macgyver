@@ -182,6 +182,10 @@ public class Kernel implements ApplicationContextAware {
 
 	}
 
+	public static File getExtensionDir(String subDir) {
+		File ext = determineExtensionDir();
+		return new File(ext,subDir);
+	}
 	public static File determineExtensionDir() {
 		try {
 			String location = System.getProperty("macgyver.ext.location");
