@@ -19,7 +19,7 @@ public class CompositeRecorder implements MetricRecorder {
 	Set<MetricRecorder> recorderList = Sets.newConcurrentHashSet();
 
 	@Override
-	public void record(String name, long value) {
+	public void record(String name, Number value) {
 		for (MetricRecorder r: recorderList) {
 			try {
 				r.record(name, value);

@@ -62,9 +62,9 @@ public class StatsD implements MetricRecorder {
 	}
 
 	@Override
-	public void record(String name, long value) {
+	public void record(String name, Number value) {
 
-		sender.execute(new GaugeSender(name, value));
+		sender.execute(new GaugeSender(name, value.longValue()));
 
 	}
 

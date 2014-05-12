@@ -13,7 +13,7 @@ import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
 
-public class HostedGraphite extends Graphite {
+public class HostedGraphite extends AbstractGraphite {
 
 	Logger logger = LoggerFactory.getLogger(HostedGraphite.class);
 
@@ -34,7 +34,7 @@ public class HostedGraphite extends Graphite {
 	}
 
 	@Override
-	public void doRecord(String metric, long val) {
+	public void doRecord(String metric, Number val) {
 		Preconditions.checkNotNull(asyncClient, "client must be initialized");
 		try {
 

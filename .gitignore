@@ -1,5 +1,5 @@
 *.class
-
+macgyver-mapdb*
 # Package Files #
 *.jar
 *.war

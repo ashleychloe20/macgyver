@@ -43,7 +43,7 @@ public class Leftronic extends AbstractMetricRecorder {
 		this.apiKey = apiKey;
 	}
 
-	public void doRecord(String streamName, long val) {
+	public void doRecord(String streamName, Number val) {
 
 		try {
 			Gson gson = new Gson();
@@ -51,7 +51,7 @@ public class Leftronic extends AbstractMetricRecorder {
 			JsonObject data = new JsonObject();
 			data.addProperty("accessKey", apiKey);
 			data.addProperty("streamName", streamName);
-			data.addProperty("point", val);
+			data.addProperty("point", val.longValue());
 
 			if (logger.isTraceEnabled()) {
 				logger.trace("sending data leftronic: {}", data);

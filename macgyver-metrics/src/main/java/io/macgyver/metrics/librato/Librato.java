@@ -46,13 +46,13 @@ public class Librato extends AbstractMetricRecorder {
 	}
 
 	@Override
-	public void doRecord(String name, long longVal) {
+	public void doRecord(String name, Number val) {
 
 		JsonObject payload = new JsonObject();
 		JsonObject gauges = new JsonObject();
 		payload.add("gauges", gauges);
 		JsonObject value = new JsonObject();
-		value.addProperty("value", longVal);
+		value.addProperty("value", val.longValue());
 
 
 

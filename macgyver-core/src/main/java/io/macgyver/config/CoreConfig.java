@@ -7,6 +7,7 @@ import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
+import io.macgyver.core.mapdb.BootstrapMapDB;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
 
@@ -24,7 +25,9 @@ import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostP
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import com.google.common.base.Optional;
 import com.ning.http.client.AsyncHttpClient;
 
 @Configuration
@@ -111,20 +114,22 @@ public class CoreConfig {
 		
 	}*/
 	@Bean(name="io.macgyver.MapDB",destroyMethod="close")
-	TxMaker mapDb() {
+	public synchronized TxMaker mapDb() {
 		if (isUnitTest()) {
 			TxMaker txm = DBMaker.newMemoryDB().closeOnJvmShutdown()
 					.makeTxMaker();
 			return txm;
 		}
 		else {
-		File dataDir = new File(Kernel.determineExtensionDir(), "data");
-		dataDir.mkdirs();
-
-		File dbFile = new File(dataDir, "macgyver.mapdb");
-		TxMaker txm = DBMaker.newFileDB(dbFile).closeOnJvmShutdown()
-				.makeTxMaker();
-			return txm;
+			Optional<TxMaker> txm = BootstrapMapDB.getInstance().getTxMaker();
+			if (txm.isPresent()) {
+				return txm.get();
+			}
+			else {
+				BootstrapMapDB.getInstance().init();
+				return BootstrapMapDB.getInstance().getTxMaker().get();
+			}
+		
 		}
 	
 
@@ -137,5 +142,10 @@ public class CoreConfig {
 		pw.close();
 		return sw.toString().contains("at org.junit");
 	
+	}
+	
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
+	    return new PropertySourcesPlaceholderConfigurer();
 	}
 }

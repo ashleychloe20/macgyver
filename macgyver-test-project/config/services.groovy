@@ -7,3 +7,11 @@ testds {
 	username="sa"
 	password=""
 }
+
+
+graphite {
+	serviceType="graphite"
+    host="mygraphitehost"
+    port=2003
+    prefix="sandbox"
+}

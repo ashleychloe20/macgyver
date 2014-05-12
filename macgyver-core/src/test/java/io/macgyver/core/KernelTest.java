@@ -12,7 +12,7 @@ public class KernelTest extends CoreIntegrationTestCase {
 	@Autowired
 	ApplicationContext applicationContext;
 	
-	@Value("${SOME_TEST_PROPERTY}")
+	@Value("${SOME_TEST_PROPERTY:somedefault}")
 	String xxx;
 	
 	@Autowired

@@ -32,7 +32,7 @@ public class MacGyverRythmResourceLoader extends ResourceLoaderBase {
 	public ITemplateResource load(String templateName) {
 		templateName = MacGyverRythmResourceLoader.stripLeadingSlash(templateName);
 	
-		logger.debug("resolving template resource for: "+templateName);
+		logger.trace("resolving template resource for: "+templateName);
 		
 		File templateDir = new File(Kernel.getInstance().getExtensionDir(),
 				"web");
@@ -40,7 +40,7 @@ public class MacGyverRythmResourceLoader extends ResourceLoaderBase {
 		
 
 		final File finalTemplate = new File(convertDotsToSlash(new File(templateDir,templateName).getAbsolutePath()));
-		logger.info("looking for template file: {}", finalTemplate);
+		logger.trace("looking for template file: {}", finalTemplate);
 		if (finalTemplate.exists()) {
 			return new TemplateResourceBase() {
 
@@ -81,14 +81,14 @@ public class MacGyverRythmResourceLoader extends ResourceLoaderBase {
 
 		String classpathResource = "web/"+stripLeadingSlash(templateName);
 		
-		logger.info("searching classpath for: {}" , classpathResource);
+		logger.trace("searching classpath for: {}" , classpathResource);
 		CustomClasspathTemplateResource ctr = new CustomClasspathTemplateResource(
 				classpathResource, this,stripLeadingSlash(templateName));
 		if (ctr.exists()) {
-			logger.info("not found");
+			logger.trace("not found");
 			return ctr;
 		} else {
-			logger.info("did not locate template for: {}",templateName);
+			logger.trace("did not locate template for: {}",templateName);
 		}
 
 		return null;

@@ -40,7 +40,7 @@ public class ServerMain {
 
 			}
 		};
-		bootstrap.getTxMaker().execute(b);
+		bootstrap.getTxMaker().get().execute(b);
 
 		ConfigurableApplicationContext ctx = SpringApplication.run(
 				ServerMain.class, args);

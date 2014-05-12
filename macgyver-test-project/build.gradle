@@ -22,11 +22,9 @@ dependencies {
 
     testCompile 'junit:junit:4.11'
  
-	compile project(":macgyver-scheduler")
 	compile project(":macgyver-jdbc")
 	compile project(":macgyver-github")
 	compile project(":macgyver-metrics")
-	compile project(":macgyver-web")
 	compile project(":macgyver-core")
     compile project(":macgyver-jython")
     compile project(":macgyver-jruby")
