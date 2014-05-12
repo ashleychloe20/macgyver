@@ -2,7 +2,6 @@ package io.macgyver.core;
 
 import io.macgyver.core.testconfig.CoreIntegrationTestConfig;
 
-import org.apache.tomcat.jni.File;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

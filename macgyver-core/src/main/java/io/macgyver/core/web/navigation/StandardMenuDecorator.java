@@ -1,9 +1,5 @@
 package io.macgyver.core.web.navigation;
 
-import java.util.List;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 public class StandardMenuDecorator implements MenuDecorator {
 

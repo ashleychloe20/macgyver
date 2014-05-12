@@ -1,14 +1,11 @@
 package io.macgyver.core.mapdb;
 
+import io.macgyver.core.Kernel;
+
 import java.io.File;
 
 import org.mapdb.DBMaker;
 import org.mapdb.TxMaker;
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.context.ApplicationListener;
-import org.springframework.core.env.Environment;
-
-import io.macgyver.core.Kernel;
 
 public class BootstrapMapDB {
 

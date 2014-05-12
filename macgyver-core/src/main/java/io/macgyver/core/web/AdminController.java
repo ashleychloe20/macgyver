@@ -77,6 +77,7 @@ public class AdminController {
 		
 	}
 	*/
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/beans")
 	public ModelAndView viewBeans( ModelAndView m) {
 		List list = com.google.common.collect.Lists.newArrayList();

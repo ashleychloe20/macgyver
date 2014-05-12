@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.bind.annotation.Mapping;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -96,6 +95,7 @@ public class ServiceRegistry {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void startAfterSpringContextInitialized(
 			Kernel.KernelStartedEvent event) throws Exception {
