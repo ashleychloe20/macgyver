@@ -1,6 +1,7 @@
 package io.macgyver.core;
 
 import io.macgyver.core.script.ScriptExecutor;
+import io.macgyver.core.web.shiro.InternalAuthorizingRealm;
 
 import java.io.File;
 import java.util.Iterator;
@@ -36,6 +37,9 @@ public class Startup implements InitializingBean {
 
 	@Autowired
 	TxMaker txMaker;
+	
+	@Autowired
+	InternalAuthorizingRealm internalAuthorizingRealm;
 	
 	@Subscribe
 	public void onStart(ContextRefreshedEvent event) {
@@ -91,30 +95,8 @@ public class Startup implements InitializingBean {
 	}
 	
 	protected void seedMapDB() {
-		TxBlock b = new TxBlock() {
-			
-			@Override
-			public void tx(DB db) throws TxRollbackException {
-				Map<String,Map<String,String>> m = db.getHashMap("internal_passwd");
-				
-				if (!m.containsKey("admin")) {
-					System.out.println("Addming admin");
-					Map<String,String> adminEntry = Maps.newHashMap();
-					adminEntry.put("username", "admin");
-					int N = 16384;
-			        int r = 8;
-			        int p = 1;
-					String hashed = SCryptUtil.scrypt("admin", N,r,p);
-					adminEntry.put("scryptHash", hashed);
-				
-					m.put("admin", adminEntry);
-				}
-				else {
-					System.out.println(m.get("admin"));
-				}
-				
-			}
-		};
-		txMaker.execute(b);
+		
+		internalAuthorizingRealm.seedData();
+		
 	}
 }

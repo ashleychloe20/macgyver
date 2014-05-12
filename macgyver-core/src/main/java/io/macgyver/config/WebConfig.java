@@ -9,7 +9,7 @@ import io.macgyver.core.web.rythm.MacGyverRythmResourceLoader;
 import io.macgyver.core.web.rythm.RythmViewResolver;
 import io.macgyver.core.web.shiro.DelegatingAuthorizingRealm;
 import io.macgyver.core.web.shiro.MacGyverFilter;
-import io.macgyver.core.web.shiro.StaticAuthorizingRealm;
+import io.macgyver.core.web.shiro.InternalAuthorizingRealm;
 
 import java.util.Map;
 
@@ -79,8 +79,8 @@ public class WebConfig implements EnvironmentAware {
 	}
 
 	@Bean
-	public StaticAuthorizingRealm staticAuthorizingRealm() {
-		return new StaticAuthorizingRealm();
+	public InternalAuthorizingRealm staticAuthorizingRealm() {
+		return new InternalAuthorizingRealm();
 	}
 
 	@Bean

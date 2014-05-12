@@ -31,7 +31,7 @@ public class RythmView extends AbstractTemplateView {
                                              HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         final String templatePath = this.getTemplatePath();
-        log.info("rendering: {}",templatePath);
+        log.debug("rendering: {}",templatePath);
         response.getWriter().append(getRythmEngine().render(templatePath, model));
     }
 
