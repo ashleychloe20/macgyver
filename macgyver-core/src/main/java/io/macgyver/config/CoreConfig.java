@@ -11,6 +11,8 @@ import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Properties;
 
 import org.mapdb.DBMaker;
@@ -105,25 +107,38 @@ public class CoreConfig {
 		return new ServiceRegistry();
 	}
 
-
+/*
 	@Bean(name="macgyverMapDb")
 	@ConditionalOnClass(name={"org.junit.Assert"})
 	TxMaker createTestMapDb() {
-		TxMaker txm = DBMaker.newMemoryDB().closeOnJvmShutdown()
-				.makeTxMaker();
-		return txm;	
-	}
-	@Bean(name="macgyverMapDb")
-	@ConditionalOnMissingClass(name={"org.junit.Assert"})
-	TxMaker macgyverMapDb() {
+		
+	}*/
+	@Bean(name="io.macgyver.MapDB",destroyMethod="close")
+	TxMaker mapDb() {
+		if (isUnitTest()) {
+			TxMaker txm = DBMaker.newMemoryDB().closeOnJvmShutdown()
+					.makeTxMaker();
+			return txm;
+		}
+		else {
 		File dataDir = new File(Kernel.determineExtensionDir(), "data");
 		dataDir.mkdirs();
 
 		File dbFile = new File(dataDir, "macgyver.mapdb");
 		TxMaker txm = DBMaker.newFileDB(dbFile).closeOnJvmShutdown()
 				.makeTxMaker();
-		return txm;
+			return txm;
+		}
+	
 
 	}
-
+	public boolean isUnitTest() {
+		
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		new RuntimeException().printStackTrace(pw);
+		pw.close();
+		return sw.toString().contains("at org.junit");
+	
+	}
 }

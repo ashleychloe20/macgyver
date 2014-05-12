@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Submit Code For Execution</title>
+  
+  <script type='text/javascript' src="/webjars/jquery/2.1.1/jquery.min.js"></script>
+  
+  
+  
+  
+  <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  
+    
+      <script type='text/javascript' src="/webjars/ace/1.1.3/src-min-noconflict/ace.js"></script>
+    
+  
+    
+      <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/3.1.1/css/bootstrap.min.css">
+    
+  
+  <style type='text/css'>
+    #editor {
+    /** Setting height is also important, otherwise editor wont showup**/
+    height: 500px;
+}
+  </style>
+  
+
+
+<script type='text/javascript'>//<![CDATA[ 
+$(function(){
+   var textarea = $('#content');
+
+   var editor = ace.edit("editor");
+   editor.setTheme("ace/theme/twilight");
+   editor.getSession().setMode("ace/mode/groovy");
+
+   editor.getSession().on('change', function () {
+       textarea.val(editor.getSession().getValue());
+   });
+
+   textarea.val(editor.getSession().getValue());
+   textarea.toggle();
+   $("#toggletextarea-btn").on('click', function () {
+       textarea.toggle();
+       $(this).text(function (i, text) {
+           return text === "Show Content" ? "Hide Content" : "Show Content";
+       });
+   });
+
+
+
+   //http://api.jquery.com/jquery.post/
+   $("#alertcontent-btn").on('click', function () {
+       
+       
+
+
+      $.post('/admin/scriptEval', { editor: textarea.val(), field2 : "hello2"}, 
+    	function(returnedData){
+         console.log(returnedData);
+         $('#showresults').html(returnedData);
+		});
+      
+ });
+ 
+});//]]>  
+
+</script>
+
+
+</head>
+<body>
+  <div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+             <span class="panel-title">Editor</span>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <h4>Script</h4>
+                <div class="col-md-6">
+                    <div id="editor">// Code here</div>
+                </div>
+                <div class="col-md-6">
+  
+                    <textarea class="col-md-6" name="content" id="content" rows="5" cols="70" disabled="disabled"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center"></div>
+
+    <button class="btn btn-default" id="alertcontent-btn">Submit</button>
+    <br/>
+    <br/>
+    <div class="text-center" id="showresults"></div>
+</div>
+  
+</body>
+
+
+</html>
+

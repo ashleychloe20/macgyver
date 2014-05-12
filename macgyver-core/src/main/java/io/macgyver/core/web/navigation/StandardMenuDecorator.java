@@ -18,6 +18,9 @@ public class StandardMenuDecorator implements MenuDecorator {
 		encrypt.setDisplayName("Encrypt String");
 		encrypt.setUriPath("/admin/encryptString");
 		
+		MenuItem beans = admin.getChildById("beans", true);
+		beans.setDisplayName("Beans");
+		beans.setUriPath("/admin/beans");
 
 		
 		

@@ -39,16 +39,5 @@ public class BootstrapMapDB {
 		txMaker = x;
 	}
 	
-	public ApplicationListener<ApplicationEnvironmentPreparedEvent> createEnvironmentPreparedEventListener() {
-		ApplicationListener<ApplicationEnvironmentPreparedEvent> listener = new ApplicationListener<ApplicationEnvironmentPreparedEvent>() {
 
-			@Override
-			public void onApplicationEvent(
-					ApplicationEnvironmentPreparedEvent event) {
-				System.out.println("EVENT: "+event);
-				
-			}
-		};
-		return listener;
-	}
 }

@@ -5,6 +5,7 @@ import groovy.util.ConfigSlurper;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.ServiceNotFoundException;
+import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
 import java.io.File;
@@ -14,10 +15,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.mapdb.DB;
+import org.mapdb.TxBlock;
+import org.mapdb.TxMaker;
+import org.mapdb.TxRollbackException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.bind.annotation.Mapping;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -41,6 +47,12 @@ public class ServiceRegistry {
 
 	@Autowired
 	MacGyverEventBus syncBus;
+
+	@Autowired
+	Crypto crypto;
+
+	@Autowired
+	TxMaker txMaker;
 
 	@SuppressWarnings("unchecked")
 	public <T> T get(String name, Class<T> t) {
@@ -209,9 +221,20 @@ public class ServiceRegistry {
 			slurper.setEnvironment(Kernel.getExecutionProfile().get());
 		}
 		ConfigObject obj = slurper.parse(configGroovy.toURI().toURL());
-		
+
 		p = obj.toProperties();
-		System.out.println("PROPS: "+p);
+
+		p = crypto.decryptProperties(p);
+
+		TxBlock b = new TxBlock() {
+
+			@Override
+			public void tx(DB db) throws TxRollbackException {
+		
+
+			}
+		};
+		txMaker.execute(b);
 		return p;
 	}
 }
