@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.ShiroFilter;
 import org.rythmengine.RythmEngine;
 import org.rythmengine.conf.RythmConfigurationKey;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,10 @@ public class WebConfig implements EnvironmentAware {
 	public ShiroFilterFactoryBean shiroFilter() {
 		ShiroFilterFactoryBean sf = new ShiroFilterFactoryBean();
 		sf.setSecurityManager(defaultWebSecurityManager());
-		sf.setFilterChainDefinitions("/api/**= anon\n/resources/** = anon\n/webjars/**=anon\n/auth/logout = logout\n/**=authc");
+		
+		
+
+		sf.setFilterChainDefinitions("/resources/** = anon\n/webjars/**=anon\n/auth/logout = logout\n/**=authc");
 		sf.setLoginUrl("/auth/login");
 		sf.setSuccessUrl("/");
 		return sf;

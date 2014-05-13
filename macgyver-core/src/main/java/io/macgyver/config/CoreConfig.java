@@ -3,6 +3,7 @@ package io.macgyver.config;
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
 import io.macgyver.core.Kernel;
+import io.macgyver.core.MacGyverCrashAuthPlugin;
 import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import org.springframework.boot.actuate.autoconfigure.ShellProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -143,7 +145,25 @@ public class CoreConfig {
 		return sw.toString().contains("at org.junit");
 	
 	}
-	
+	@Bean
+	public ShellProperties.CrshShellAuthenticationProperties authProperties() {
+		ShellProperties.CrshShellAuthenticationProperties x = new ShellProperties.CrshShellAuthenticationProperties() {
+			
+			@Override
+			protected void applyToCrshShellConfig(Properties config) {
+				System.out.println("CONFIG: "+config);
+				config.put("crash.auth", "macgyvercrash");
+			//	config.put("crash.auth.simple.username", "abc");
+			//	config.put("crash.auth.simple.password", "abc");
+				
+			}
+		};
+		return x;
+	}
+	@Bean
+	public MacGyverCrashAuthPlugin macgyverCrashAuthPlugin() {
+		return new MacGyverCrashAuthPlugin();
+	}
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
 	    return new PropertySourcesPlaceholderConfigurer();
