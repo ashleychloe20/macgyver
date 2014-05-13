@@ -39,7 +39,9 @@ dependencies {
 	compile 'org.quartz-scheduler:quartz:2.2.1'
     compile("org.springframework.boot:spring-boot-starter-web:${SPRING_BOOT_VERSION}")
     compile("org.springframework.boot:spring-boot-starter-remote-shell:${SPRING_BOOT_VERSION}")
+    
     compile("org.springframework.boot:spring-boot-starter-security:${SPRING_BOOT_VERSION}")
+    compile "org.springframework.security:spring-security-ldap:${SPRING_SECURITY_VERSION}"
      compile 'org.rythmengine:rythm-engine:1.0'
 
      compile 'org.webjars:bootstrap:3.1.1-1'
