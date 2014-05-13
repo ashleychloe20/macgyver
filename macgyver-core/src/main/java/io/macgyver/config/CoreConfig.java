@@ -134,7 +134,6 @@ public class CoreConfig {
 		
 		}
 	
-
 	}
 	public boolean isUnitTest() {
 		
@@ -146,16 +145,15 @@ public class CoreConfig {
 	
 	}
 	@Bean
-	public ShellProperties.CrshShellAuthenticationProperties authProperties() {
+	public ShellProperties.CrshShellAuthenticationProperties crashAuthProperties() {
+		
 		ShellProperties.CrshShellAuthenticationProperties x = new ShellProperties.CrshShellAuthenticationProperties() {
 			
 			@Override
 			protected void applyToCrshShellConfig(Properties config) {
-				System.out.println("CONFIG: "+config);
+				// This binds us to a Shiro-managed crash authenticator
 				config.put("crash.auth", "macgyvercrash");
-			//	config.put("crash.auth.simple.username", "abc");
-			//	config.put("crash.auth.simple.password", "abc");
-				
+
 			}
 		};
 		return x;
