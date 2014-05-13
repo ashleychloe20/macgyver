@@ -3,7 +3,6 @@ package io.macgyver.config;
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
 import io.macgyver.core.Kernel;
-import io.macgyver.core.MacGyverCrashAuthPlugin;
 import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
@@ -11,6 +10,7 @@ import io.macgyver.core.eventbus.MacGyverEventBus;
 import io.macgyver.core.mapdb.BootstrapMapDB;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
+import io.macgyver.core.web.auth.InternalAuthenticationProvider;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -115,7 +115,7 @@ public class CoreConfig {
 	TxMaker createTestMapDb() {
 		
 	}*/
-	@Bean(name="io.macgyver.MapDB",destroyMethod="close")
+	@Bean(name="io.macgyver.MapDB")
 	public synchronized TxMaker mapDb() {
 		if (isUnitTest()) {
 			TxMaker txm = DBMaker.newMemoryDB().closeOnJvmShutdown()
@@ -144,23 +144,25 @@ public class CoreConfig {
 		return sw.toString().contains("at org.junit");
 	
 	}
+	/*
+	 * This might be used in the future.
 	@Bean
-	public ShellProperties.CrshShellAuthenticationProperties crashAuthProperties() {
+	public ShellProperties.SpringAuthenticationProperties crashAuthProperties() {
 		
-		ShellProperties.CrshShellAuthenticationProperties x = new ShellProperties.CrshShellAuthenticationProperties() {
+		ShellProperties.SpringAuthenticationProperties x = new ShellProperties.SpringAuthenticationProperties() {
 			
 			@Override
 			protected void applyToCrshShellConfig(Properties config) {
-				// This binds us to a Shiro-managed crash authenticator
-				config.put("crash.auth", "macgyvercrash");
-
+				super.applyToCrshShellConfig(config);
+	
 			}
 		};
 		return x;
 	}
+	*/
 	@Bean
-	public MacGyverCrashAuthPlugin macgyverCrashAuthPlugin() {
-		return new MacGyverCrashAuthPlugin();
+	public InternalAuthenticationProvider internalAuthenticationProvider() {
+		return new InternalAuthenticationProvider();
 	}
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {

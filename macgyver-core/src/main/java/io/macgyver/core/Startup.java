@@ -1,7 +1,7 @@
 package io.macgyver.core;
 
 import io.macgyver.core.script.ScriptExecutor;
-import io.macgyver.core.web.shiro.InternalAuthorizingRealm;
+import io.macgyver.core.web.auth.InternalAuthenticationProvider;
 
 import java.io.File;
 import java.util.Iterator;
@@ -33,7 +33,7 @@ public class Startup implements InitializingBean {
 	TxMaker txMaker;
 	
 	@Autowired
-	InternalAuthorizingRealm internalAuthorizingRealm;
+	InternalAuthenticationProvider internalAuthenticationProvider;
 	
 	@Subscribe
 	public void onStart(ContextRefreshedEvent event) {
@@ -90,7 +90,7 @@ public class Startup implements InitializingBean {
 	
 	protected void seedMapDB() {
 		
-		internalAuthorizingRealm.seedData();
+		internalAuthenticationProvider.seedData();
 		
 	}
 }
