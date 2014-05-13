@@ -1,5 +1,8 @@
 package io.macgyver.config;
 
+import java.util.Map;
+
+import io.macgyver.core.HookScriptManager;
 import io.macgyver.core.web.auth.InternalAuthenticationProvider;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 
+import com.google.common.collect.Maps;
+
 @Configuration
 @EnableWebMvcSecurity
 //@EnableWebSecurity
@@ -19,6 +24,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	InternalAuthenticationProvider internalAuthenticationProvider;
+	
+	@Autowired
+	HookScriptManager hookScriptManager;
 	
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -45,13 +53,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
     	auth.authenticationProvider(internalAuthenticationProvider);
+    	
+    	Map<String,Object> map = Maps.newHashMap();
+    	map.put("auth", auth);
+    	hookScriptManager.invokeHook("authBuilder",map);
     }
     
-
+    
     
     @Autowired
     public void registerSharedAuthentication(AuthenticationManagerBuilder auth) throws Exception {
     	
     	auth.authenticationProvider(internalAuthenticationProvider);
+    	
+    	Map<String,Object> map = Maps.newHashMap();
+    	map.put("auth", auth);
+    	hookScriptManager.invokeHook("authBuilder",map);
     }
 }

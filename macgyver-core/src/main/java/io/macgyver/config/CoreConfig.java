@@ -2,6 +2,7 @@ package io.macgyver.config;
 
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
+import io.macgyver.core.HookScriptManager;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
@@ -115,8 +116,8 @@ public class CoreConfig {
 	TxMaker createTestMapDb() {
 		
 	}*/
-	@Bean(name="io.macgyver.MapDB")
-	public synchronized TxMaker mapDb() {
+	@Bean(name="io.macgyver.mapdb.TxMaker")
+	public synchronized TxMaker txMaker() {
 		if (isUnitTest()) {
 			TxMaker txm = DBMaker.newMemoryDB().closeOnJvmShutdown()
 					.makeTxMaker();
@@ -167,5 +168,10 @@ public class CoreConfig {
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
 	    return new PropertySourcesPlaceholderConfigurer();
+	}
+	
+	@Bean
+	public HookScriptManager hookScriptManager() {
+		return new HookScriptManager();
 	}
 }
