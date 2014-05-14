@@ -42,13 +42,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		httpSecurity.authorizeRequests()
 
-		.antMatchers("/login", "/resources/**", "/webjars/**").permitAll().and().authorizeRequests()
-				.and().authorizeRequests().antMatchers("/**")
-				.authenticated().and().
+		.antMatchers("/login","/public/**", "/resources/**", "/webjars/**").permitAll()
+				.and().authorizeRequests().and().authorizeRequests()
+				.antMatchers("/**").authenticated().and().
 
 				formLogin().loginPage("/login").failureUrl("/login")
-				.defaultSuccessUrl("/").and().logout().permitAll().and().httpBasic();
-
+				.defaultSuccessUrl("/").and().logout().permitAll();
 	}
 
 	@Override
@@ -72,18 +71,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		map.put("authBuilder", auth);
 		hookScriptManager.invokeHook("configureAuthProviders", map);
 	}
-	/*
-	  @Configuration
-	    @Order(20)
-	    public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
-	        // Since we didn't specify an AuthenticationManager for this class,
-	        // the global instance is used
 
+	@Configuration
+	@Order(92)
+	public static class ApiWebSecurityConfigurationAdapter extends
+			WebSecurityConfigurerAdapter {
+		protected void configure(HttpSecurity http) throws Exception {
+			http.antMatcher("/api/**").authorizeRequests().anyRequest()
+					.authenticated().and().httpBasic();
+		}
+	}
 
-	        public void configure(HttpSecurity http) throws Exception {
-	          http.httpBasic().and().authorizeRequests().antMatchers("/api/**").authenticated();
-	        }
-	    }
-	*/
+	@Configuration
+	@Order(91)
+	public static class ApiPublicWebSecurityConfigurationAdapter extends
+			WebSecurityConfigurerAdapter {
+		protected void configure(HttpSecurity http) throws Exception {
+			http.antMatcher("/api/public/**").anonymous();
+
+		}
+	}
 
 }

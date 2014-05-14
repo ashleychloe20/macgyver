@@ -110,16 +110,11 @@ public class CoreConfig {
 		return new ServiceRegistry();
 	}
 
-/*
-	@Bean(name="macgyverMapDb")
-	@ConditionalOnClass(name={"org.junit.Assert"})
-	TxMaker createTestMapDb() {
-		
-	}*/
+
 	@Bean(name="io.macgyver.mapdb.TxMaker")
-	public synchronized TxMaker txMaker() {
+	public TxMaker txMaker() {
 		if (isUnitTest()) {
-			TxMaker txm = DBMaker.newMemoryDB().closeOnJvmShutdown()
+			TxMaker txm = DBMaker.newMemoryDB()
 					.makeTxMaker();
 			return txm;
 		}

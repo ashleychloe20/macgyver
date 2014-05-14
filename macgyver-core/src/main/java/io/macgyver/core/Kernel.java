@@ -182,6 +182,12 @@ public class Kernel implements ApplicationContextAware {
 
 	}
 
+	public static File getExtensionDataDir() {
+		return getExtensionDir("data");
+	}
+	public static File getExtensionConfigDir() {
+		return getExtensionDir("config");
+	}
 	public static File getExtensionDir(String subDir) {
 		File ext = determineExtensionDir();
 		return new File(ext,subDir);
