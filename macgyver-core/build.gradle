@@ -30,8 +30,9 @@ dependencies {
     compile "org.glassfish:javax.json:1.0.4"
     compile 'org.codehaus.groovy:groovy-all:2.1.9'
     
-    compile "org.jboss.resteasy:resteasy-jaxrs-all:${RESTEASY_VERSION}"
+   // compile "org.jboss.resteasy:resteasy-jaxrs-all:${RESTEASY_VERSION}"
     compile "org.jboss.resteasy:jaxrs-api:${RESTEASY_VERSION}"
+    compile "org.jboss.resteasy:resteasy-client:${RESTEASY_VERSION}"
     
     compile 'javax.inject:javax.inject:1'
     compile 'com.ning:async-http-client:1.7.23'

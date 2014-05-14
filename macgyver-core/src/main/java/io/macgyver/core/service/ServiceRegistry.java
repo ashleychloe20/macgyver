@@ -67,7 +67,9 @@ public class ServiceRegistry {
 		if (instance != null) {
 			return instance;
 		}
-		logger.info("defs: {}", definitions);
+		if (logger.isDebugEnabled()) {
+			logger.debug("defs: {}", definitions);
+		}
 		ServiceDefinition def = definitions.get(name);
 
 		if (def == null) {

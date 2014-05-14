@@ -1,5 +1,6 @@
 package io.macgyver.metrics.graphite;
 
+import io.macgyver.core.jaxrs.GsonMessageBodyHandler;
 import io.macgyver.metrics.AbstractMetricRecorder;
 import io.macgyver.metrics.BasicTSV;
 import io.macgyver.metrics.MetricRecorder;
@@ -8,6 +9,7 @@ import io.macgyver.metrics.TSV;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.client.Client;
@@ -114,15 +116,23 @@ public abstract class AbstractGraphite extends AbstractMetricRecorder {
 
 	public Optional<TSV> queryMostRecentValue(String target, String from,
 			String until) {
+		try {
 		Iterable<TSV> t = queryTimeSeries(target, from, until);
+		if (t==null) {
+			return Optional.absent();
+		}
 		return Optional.fromNullable(Iterables.getLast(t));
+		}
+		catch (NoSuchElementException e) {
+			return Optional.absent();
+		}
 	}
 
 	protected JsonArray queryJsonArray(Map<String, String> m) {
 		Preconditions.checkNotNull(m);
 		m.put("format", "json");
 
-		WebTarget target = ClientBuilder.newClient().target(getQueryBaseUrl()).path(
+		WebTarget target = ClientBuilder.newClient().register(GsonMessageBodyHandler.class).target(getQueryBaseUrl()).path(
 				"render");
 		for (Map.Entry<String, String> entry : m.entrySet()) {
 			target = target.queryParam(entry.getKey(), entry.getValue());
