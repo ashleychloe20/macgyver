@@ -17,6 +17,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'org.ajoberstar:gradle-git:0.8.0'
     }
 }
 
@@ -30,7 +31,7 @@ subprojects {
     group 'io.macgyver'
     version = "${MACGYVER_VERSION}"
     
-
+    
     
     configurations {
 		all*.exclude group: 'commons-logging', module: 'commons-logging'

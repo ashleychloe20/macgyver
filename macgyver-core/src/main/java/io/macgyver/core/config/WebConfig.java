@@ -1,6 +1,7 @@
 package io.macgyver.core.config;
 
 
+import io.macgyver.core.web.CoreApiController;
 import io.macgyver.core.web.HomeController;
 import io.macgyver.core.web.MacgyverWeb;
 import io.macgyver.core.web.navigation.MenuManager;
@@ -42,7 +43,10 @@ public class WebConfig implements EnvironmentAware {
 
 	}
 
-
+	@Bean
+	public CoreApiController coreApiController() {
+		return new CoreApiController();
+	}
 	
 	
 

@@ -1,3 +1,5 @@
+import org.ajoberstar.grgit.*
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
@@ -52,6 +54,25 @@ dependencies {
 	testCompile "org.springframework:spring-test:${SPRING_VERSION}"
 	testCompile group: "junit", name: "junit", version: "${JUNIT_VERSION}"
 
+}
+
+compileJava.doLast() {
+    def p = new Properties()
+
+    p.setProperty("version",project.version)
+    p.setProperty("artifactId",project.name)
+    p.setProperty("groupId","io.macgyver")
+    
+    def gitrepo = Grgit.open(project.file('..'))
+    p.setProperty("gitCommitId",gitrepo.head().id)
+    p.setProperty("gitShortCommitId",p.gitCommitId.substring(0,7))
+    p.setProperty("githubCommitUrl","https://github.com/if6was9/macgyver/commit/${p.gitCommitId}")
+    p.setProperty("gitBranchName",new org.ajoberstar.grgit.service.BranchService(gitrepo.repository).getCurrent().getName())
+    p.setProperty("gitBranchFullName",new org.ajoberstar.grgit.service.BranchService(gitrepo.repository).getCurrent().getFullName())
+    new File("src/main/resources/macgyver-core-revision.properties").withOutputStream {
+        p.store(it,"revision info")
+    }
+    
 }
 
 task showRepos << {

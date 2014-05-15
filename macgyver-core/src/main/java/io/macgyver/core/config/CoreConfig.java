@@ -5,6 +5,7 @@ import io.macgyver.core.CoreBindingSupplier;
 import io.macgyver.core.HookScriptManager;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
+import io.macgyver.core.CoreSystemInfo;
 import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
@@ -174,5 +175,9 @@ public class CoreConfig {
 	@Bean
 	public MacGyverBeanFactoryPostProcessor macGyverBeanFactoryPostProcessor() {
 		return new MacGyverBeanFactoryPostProcessor(Kernel.getExtensionDir("."));
+	}
+	@Bean(name="io.macgyver.CoreRevisionInfo")
+	public CoreSystemInfo revisionInfo() {
+		return new CoreSystemInfo();
 	}
 }
