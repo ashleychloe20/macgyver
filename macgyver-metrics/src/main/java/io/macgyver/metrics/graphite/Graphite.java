@@ -1,134 +1,44 @@
 package io.macgyver.metrics.graphite;
 
-import io.macgyver.metrics.AbstractMetricRecorder;
-import io.macgyver.metrics.BasicTSV;
-import io.macgyver.metrics.MetricRecorder;
-import io.macgyver.metrics.TSV;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
+import java.io.IOException;
 
 
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+public class Graphite extends AbstractGraphite {
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.ning.http.client.AsyncHttpClient;
+	
+	String host="localhost";
+	int port = 2003;
 
-public abstract class Graphite extends AbstractMetricRecorder {
+	SimpleGraphiteClient simpleClient;
 
-	private String graphiteQueryBaseUrl;
-
-	private Client client;
-	protected AsyncHttpClient asyncClient;
-
-	public Graphite() {
-
-	}
-
-	public Graphite(AsyncHttpClient client) {
-
-		Preconditions.checkNotNull(client);
-
-		this.asyncClient = client;
-	}
-
-	/**
-	 * Returns the URL for making "REST" calls to graphite up to /graphite
-	 * 
-	 * @return
-	 */
-	public String getQueryBaseUrl() {
-		return graphiteQueryBaseUrl;
-	}
-
-	public void setQueryBaseUrl(String url) {
-		this.graphiteQueryBaseUrl = url;
-	}
-
-
-
-	public Iterable<TSV> queryTimeSeries(String target, String from) {
-		return queryTimeSeries(target, from);
-	}
-
-	public Iterable<TSV> queryTimeSeries(String target) {
-		return queryTimeSeries(target, null, null);
-	}
-
-	public Iterable<TSV> queryTimeSeries(String target, String from,
-			String until) {
-		Preconditions.checkNotNull(target);
-		Map<String, String> m = Maps.newHashMap();
-		m.put("target", target);
-		if (!Strings.isNullOrEmpty(from)) {
-			m.put("from", from);
+	SimpleGraphiteClient getSimpleGraphiteClient() {
+		if (simpleClient == null) {
+			simpleClient = new SimpleGraphiteClient(host, port);
 		}
-
-		if (!Strings.isNullOrEmpty(until)) {
-			m.put("until", until);
-		}
-
-		JsonArray x = queryJsonArray(m);
-		List<TSV> vals = Lists.newArrayList();
-
-		for (int i = 0; i < x.size(); i++) {
-			JsonObject obj = x.get(i).getAsJsonObject();
-			String targetName = obj.get("target").getAsString();
-			if (target.equals(targetName)) {
-				JsonArray datapoints = obj.get("datapoints").getAsJsonArray();
-				for (int j = 0; j < datapoints.size(); j++) {
-
-					JsonArray tuple = datapoints.get(j).getAsJsonArray();
-					JsonElement val = tuple.get(0);
-
-					long timestamp = tuple.get(1).getAsLong();
-					if (!val.isJsonNull()) {
-						BasicTSV tsv = new BasicTSV(new DateTime(
-								timestamp * 1000), val.getAsBigDecimal());
-						vals.add(tsv);
-					}
-				}
-			}
-		}
-		return vals;
+		return simpleClient;
 	}
 
-	public Optional<TSV> queryMostRecentValue(String target) {
-		return queryMostRecentValue(target, null, null);
+	@Override
+	public void doRecord(String metric, Number val) {
+		getSimpleGraphiteClient().sendMetric(metric, val.longValue());
 	}
 
-	public Optional<TSV> queryMostRecentValue(String target, String from,
-			String until) {
-		Iterable<TSV> t = queryTimeSeries(target, from, until);
-		return Optional.fromNullable(Iterables.getLast(t));
+	public String getHost() {
+		
+		return host;
 	}
 
-	protected JsonArray queryJsonArray(Map<String, String> m) {
-		Preconditions.checkNotNull(m);
-		m.put("format", "json");
-
-		WebTarget target = ClientBuilder.newClient().target(getQueryBaseUrl()).path(
-				"render");
-		for (Map.Entry<String, String> entry : m.entrySet()) {
-			target = target.queryParam(entry.getKey(), entry.getValue());
-		}
-
-		return target.request().get(JsonArray.class);
+	public void setHost(String host) {
+		this.host = host;
 	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+
 }

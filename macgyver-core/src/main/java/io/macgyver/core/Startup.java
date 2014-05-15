@@ -1,10 +1,12 @@
 package io.macgyver.core;
 
 import io.macgyver.core.script.ScriptExecutor;
+import io.macgyver.core.web.auth.InternalAuthenticationProvider;
 
 import java.io.File;
 import java.util.Iterator;
 
+import org.mapdb.TxMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,19 +29,26 @@ public class Startup implements InitializingBean {
 	@Autowired
 	Kernel kernel;
 
+	@Autowired
+	TxMaker txMaker;
+	
+	@Autowired
+	InternalAuthenticationProvider internalAuthenticationProvider;
+	
 	@Subscribe
 	public void onStart(ContextRefreshedEvent event) {
-		if (Kernel.getInstance().getApplicationContext()!=event.getSource()) {
+		if (kernel.getApplicationContext()!=event.getSource()) {
 			return;
 		}
 		logger.info("STARTED: {}", event);
 		runInitScripts();
+		seedMapDB();
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		bus.register(this);
-		;
+		
 
 	}
 
@@ -77,5 +86,11 @@ public class Startup implements InitializingBean {
 		} else {
 			logger.info("ignoring file in init script dir: {}", f);
 		}
+	}
+	
+	protected void seedMapDB() {
+		
+		internalAuthenticationProvider.seedData();
+		
 	}
 }

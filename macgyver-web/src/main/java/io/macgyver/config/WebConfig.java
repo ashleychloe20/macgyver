@@ -1,7 +1,7 @@
 package io.macgyver.config;
 
+import io.macgyver.core.web.rythm.MacGyverRythmResourceLoader;
 import io.macgyver.web.jetty.JettyServer;
-import io.macgyver.web.rythm.MacGyverRythmResourceLoader;
 import io.macgyver.web.shiro.DelegatingAuthorizingRealm;
 import io.macgyver.web.shiro.StaticAuthorizingRealm;
 
@@ -71,15 +71,6 @@ public class WebConfig {
 	}
 	
 	
-	@Bean(name="io.macgyver.web.RythmEngine")
-	public RythmEngine macgyverRythmEngine() {
-		Map<String,String> cfg = Maps.newHashMap();	
-		cfg.put(RythmConfigurationKey.RESOURCE_LOADER_IMPLS.getKey(), MacGyverRythmResourceLoader.class.getName());
-		cfg.put(RythmConfigurationKey.ENGINE_MODE.getKey(), "dev");
-		RythmEngine re = new RythmEngine(cfg);
-		
-		MacGyverRythmResourceLoader.setRhythmEngine(re);
-		return re;
-	}
+
 
 }

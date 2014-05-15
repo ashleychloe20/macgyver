@@ -2,8 +2,8 @@ package io.macgyver.webconfig;
 
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
+import io.macgyver.core.web.rythm.RythmViewResolver;
 import io.macgyver.web.jetty.StaticResourceServlet;
-import io.macgyver.web.rythm.RythmViewResolver;
 import io.macgyver.web.rythm.TestController;
 
 import org.slf4j.Logger;
@@ -28,10 +28,7 @@ public class MacWebConfig extends WebMvcConfigurerAdapter {
 		return new TestController();
 	}
 
-	@Bean
-	public RythmViewResolver rythmViewResolver() {
-		return new RythmViewResolver();
-	}
+
 
 	@Override
 	public void configureDefaultServletHandling(

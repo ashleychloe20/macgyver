@@ -28,7 +28,5 @@ public class TestBean  {
 		this.crypto = crypto;
 	}
 	
-	public static void main(String [] args) {
-		Kernel.initialize();
-	}
+
 }

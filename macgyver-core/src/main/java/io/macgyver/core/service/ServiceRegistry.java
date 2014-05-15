@@ -1,18 +1,24 @@
 package io.macgyver.core.service;
 
+import groovy.util.ConfigObject;
+import groovy.util.ConfigSlurper;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
-import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
 import io.macgyver.core.ServiceNotFoundException;
+import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
+import org.mapdb.DB;
+import org.mapdb.TxBlock;
+import org.mapdb.TxMaker;
+import org.mapdb.TxRollbackException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +45,13 @@ public class ServiceRegistry {
 	ApplicationContext applicationContext;
 
 	@Autowired
-	MacGyverPropertySourcesPlaceholderConfigurer cfg;
+	MacGyverEventBus syncBus;
 
 	@Autowired
-	MacGyverEventBus syncBus;
+	Crypto crypto;
+
+	@Autowired
+	TxMaker txMaker;
 
 	@SuppressWarnings("unchecked")
 	public <T> T get(String name, Class<T> t) {
@@ -58,7 +67,9 @@ public class ServiceRegistry {
 		if (instance != null) {
 			return instance;
 		}
-
+		if (logger.isDebugEnabled()) {
+			logger.debug("defs: {}", definitions);
+		}
 		ServiceDefinition def = definitions.get(name);
 
 		if (def == null) {
@@ -86,13 +97,15 @@ public class ServiceRegistry {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Subscribe
 	public void startAfterSpringContextInitialized(
 			Kernel.KernelStartedEvent event) throws Exception {
 
 		collectServiceFactories();
 
-		Properties properties = cfg.getEffectiveProperties();
+		Properties properties = reloadProperties();
+
 		for (Object keyObj : properties.keySet()) {
 			String key = keyObj.toString();
 			if (isServiceTypeKey(key)) {
@@ -103,23 +116,23 @@ public class ServiceRegistry {
 						.toLowerCase());
 
 				if (factory == null) {
-					throw new MacGyverException(
-							"No ServiceFactory registered for service type: "
-									+ serviceType.toLowerCase());
-				}
+					logger.warn("No ServiceFactory registered for service type: "
+							+ serviceType.toLowerCase());
+				} else {
 
-				String serviceName = key.substring(0, key.length()
-						- ".serviceType".length());
+					String serviceName = key.substring(0, key.length()
+							- ".serviceType".length());
 
-				Properties scopedProperties = extractScopedPropertiesForService(
-						properties, serviceName);
+					Properties scopedProperties = extractScopedPropertiesForService(
+							properties, serviceName);
 
-				Set<ServiceDefinition> set = Sets.newHashSet();
-				factory.createServiceDefintions(set, serviceName,
-						scopedProperties);
+					Set<ServiceDefinition> set = Sets.newHashSet();
+					factory.createServiceDefintions(set, serviceName,
+							scopedProperties);
 
-				for (ServiceDefinition def : set) {
-					registerServiceDefintion(def);
+					for (ServiceDefinition def : set) {
+						registerServiceDefintion(def);
+					}
 				}
 			}
 		}
@@ -135,7 +148,7 @@ public class ServiceRegistry {
 				if (!def.isLazyInit()) {
 					logger.info("starting service: {}", def);
 					get(def.getName());
-				} 
+				}
 			} catch (Exception e) {
 				logger.warn("problem starting service: " + def, e);
 
@@ -160,7 +173,7 @@ public class ServiceRegistry {
 				scoped.put(scopedKey, val);
 			}
 		}
-	
+
 		scoped.remove("serviceType");
 		return scoped;
 	}
@@ -195,5 +208,35 @@ public class ServiceRegistry {
 
 	public void publish(ServiceCreatedEvent event) {
 		syncBus.post(event);
+	}
+
+	protected Properties reloadProperties() throws MalformedURLException {
+		Properties p = new Properties();
+
+		File extDir = Kernel.determineExtensionDir();
+		File confDir = new File(extDir, "config");
+
+		File configGroovy = new File(confDir, "services.groovy");
+
+		ConfigSlurper slurper = new ConfigSlurper();
+		if (Kernel.getExecutionProfile().isPresent()) {
+			slurper.setEnvironment(Kernel.getExecutionProfile().get());
+		}
+		ConfigObject obj = slurper.parse(configGroovy.toURI().toURL());
+
+		p = obj.toProperties();
+
+		p = crypto.decryptProperties(p);
+
+		TxBlock b = new TxBlock() {
+
+			@Override
+			public void tx(DB db) throws TxRollbackException {
+		
+
+			}
+		};
+		txMaker.execute(b);
+		return p;
 	}
 }

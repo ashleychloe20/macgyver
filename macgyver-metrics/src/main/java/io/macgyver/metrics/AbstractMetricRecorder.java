@@ -20,7 +20,7 @@ public abstract class AbstractMetricRecorder implements MetricRecorder {
 	}
 
 	public String qualify(String unqualified) {
-		if (Strings.isNullOrEmpty(unqualified)) {
+		if (Strings.isNullOrEmpty(prefix)) {
 			return unqualified;
 		}
 		else {
@@ -28,10 +28,10 @@ public abstract class AbstractMetricRecorder implements MetricRecorder {
 		}
 	}
 	
-	public abstract void doRecord(String name, long value);
+	public abstract void doRecord(String name, Number value);
 	
 	@Override
-	public final void record(String name, long value) {
+	public final void record(String name, Number value) {
 		name = qualify(name);
 		
 		if (logger.isDebugEnabled()) {

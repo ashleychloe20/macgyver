@@ -14,7 +14,7 @@ public class TestBeanServiceFactory extends ServiceFactory<TestBean> {
 	}
 	@Override
 	protected TestBean doCreateInstance(ServiceDefinition def) {
-		logger.info("creating testbean with props: "+def.getProperties().keySet());
+		logger.info("creating testbean with props: ",def.getProperties().keySet());
 		return new TestBean();
 	}
 	@Override

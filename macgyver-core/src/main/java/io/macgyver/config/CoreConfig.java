@@ -2,27 +2,35 @@ package io.macgyver.config;
 
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
+import io.macgyver.core.HookScriptManager;
 import io.macgyver.core.Kernel;
-import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
 import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
-import io.macgyver.core.jaxrs.GsonMessageBodyProvider;
+import io.macgyver.core.mapdb.BootstrapMapDB;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
+import io.macgyver.core.web.auth.InternalAuthenticationProvider;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Properties;
 
+import org.mapdb.DBMaker;
+import org.mapdb.TxMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.ShellProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import com.google.common.base.Optional;
 import com.ning.http.client.AsyncHttpClient;
 
 @Configuration
@@ -33,13 +41,6 @@ public class CoreConfig {
 
 	static Logger logger = LoggerFactory.getLogger(CoreConfig.class);
 
-	@Value("${macgyver.ext.location:.}")
-	public String extLocation;
-
-	@Bean(name = "macgyverConfigurer")
-	static public MacGyverPropertySourcesPlaceholderConfigurer macgyverConfigurer() {
-		return new MacGyverPropertySourcesPlaceholderConfigurer();
-	}
 
 	@Bean
 	public ContextRefreshApplicationListener contextRefreshApplicationListener() {
@@ -64,9 +65,9 @@ public class CoreConfig {
 
 	@Bean(name = "macgyverKernel")
 	public Kernel createKernel() {
-
+		File extLocation = Kernel.determineExtensionDir();
 		logger.info("macgyver.ext.location: {}", extLocation);
-		return Kernel.getInstance();
+		return new Kernel(extLocation);
 	}
 
 	@Bean
@@ -86,7 +87,9 @@ public class CoreConfig {
 
 	@Bean
 	public Crypto crypto() {
-		return Crypto.instance;
+		Crypto crypto = new Crypto();
+		Crypto.instance = crypto;
+		return crypto;
 	}
 
 	@Bean(name = "testOverride")
@@ -101,17 +104,69 @@ public class CoreConfig {
 		return new AutowiredAnnotationBeanPostProcessor();
 
 	}
-	/*
-	@Bean(name = "macgyverJerseyClientConfig")
-	public ClientConfig jerseyClientConfig() {
-		ClientConfig cc = new ClientConfig();
-		cc.register(GsonMessageBodyProvider.class);
-		return cc;
-	}
-	*/
+
 	@Bean
 	public ServiceRegistry serviceInstanceRegistry() {
 		return new ServiceRegistry();
 	}
 
+
+	@Bean(name="io.macgyver.mapdb.TxMaker")
+	public TxMaker txMaker() {
+		if (isUnitTest()) {
+			TxMaker txm = DBMaker.newMemoryDB()
+					.makeTxMaker();
+			return txm;
+		}
+		else {
+			Optional<TxMaker> txm = BootstrapMapDB.getInstance().getTxMaker();
+			if (txm.isPresent()) {
+				return txm.get();
+			}
+			else {
+				BootstrapMapDB.getInstance().init();
+				return BootstrapMapDB.getInstance().getTxMaker().get();
+			}
+		
+		}
+	
+	}
+	public boolean isUnitTest() {
+		
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		new RuntimeException().printStackTrace(pw);
+		pw.close();
+		return sw.toString().contains("at org.junit");
+	
+	}
+	/*
+	 * This might be used in the future.
+	@Bean
+	public ShellProperties.SpringAuthenticationProperties crashAuthProperties() {
+		
+		ShellProperties.SpringAuthenticationProperties x = new ShellProperties.SpringAuthenticationProperties() {
+			
+			@Override
+			protected void applyToCrshShellConfig(Properties config) {
+				super.applyToCrshShellConfig(config);
+	
+			}
+		};
+		return x;
+	}
+	*/
+	@Bean
+	public InternalAuthenticationProvider internalAuthenticationProvider() {
+		return new InternalAuthenticationProvider();
+	}
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
+	    return new PropertySourcesPlaceholderConfigurer();
+	}
+	
+	@Bean
+	public HookScriptManager hookScriptManager() {
+		return new HookScriptManager();
+	}
 }

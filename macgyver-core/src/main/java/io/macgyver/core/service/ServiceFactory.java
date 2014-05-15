@@ -1,7 +1,6 @@
 package io.macgyver.core.service;
 
 import io.macgyver.core.MacGyverException;
-import io.macgyver.core.MacGyverPropertySourcesPlaceholderConfigurer;
 import io.macgyver.core.ServiceNotFoundException;
 
 import java.util.Map;
@@ -34,8 +33,6 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 	@Autowired
 	protected ApplicationContext applicationContext;
 
-	@Autowired
-	MacGyverPropertySourcesPlaceholderConfigurer cfg;
 
 	protected ServiceFactory(String type) {
 		Preconditions.checkNotNull(type);

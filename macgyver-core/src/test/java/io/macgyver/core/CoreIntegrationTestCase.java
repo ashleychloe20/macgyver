@@ -27,6 +27,7 @@ public abstract class CoreIntegrationTestCase extends AbstractJUnit4SpringContex
 
 	@BeforeClass 
 	public static void setup() {
+		System.setProperty("macgyver.ext.location", new java.io.File("./src/test/resources/ext").getAbsolutePath());
 		//Kernel.initialize();
 	}
 }

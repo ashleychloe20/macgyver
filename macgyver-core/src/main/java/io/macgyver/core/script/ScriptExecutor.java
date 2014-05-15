@@ -19,6 +19,7 @@ import javax.script.SimpleBindings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -31,7 +32,9 @@ public class ScriptExecutor implements ApplicationContextAware {
 	Logger logger = LoggerFactory.getLogger(ScriptExecutor.class);
 	Bindings bindings = new SimpleBindings();
 
+	@Autowired
 	ApplicationContext applicationContext;
+	@Autowired
 	Kernel kernel;
 
 	ScriptException evalException;
@@ -42,8 +45,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 	StringWriter errWriter;
 
 	public ScriptExecutor() {
-		this.applicationContext = Kernel.getInstance().getApplicationContext();
-		this.kernel = Kernel.getInstance();
+		
 	}
 
 	public String getStandardOutputString() {
@@ -114,7 +116,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 	}
 	public void run(String arg, Map<String, Object> vars, boolean failIfNotFound) {
-		File scriptDir = new File(kernel.getExtensionDir(), "scripts");
+		File scriptDir = new File(Kernel.getInstance().getExtensionDir(), "scripts");
 
 		File f = new File(scriptDir, arg);
 

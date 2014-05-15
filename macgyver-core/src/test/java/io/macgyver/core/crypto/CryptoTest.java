@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
 
 public class CryptoTest extends CoreIntegrationTestCase {
@@ -39,7 +38,7 @@ public class CryptoTest extends CoreIntegrationTestCase {
 	public void testDecryptWithMac0() throws GeneralSecurityException {
 
 		String input = "eyJrIjoibWFjMCIsImQiOiJYRjMrbDBuY0p2aW9tYTdjYW52Q2UrTmhIY2hqRnF5N2lHV201L3ltUWdVPSJ9";
-		String x = BaseEncoding.base64().encode(input.getBytes(Charsets.UTF_8));
+		//String x = BaseEncoding.base64().encode(input.getBytes(Charsets.UTF_8));
 
 		String plain = crypto.decryptString(input);
 
@@ -55,6 +54,7 @@ public class CryptoTest extends CoreIntegrationTestCase {
 	@Test
 	public void testEncrypt() throws GeneralSecurityException,
 			UnsupportedEncodingException {
+		Assert.assertNotNull(crypto);
 		String encodedEnvelope = crypto.encryptString("test", "mac0");
 		String envelope = new String(BaseEncoding.base64().decode(
 				encodedEnvelope), "UTF-8");

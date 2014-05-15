@@ -15,6 +15,7 @@ public class ServiceIntanceRegistryTest extends CoreIntegrationTestCase {
 
 	@Test
 	public void testX() {
+		logger.info("testing ServiceRegistry: {}",reg);
 		Assert.assertNotNull(reg.get("unittest.testBeanName"));
 
 		Assert.assertSame(reg.get("unittest.testBeanName"),

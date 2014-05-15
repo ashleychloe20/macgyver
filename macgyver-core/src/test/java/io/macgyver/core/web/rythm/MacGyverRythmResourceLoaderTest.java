@@ -1,0 +1,49 @@
+package io.macgyver.core.web.rythm;
+
+import io.macgyver.core.CoreIntegrationTestCase;
+import io.macgyver.core.web.rythm.MacGyverRythmResourceLoader;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.rythmengine.RythmEngine;
+import org.rythmengine.resource.ITemplateResource;
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class MacGyverRythmResourceLoaderTest extends CoreIntegrationTestCase {
+
+
+	@Autowired
+	RythmEngine rythmEngine;
+	
+
+	
+	@Test
+	public void testLoader() {
+		MacGyverRythmResourceLoader loader = new MacGyverRythmResourceLoader();
+		
+		String root = loader.getResourceLoaderRoot();
+		Assert.assertEquals("/", root);
+		
+		Assert.assertNull(loader.load("notfound.rythm"));
+		
+		Assert.assertNotNull(loader.load("templateFromClasspath.rythm"));
+		Assert.assertNotNull(loader.load("subdir/templateFromClasspathSubdir.rythm"));
+		
+		Assert.assertNotNull(loader.load("templateFromFile.rythm"));
+		Assert.assertNotNull(loader.load("subdir/templateFromFileSubdir.rythm"));
+		
+		ITemplateResource r = loader.load("subdir/templateFromFileSubdir.rythm");
+		Assert.assertTrue(r.asTemplateContent().contains("from sub dir"));
+		
+	}
+	
+	@Test
+	public void testPrecedence() {
+		MacGyverRythmResourceLoader loader = new MacGyverRythmResourceLoader();
+		ITemplateResource r = loader.load("precedenceTest.rythm");
+		
+		Assert.assertTrue(r.asTemplateContent().contains("from file"));
+	}
+	
+	
+}

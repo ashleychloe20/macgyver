@@ -1,23 +1,36 @@
 
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
+    gradleVersion = '1.12'
 }
 /*allprojects {
     group 'io.macgyver'
     version = '1.0.0-SNAPSHOT'
 }
 */
+buildscript {
+	ext {
+		springBootVersion = '1.0.2.RELEASE'
+	}
+    repositories {
+    	mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'eclipse'
-
+    apply plugin: 'spring-boot'
 	
     
     group 'io.macgyver'
     version = "${MACGYVER_VERSION}"
     
+
     
     configurations {
 		all*.exclude group: 'commons-logging', module: 'commons-logging'

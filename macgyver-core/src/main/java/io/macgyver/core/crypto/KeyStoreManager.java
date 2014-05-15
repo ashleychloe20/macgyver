@@ -38,7 +38,7 @@ public class KeyStoreManager {
 			return new File(location);
 		} else {
 			return new File(Kernel.determineExtensionDir(),
-					"conf/keystore.jceks");
+					"config/keystore.jceks");
 		}
 	}
 
