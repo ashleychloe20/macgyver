@@ -11,6 +11,7 @@ dependencies {
 
 	
     compile 'org.mongodb:mongo-java-driver:2.11.3'
+    compile "org.springframework.data:spring-data-mongodb:${SPRING_DATA_MONGODB_VERSION}"
 	compile project(':macgyver-core')
 	testCompile project(":macgyver-test")
 
