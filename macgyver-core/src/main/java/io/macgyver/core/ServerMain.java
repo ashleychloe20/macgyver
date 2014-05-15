@@ -22,7 +22,7 @@ import org.springframework.core.env.Environment;
  */
 
 @Configuration
-@ComponentScan(basePackages={"io.macgyver.config","io.macgyver.core.config"})
+@ComponentScan(basePackages={"io.macgyver.config","io.macgyver.plugin.config","io.macgyver.core.config"})
 @EnableAutoConfiguration
 public class ServerMain {
 

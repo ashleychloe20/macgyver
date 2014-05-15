@@ -15,11 +15,17 @@ public class GitHubTest extends MacgyverIntegrationTest {
 	@Autowired
 	ServiceRegistry reg;
 
+	@Autowired
+	GitHubServiceFactory githubServiceFactory;
+	
+	
 	@Test
 	public void testX() throws IOException {
 		GitHub gh = (GitHub) reg.get("testGitHub");
 
 		Assert.assertNotNull(gh);
+		
+		Assert.assertNotNull(githubServiceFactory);
 	}
 
 }

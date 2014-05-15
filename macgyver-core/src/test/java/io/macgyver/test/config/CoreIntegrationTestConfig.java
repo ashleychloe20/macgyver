@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  */
 
 @Configuration
-@ComponentScan(basePackages={"io.macgyver.config","io.macgyver.core.config"})
+@ComponentScan(basePackages={"io.macgyver.config","io.macgyver.plugin.config","io.macgyver.core.config"})
 public class CoreIntegrationTestConfig {
 
 

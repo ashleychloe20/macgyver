@@ -1,9 +1,9 @@
 package io.macgyver.metrics.leftronic;
 
-import io.macgyver.config.MetricsConfig;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.metrics.AbstractMetricRecorder;
 import io.macgyver.metrics.MetricRecorder;
+import io.macgyver.plugin.config.MetricsConfig;
 
 import java.io.IOException;
 
