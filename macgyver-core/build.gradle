@@ -69,7 +69,7 @@ compileJava.doLast() {
     p.setProperty("githubCommitUrl","https://github.com/if6was9/macgyver/commit/${p.gitCommitId}")
     p.setProperty("gitBranchName",new org.ajoberstar.grgit.service.BranchService(gitrepo.repository).getCurrent().getName())
     p.setProperty("gitBranchFullName",new org.ajoberstar.grgit.service.BranchService(gitrepo.repository).getCurrent().getFullName())
-    new File("src/main/resources/macgyver-core-revision.properties").withOutputStream {
+    new File("${project.projectDir}/src/main/resources/macgyver-core-revision.properties").withOutputStream {
         p.store(it,"revision info")
     }
     
