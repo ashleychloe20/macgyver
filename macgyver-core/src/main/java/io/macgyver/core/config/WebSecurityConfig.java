@@ -77,7 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public static class ApiWebSecurityConfigurationAdapter extends
 			WebSecurityConfigurerAdapter {
 		protected void configure(HttpSecurity http) throws Exception {
-			http.antMatcher("/api/**").authorizeRequests().anyRequest()
+			http.csrf().disable().antMatcher("/api/**").authorizeRequests().anyRequest()
 					.authenticated().and().httpBasic();
 		}
 	}
