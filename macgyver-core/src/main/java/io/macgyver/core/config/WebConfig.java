@@ -15,16 +15,13 @@ import org.rythmengine.conf.RythmConfigurationKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.web.filter.DelegatingFilterProxy;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Configuration

@@ -1,7 +1,5 @@
 package io.macgyver.test.config;
 
-import io.macgyver.core.config.CoreConfig;
-
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 

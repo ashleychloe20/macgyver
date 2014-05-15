@@ -1,6 +1,5 @@
 package io.macgyver.metrics.graphite;
 
-import java.io.IOException;
 
 
 public class Graphite extends AbstractGraphite {

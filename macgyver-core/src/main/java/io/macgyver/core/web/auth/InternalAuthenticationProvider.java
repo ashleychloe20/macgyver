@@ -2,14 +2,12 @@ package io.macgyver.core.web.auth;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.mapdb.DB;
 import org.mapdb.TxBlock;
 import org.mapdb.TxMaker;
 import org.mapdb.TxRollbackException;
-import org.rythmengine.logger.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;

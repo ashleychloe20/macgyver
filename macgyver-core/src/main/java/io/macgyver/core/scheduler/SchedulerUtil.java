@@ -1,10 +1,7 @@
 package io.macgyver.core.scheduler;
 
 import groovy.lang.Closure;
-import groovy.lang.DelegatingMetaClass;
-import groovy.lang.ExpandoMetaClass;
 import io.macgyver.core.Kernel;
-import io.macgyver.core.script.ScriptExecutor;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -20,7 +17,6 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Maps;
 

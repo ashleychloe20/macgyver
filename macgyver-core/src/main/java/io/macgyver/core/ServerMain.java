@@ -1,6 +1,5 @@
 package io.macgyver.core;
 
-import io.macgyver.core.config.CoreConfig;
 import io.macgyver.core.mapdb.BootstrapMapDB;
 
 import org.mapdb.DB;
