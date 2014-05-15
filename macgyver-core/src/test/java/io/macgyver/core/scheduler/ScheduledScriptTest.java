@@ -1,4 +1,6 @@
-package io.macgyver.scheduler;
+package io.macgyver.core.scheduler;
+
+import io.macgyver.core.scheduler.ScheduledScript;
 
 import org.junit.Assert;
 import org.junit.Test;

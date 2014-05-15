@@ -1,4 +1,6 @@
-package io.macgyver.scheduler;
+package io.macgyver.core.scheduler;
+
+import io.macgyver.core.scheduler.AutoScheduler;
 
 import java.io.File;
 import java.io.IOException;

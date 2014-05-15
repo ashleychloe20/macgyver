@@ -1,4 +1,4 @@
-package io.macgyver.scheduler;
+package io.macgyver.core.scheduler;
 
 import io.macgyver.core.Kernel;
 import io.macgyver.core.script.ScriptExecutor;

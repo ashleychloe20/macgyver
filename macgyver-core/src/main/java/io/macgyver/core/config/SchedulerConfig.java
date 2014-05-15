@@ -1,10 +1,10 @@
-package io.macgyver.config;
+package io.macgyver.core.config;
 
+import io.macgyver.core.scheduler.AutoScheduler;
+import io.macgyver.core.scheduler.AutoSchedulerFileWatcher;
+import io.macgyver.core.scheduler.AutoWiringSpringJobFactory;
+import io.macgyver.core.scheduler.SchedulerUtil;
 import io.macgyver.core.script.BindingSupplier;
-import io.macgyver.scheduler.AutoScheduler;
-import io.macgyver.scheduler.AutoSchedulerFileWatcher;
-import io.macgyver.scheduler.AutoWiringSpringJobFactory;
-import io.macgyver.scheduler.SchedulerUtil;
 
 import java.util.Properties;
 

@@ -1,6 +1,6 @@
 package io.macgyver.core;
 
-import io.macgyver.config.CoreConfig;
+import io.macgyver.core.config.CoreConfig;
 import io.macgyver.core.mapdb.BootstrapMapDB;
 
 import org.mapdb.DB;
@@ -22,7 +22,7 @@ import org.springframework.core.env.Environment;
  */
 
 @Configuration
-@ComponentScan(basePackageClasses = { CoreConfig.class })
+@ComponentScan(basePackages={"io.macgyver.config","io.macgyver.core.config"})
 @EnableAutoConfiguration
 public class ServerMain {
 

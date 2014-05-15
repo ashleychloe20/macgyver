@@ -1,4 +1,4 @@
-package io.macgyver.config;
+package io.macgyver.core.config;
 
 import io.macgyver.core.HookScriptManager;
 import io.macgyver.core.web.auth.InternalAuthenticationProvider;

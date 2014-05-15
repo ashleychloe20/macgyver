@@ -1,4 +1,4 @@
-package io.macgyver.scheduler;
+package io.macgyver.core.scheduler;
 
 import groovy.lang.Closure;
 import groovy.lang.DelegatingMetaClass;
