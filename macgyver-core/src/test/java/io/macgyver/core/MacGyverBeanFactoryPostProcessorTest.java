@@ -11,7 +11,7 @@ public class MacGyverBeanFactoryPostProcessorTest extends CoreIntegrationTestCas
 
 	@Autowired(required=false)
 	@Qualifier("testGroovyBean")
-	TestBean testBean;
+	DummyBean testBean;
 	
 	@Test
 	public void testIt() {

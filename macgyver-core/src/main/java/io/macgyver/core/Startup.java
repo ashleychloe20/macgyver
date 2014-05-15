@@ -31,13 +31,13 @@ public class Startup implements InitializingBean {
 
 	@Autowired
 	TxMaker txMaker;
-	
+
 	@Autowired
 	InternalAuthenticationProvider internalAuthenticationProvider;
-	
+
 	@Subscribe
 	public void onStart(ContextRefreshedEvent event) {
-		if (kernel.getApplicationContext()!=event.getSource()) {
+		if (kernel.getApplicationContext() != event.getSource()) {
 			return;
 		}
 		logger.info("STARTED: {}", event);
@@ -48,7 +48,7 @@ public class Startup implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		bus.register(this);
-		
+
 
 	}
 
@@ -70,8 +70,6 @@ public class Startup implements InitializingBean {
 
 	}
 
-
-
 	public void runInitScript(File f) {
 		if (f.isDirectory()) {
 			return;
@@ -80,17 +78,19 @@ public class Startup implements InitializingBean {
 		if (se.isSupportedScript(f)) {
 			try {
 				se.run(f, null, false);
-			} catch (RuntimeException e) {
-				Kernel.registerStartupError(e);
+			}
+			catch (RuntimeException e) {
+				kernel.registerStartupError(e);
+				throw e;
 			}
 		} else {
 			logger.info("ignoring file in init script dir: {}", f);
 		}
 	}
-	
+
 	protected void seedMapDB() {
-		
+
 		internalAuthenticationProvider.seedData();
-		
+
 	}
 }

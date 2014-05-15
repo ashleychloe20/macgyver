@@ -75,8 +75,12 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 				}
 			}
 		};
+		try {
 		txMaker.execute(b);
-
+		}
+		catch (RuntimeException e) {
+			logger.warn(e.toString());
+		}
 		return authToken.get();
 	}
 

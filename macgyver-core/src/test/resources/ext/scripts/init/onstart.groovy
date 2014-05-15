@@ -1,1 +1,3 @@
-System.out.println("HELLO\n\n\nWORLD")
+
+
+System.out.println("onstart.groovy")
