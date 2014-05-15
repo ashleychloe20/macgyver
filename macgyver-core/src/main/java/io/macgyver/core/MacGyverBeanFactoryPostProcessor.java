@@ -36,7 +36,7 @@ public class MacGyverBeanFactoryPostProcessor implements
 	@Override
 	public void postProcessBeanFactory(
 			ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		File beansGroovyFile = new File(Kernel.determineExtensionDir(), "conf/beans.groovy");
+		File beansGroovyFile = new File(Kernel.getExtensionConfigDir(),"springConfig.groovy");
 		if (beansGroovyFile.exists()) {
 			logger.info("adding beans from: {}",beansGroovyFile.getAbsolutePath());
 			GroovyBeanDefinitionReader gbdr = new GroovyBeanDefinitionReader(

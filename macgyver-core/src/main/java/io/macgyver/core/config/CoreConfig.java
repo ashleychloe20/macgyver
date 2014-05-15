@@ -4,6 +4,7 @@ import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
 import io.macgyver.core.HookScriptManager;
 import io.macgyver.core.Kernel;
+import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
 import io.macgyver.core.Startup;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
@@ -168,5 +169,10 @@ public class CoreConfig {
 	@Bean
 	public HookScriptManager hookScriptManager() {
 		return new HookScriptManager();
+	}
+	
+	@Bean
+	public MacGyverBeanFactoryPostProcessor macGyverBeanFactoryPostProcessor() {
+		return new MacGyverBeanFactoryPostProcessor(Kernel.getExtensionDir("."));
 	}
 }
