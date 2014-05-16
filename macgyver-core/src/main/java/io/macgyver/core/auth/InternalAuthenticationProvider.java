@@ -101,7 +101,9 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 			JsonObject x = new JsonObject();
 			x.addProperty("username", "admin");
 			JsonArray arr = new JsonArray();
-			arr.add(new Gson().toJsonTree("ROLE_CRASH_SHELL"));
+			arr.add(new Gson().toJsonTree("ROLE_MACGYVER_SHELL"));
+			arr.add(new Gson().toJsonTree("ROLE_MACGYVER_USER"));
+			arr.add(new Gson().toJsonTree("ROLE_MACGYVER_ADMIN"));
 			x.add("roles", arr);
 			userManager.save(x);
 			userManager.setPassword("admin", "admin");
