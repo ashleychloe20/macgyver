@@ -24,7 +24,7 @@ public class GrantedAuthoritiesTranslatorScriptHook extends
 		m.put("target",target);
 		
 		hookScriptManager.invokeHook("translateGrantedAuthorities", m);
-		
+	
 	}
 	
 	

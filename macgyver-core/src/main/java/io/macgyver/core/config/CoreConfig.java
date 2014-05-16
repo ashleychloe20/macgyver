@@ -162,10 +162,7 @@ public class CoreConfig {
 		return authenticationProperties;
 	}
 	*/
-	@Bean
-	public InternalAuthenticationProvider internalAuthenticationProvider() {
-		return new InternalAuthenticationProvider();
-	}
+
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
 	    return new PropertySourcesPlaceholderConfigurer();
