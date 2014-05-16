@@ -2,7 +2,7 @@ package io.macgyver.core.config;
 
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
-import io.macgyver.core.HookScriptManager;
+import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
 import io.macgyver.core.CoreSystemInfo;
@@ -172,8 +172,8 @@ public class CoreConfig {
 	}
 	
 	@Bean
-	public HookScriptManager macHookScriptManager() {
-		return new HookScriptManager();
+	public ScriptHookManager macHookScriptManager() {
+		return new ScriptHookManager();
 	}
 	
 	@Bean

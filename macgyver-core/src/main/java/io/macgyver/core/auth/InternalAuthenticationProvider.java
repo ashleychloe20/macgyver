@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.Assert;
 
@@ -45,6 +46,12 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 	@Autowired
 	AccessDecisionManager adm;
 
+	GrantedAuthoritiesMapper grantedAuthoritiesMapper;
+	
+	public void setAuthoritiesMapper(GrantedAuthoritiesMapper mapper) {
+		this.grantedAuthoritiesMapper = mapper;
+	}
+	
 	@Override
 	public Authentication authenticate(final Authentication authentication)
 			throws AuthenticationException {

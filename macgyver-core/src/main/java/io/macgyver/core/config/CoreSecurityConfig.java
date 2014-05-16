@@ -1,6 +1,8 @@
 package io.macgyver.core.config;
 
-import io.macgyver.core.HookScriptManager;
+import io.macgyver.core.ScriptHookManager;
+import io.macgyver.core.auth.GrantedAuthoritiesTranslatorChain;
+import io.macgyver.core.auth.GrantedAuthoritiesTranslatorScriptHook;
 import io.macgyver.core.auth.InternalAuthenticationProvider;
 import io.macgyver.core.auth.LogOnlyAccessDecisionVoter;
 import io.macgyver.core.auth.MacGyverAccessDecisionManager;
@@ -37,7 +39,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 	InternalAuthenticationProvider internalAuthenticationProvider;
 
 	@Autowired
-	HookScriptManager hookScriptManager;
+	ScriptHookManager hookScriptManager;
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
@@ -106,7 +108,6 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	AccessDecisionManager macgyverAccessDecisionManager() {
 		
-		
 		List<AccessDecisionVoter> list = macgyverAccessDecisionVoterList();
 		
 		return new MacGyverAccessDecisionManager(list);
@@ -122,4 +123,21 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 	}
 
+	@Bean
+	public GrantedAuthoritiesTranslatorChain macGrantedAuthoritiesTranslatorChain() {
+		GrantedAuthoritiesTranslatorChain chain = new GrantedAuthoritiesTranslatorChain();
+		chain.addTranslator(macGrantedAuthoritiesTranslatorScriptHook());
+		return chain;
+	}
+	@Bean
+	public GrantedAuthoritiesTranslatorScriptHook macGrantedAuthoritiesTranslatorScriptHook() {
+		return new GrantedAuthoritiesTranslatorScriptHook();
+	}
+	
+	@Bean
+	public InternalAuthenticationProvider macInternalAuthenticationProvider() {
+		InternalAuthenticationProvider p = new InternalAuthenticationProvider();
+		p.setAuthoritiesMapper(macGrantedAuthoritiesTranslatorChain());
+		return p;
+	}
 }
