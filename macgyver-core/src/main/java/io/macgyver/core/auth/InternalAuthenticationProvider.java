@@ -14,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,11 +48,18 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public Authentication authenticate(final Authentication authentication)
 			throws AuthenticationException {
-		boolean b = userManager.authenticate(authentication.getPrincipal()
-				.toString(), authentication.getCredentials().toString());
-
+		
 		Optional<JsonObject> u = userManager.getUserAsJsonObject(authentication
 				.getPrincipal().toString());
+		if (!u.isPresent()) {
+			throw new UsernameNotFoundException("user not found: "+authentication.getPrincipal().toString());
+		}
+		boolean b = userManager.authenticate(authentication.getPrincipal()
+				.toString(), authentication.getCredentials().toString());
+		if (!b) {
+			throw new BadCredentialsException("invalid credentials");
+		}
+		
 		JsonElement r = u.get().get("roles");
 
 		List<GrantedAuthority> gaList = Lists.newArrayList();
