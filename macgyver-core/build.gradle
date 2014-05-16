@@ -40,6 +40,7 @@ dependencies {
     compile 'com.ning:async-http-client:1.7.23'
 	compile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
 	compile 'org.quartz-scheduler:quartz:2.2.1'
+    compile 'com.jayway.jsonpath:json-path:0.9.1'
     compile("org.springframework.boot:spring-boot-starter-web:${SPRING_BOOT_VERSION}")
     compile("org.springframework.boot:spring-boot-starter-remote-shell:${SPRING_BOOT_VERSION}")
     
