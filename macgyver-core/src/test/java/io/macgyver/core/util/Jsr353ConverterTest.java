@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class JSR353ConverterTest extends AbstractConverterTest {
+public class Jsr353ConverterTest extends AbstractConverterTest {
 
 	String jsonText = "{\"name\":\"Jerry\"}";
 	String jsonArrayText = "[{\"name\":\"Jerry\"}]";
@@ -46,17 +46,17 @@ public class JSR353ConverterTest extends AbstractConverterTest {
 	}
 
 	@Override
-	public Class getAbstractNodeClass() {
+	public Class<? extends Object> getAbstractNodeClass() {
 		return JsonStructure.class;
 	}
 
 	@Override
-	public Class getObjectNodeClass() {
+	public Class<? extends Object> getObjectNodeClass() {
 		return ObjectNode.class;
 	}
 
 	@Override
-	public Class getArrayNodeClass() {
+	public Class<? extends Object> getArrayNodeClass() {
 		return ArrayNode.class;
 	}
 }

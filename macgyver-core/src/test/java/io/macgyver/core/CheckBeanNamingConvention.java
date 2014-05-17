@@ -21,6 +21,7 @@ public class CheckBeanNamingConvention extends CoreIntegrationTestCase {
 
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
 
+			@SuppressWarnings("rawtypes")
 			Class c = entry.getValue().getClass();
 			
 			if (c.getPackage().getName().startsWith("io.macgyver")) {
@@ -31,6 +32,7 @@ public class CheckBeanNamingConvention extends CoreIntegrationTestCase {
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public void check(String name, Class clazz) {
 		if (name.contains("Config") || name.equals("testGroovyBean")) {
 			

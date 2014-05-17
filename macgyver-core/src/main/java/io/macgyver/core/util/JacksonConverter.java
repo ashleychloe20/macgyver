@@ -6,15 +6,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JacksonConverter implements Xson.Converter {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <X> X convertObject(Object input, Class<X> output) {
 
 		try {
-			String val = null;
+		
 			if (input == null) {
 				return null;
 			}
-			return (X) new ObjectMapper().reader().readTree(input.toString());
+			X x = (X) new ObjectMapper().reader().readTree(input.toString());
+			return x;
+
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

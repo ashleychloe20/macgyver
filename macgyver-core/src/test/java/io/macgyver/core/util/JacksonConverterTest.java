@@ -4,6 +4,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,35 +28,31 @@ public class JacksonConverterTest extends AbstractConverterTest {
 
 	@Test
 	public void testJsonObject() {
-		JsonObject x = Xson.convert(jsonText, JsonObject.class);
+		Xson.convert(jsonText, JsonObject.class);
 
 	}
 
-	@Test(expected = ClassCastException.class)
-	public void testInvalidTarget() {
-		JsonArray x = Xson.convert(jsonText, JsonArray.class);
 
-	}
 
 	@Test
 	public void testIdentityArray() {
 		JsonArray x = Xson.convert(
 				Xson.convert(jsonArrayText, JsonArray.class), JsonArray.class);
-
+		Assert.assertNotNull(x);
 	}
 
 	@Override
-	public Class getAbstractNodeClass() {
+	public Class<? extends Object> getAbstractNodeClass() {
 		return JsonNode.class;
 	}
 
 	@Override
-	public Class getObjectNodeClass() {
+	public Class<? extends Object> getObjectNodeClass() {
 		return ObjectNode.class;
 	}
 
 	@Override
-	public Class getArrayNodeClass() {
+	public Class<? extends Object> getArrayNodeClass() {
 		return ArrayNode.class;
 	}
 }

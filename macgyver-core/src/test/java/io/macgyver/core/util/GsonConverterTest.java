@@ -29,7 +29,7 @@ public class GsonConverterTest extends AbstractConverterTest {
 
 	@Test(expected = ClassCastException.class)
 	public void testInvalidTarget() {
-		JsonArray x = Xson.convert(jsonText, JsonArray.class);
+		 Xson.convert(jsonText, JsonArray.class);
 
 	}
 
@@ -41,16 +41,19 @@ public class GsonConverterTest extends AbstractConverterTest {
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Class getAbstractNodeClass() {
 		return JsonElement.class;
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Class getObjectNodeClass() {
 		return JsonObject.class;
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Class getArrayNodeClass() {
 		return JsonArray.class;
 	}
