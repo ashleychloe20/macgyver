@@ -30,7 +30,7 @@ public class DataSourceFactoryTest extends MacgyverIntegrationTest {
 		Assert.assertNotNull(applicationContext);
 		Assert.assertSame(Kernel.getInstance(), kernel);
 		Assert.assertSame(Kernel.getInstance(),
-				applicationContext.getBean("macgyverKernel"));
+				applicationContext.getBean("macKernel"));
 
 	}
 

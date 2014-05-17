@@ -14,7 +14,7 @@ public class HipChatServiceFactory extends
 		io.macgyver.core.service.ServiceFactory<HipChat> {
 
 	@Autowired
-	@Qualifier("macgyverAsyncHttpClient")
+	@Qualifier("macAsyncHttpClient")
 	AsyncHttpClient client;
 
 	public HipChatServiceFactory() {

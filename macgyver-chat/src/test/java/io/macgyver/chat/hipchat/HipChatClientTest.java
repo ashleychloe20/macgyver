@@ -15,7 +15,7 @@ import com.ning.http.client.AsyncHttpClient;
 public class HipChatClientTest extends MacgyverIntegrationTest {
 
 	@Autowired
-	@Qualifier("macgyverAsyncHttpClient")
+	@Qualifier("macAsyncHttpClient")
 	AsyncHttpClient client;
 
 	@Autowired

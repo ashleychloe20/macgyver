@@ -1,3 +1,3 @@
 puts "Hello, Ruby!"
 
-puts "kernel: #{$beans['macgyverKernel']}"
+puts "kernel: #{$beans['macKernel']}"
