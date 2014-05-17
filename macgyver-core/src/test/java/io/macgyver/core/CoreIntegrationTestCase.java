@@ -1,6 +1,6 @@
 package io.macgyver.core;
 
-import io.macgyver.core.testconfig.CoreIntegrationTestConfig;
+import io.macgyver.test.config.CoreIntegrationTestConfig;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;

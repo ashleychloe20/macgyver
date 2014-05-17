@@ -1,8 +1,5 @@
 package io.macgyver.email;
 
-import io.macgyver.core.MacGyverException;
-
-import java.net.InetAddress;
 import java.util.List;
 
 import javax.mail.Message;

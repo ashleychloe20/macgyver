@@ -1,8 +1,9 @@
 package io.macgyver.metrics.librato;
 
-import java.io.IOException;
+import io.macgyver.core.MacGyverException;
+import io.macgyver.metrics.AbstractMetricRecorder;
 
-import javax.json.Json;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +16,6 @@ import com.google.gson.JsonObject;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Response;
-
-import io.macgyver.core.MacGyverException;
-import io.macgyver.metrics.AbstractMetricRecorder;
-import io.macgyver.metrics.MetricRecorder;
 
 public class Librato extends AbstractMetricRecorder {
 

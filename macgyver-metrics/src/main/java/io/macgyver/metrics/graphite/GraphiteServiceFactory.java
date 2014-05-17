@@ -7,8 +7,6 @@ import java.util.Properties;
 
 import org.springframework.stereotype.Component;
 
-import com.ning.http.client.AsyncHttpClient;
-
 @Component
 public class GraphiteServiceFactory extends BasicServiceFactory<Graphite> {
 

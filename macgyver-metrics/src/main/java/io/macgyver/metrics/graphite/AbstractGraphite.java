@@ -3,22 +3,17 @@ package io.macgyver.metrics.graphite;
 import io.macgyver.core.jaxrs.GsonMessageBodyHandler;
 import io.macgyver.metrics.AbstractMetricRecorder;
 import io.macgyver.metrics.BasicTSV;
-import io.macgyver.metrics.MetricRecorder;
 import io.macgyver.metrics.TSV;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;

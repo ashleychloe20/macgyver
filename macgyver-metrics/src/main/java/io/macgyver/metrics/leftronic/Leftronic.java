@@ -1,24 +1,18 @@
 package io.macgyver.metrics.leftronic;
 
-import io.macgyver.config.MetricsConfig;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.metrics.AbstractMetricRecorder;
-import io.macgyver.metrics.MetricRecorder;
 
 import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.ning.http.client.AsyncCompletionHandler;
-import com.ning.http.client.AsyncHandler.STATE;
 import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.HttpResponseStatus;
 import com.ning.http.client.Response;
 
 public class Leftronic extends AbstractMetricRecorder {

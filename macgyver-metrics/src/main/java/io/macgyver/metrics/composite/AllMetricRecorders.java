@@ -1,11 +1,10 @@
 package io.macgyver.metrics.composite;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-
-import io.macgyver.core.Kernel.KernelStartedEvent;
 import io.macgyver.core.service.ServiceCreatedEvent;
 import io.macgyver.metrics.MetricRecorder;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import com.google.common.eventbus.Subscribe;
 

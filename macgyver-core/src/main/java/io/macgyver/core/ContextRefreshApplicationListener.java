@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
+import com.google.common.base.Optional;
+
 public class ContextRefreshApplicationListener implements
 		ApplicationListener<ContextRefreshedEvent> {
 
@@ -23,9 +25,16 @@ public class ContextRefreshApplicationListener implements
 
 		eventBus.post(event);
 
+		Optional<Throwable> e = Kernel.getInstance().getStartupError();
+
+		if (e.isPresent()) {
+			if (e.get() instanceof RuntimeException) {
+				throw ((RuntimeException) e.get());
+			}
+			throw new RuntimeException(e.get());
+		}
 		log.info("event post complete");
-		
-		
+
 		eventBus.post(new Kernel.KernelStartedEvent());
 	}
 

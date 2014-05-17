@@ -1,7 +1,7 @@
 package io.macgyver.core;
 
 import groovy.lang.GroovyShell;
-import io.macgyver.config.CoreConfig;
+import io.macgyver.core.config.CoreConfig;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
 import java.io.File;
