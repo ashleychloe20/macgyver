@@ -31,6 +31,8 @@ subprojects {
     group 'io.macgyver'
     version = "${MACGYVER_VERSION}"
     
+    mainClassName = 'io.macgyver.core.ServerMain'
+    
     
     
     configurations {
