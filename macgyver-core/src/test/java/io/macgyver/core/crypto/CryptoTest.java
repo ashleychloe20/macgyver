@@ -38,8 +38,7 @@ public class CryptoTest extends CoreIntegrationTestCase {
 	public void testDecryptWithMac0() throws GeneralSecurityException {
 	
 		String input = "eyJrIjoibWFjMCIsImQiOiJKZXE2SXptUEQrZFNHcEhBWUxLODJYTW5JS2JlQ0czMng5U3g5OTNxaTZzPSJ9";
-		//String x = BaseEncoding.base64().encode(input.getBytes(Charsets.UTF_8));
-		System.out.println(crypto.getKeyStoreManager().getKeyStoreLocation());
+		
 		String plain = crypto.decryptString(input);
 
 		Assert.assertEquals("abcdefg", plain);
