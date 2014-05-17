@@ -9,12 +9,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CoreTestConfig {
 	@Bean
-	public TestBeanServiceFactory testBeanServiceFactory() {
+	public TestBeanServiceFactory macTestBeanFactory() {
 		return new TestBeanServiceFactory();
 	}
 	
 	@Bean
-	public MacgyverWeb macgyverWeb() {
+	public MacgyverWeb macWEb() {
 		return new MacgyverWeb();
 	}
 }

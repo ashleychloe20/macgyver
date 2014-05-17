@@ -48,50 +48,50 @@ public class CoreConfig {
 
 
 	@Bean
-	public ContextRefreshApplicationListener contextRefreshApplicationListener() {
+	public ContextRefreshApplicationListener macContextRefreshApplicationListener() {
 		return new ContextRefreshApplicationListener();
 	}
 
-	@Bean(name = "macgyverAsyncHttpClient", destroyMethod = "close")
-	public AsyncHttpClient macgyverAsyncHttpClient() {
+	@Bean(name = "macAsyncHttpClient", destroyMethod = "close")
+	public AsyncHttpClient macAsyncHttpClient() {
 		return new AsyncHttpClient();
 	}
 
-	@Bean(name = "macGyverEventBus")
-	public MacGyverEventBus macGyverEventBus() {
+	@Bean(name = "macEventBus")
+	public MacGyverEventBus macEventBus() {
 		MacGyverEventBus b = new MacGyverEventBus();
 		return b;
 	}
 
 	@Bean
-	public EventBusPostProcessor createEventBusPostProcessor() {
+	public EventBusPostProcessor macEventBusPostProcessor() {
 		return new EventBusPostProcessor();
 	}
 
-	@Bean(name = "macgyverKernel")
-	public Kernel createKernel() {
+	@Bean(name = "macKernel")
+	public Kernel macKernel() {
 		File extLocation = Kernel.determineExtensionDir();
 		logger.info("macgyver.ext.location: {}", extLocation);
 		return new Kernel(extLocation);
 	}
 
 	@Bean
-	public Startup startup() {
+	public Startup macStartup() {
 		return new Startup();
 	}
 
 	@Bean
-	public BindingSupplierManager bindingSupplierManager() {
+	public BindingSupplierManager macBindingSupplierManager() {
 		return new BindingSupplierManager();
 	}
 
 	@Bean
-	public CoreBindingSupplier coreBindingSupplier() {
+	public CoreBindingSupplier macCoreBindingSupplier() {
 		return new CoreBindingSupplier();
 	}
 
 	@Bean
-	public Crypto crypto() {
+	public Crypto macCrypto() {
 		Crypto crypto = new Crypto();
 		Crypto.instance = crypto;
 		return crypto;
@@ -105,18 +105,18 @@ public class CoreConfig {
 	}
 
 	@Bean
-	public static AutowiredAnnotationBeanPostProcessor autowiredPostProcessor() {
+	public static AutowiredAnnotationBeanPostProcessor macAutowiredPostProcessor() {
 		return new AutowiredAnnotationBeanPostProcessor();
 
 	}
 
 	@Bean
-	public ServiceRegistry serviceInstanceRegistry() {
+	public ServiceRegistry macServiceInstanceRegistry() {
 		return new ServiceRegistry();
 	}
 
 
-	@Bean(name="io.macgyver.mapdb.TxMaker")
+	@Bean(name="macTxMaker")
 	public TxMaker txMaker() {
 		if (isUnitTest()) {
 			TxMaker txm = DBMaker.newMemoryDB()
@@ -164,7 +164,7 @@ public class CoreConfig {
 	*/
 
 	@Bean
-	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
+	public static PropertySourcesPlaceholderConfigurer macPropertyPlaceholderConfigurer() {
 	    return new PropertySourcesPlaceholderConfigurer();
 	}
 	
@@ -174,11 +174,11 @@ public class CoreConfig {
 	}
 	
 	@Bean
-	public MacGyverBeanFactoryPostProcessor macGyverBeanFactoryPostProcessor() {
+	public MacGyverBeanFactoryPostProcessor macBeanFactoryPostProcessor() {
 		return new MacGyverBeanFactoryPostProcessor(Kernel.getExtensionDir("."));
 	}
 	@Bean(name="macCoreRevisionInfo")
-	public CoreSystemInfo revisionInfo() {
+	public CoreSystemInfo macCoreRevisionInfo() {
 		return new CoreSystemInfo();
 	}
 	

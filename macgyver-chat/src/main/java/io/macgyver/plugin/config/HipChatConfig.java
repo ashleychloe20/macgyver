@@ -9,7 +9,7 @@ import io.macgyver.chat.hipchat.HipChatServiceFactory;
 public class HipChatConfig {
 
 	@Bean
-	public HipChatServiceFactory hipChatServiceFactory() {
+	public HipChatServiceFactory macHipChatServiceFactory() {
 		return new HipChatServiceFactory();
 	}
 	

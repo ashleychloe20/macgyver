@@ -2,6 +2,7 @@ package io.macgyver.core;
 
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +32,14 @@ public class CheckBeanNamingConvention extends CoreIntegrationTestCase {
 	}
 	
 	public void check(String name, Class clazz) {
-		if (!name.startsWith("mac")) {
-			logger.warn("bean naming violation: "+name+" for "+clazz);
+		if (name.contains("Config") || name.equals("testGroovyBean")) {
+			
+		}
+		else if (!name.startsWith("mac")) {
+			Assert.fail("bean naming violation: "+name+" for "+clazz);
 		}
 		else if (name.toLowerCase().startsWith("macgyver")) {
-			logger.warn("bean naming violation: "+name+" for "+clazz);
+			Assert.fail("bean naming violation: "+name+" for "+clazz);
 		}
 	}
 }

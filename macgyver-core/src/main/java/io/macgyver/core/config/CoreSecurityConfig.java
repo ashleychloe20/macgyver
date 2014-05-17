@@ -97,7 +97,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	List<AccessDecisionVoter> macgyverAccessDecisionVoterList() {
+	List<AccessDecisionVoter> macAccessDecisionVoterList() {
 		List<AccessDecisionVoter> x = Lists.newCopyOnWriteArrayList();
 		x.add(new LogOnlyAccessDecisionVoter());
 		x.add(new RoleVoter());
@@ -106,9 +106,9 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	AccessDecisionManager macgyverAccessDecisionManager() {
+	AccessDecisionManager macAccessDecisionManager() {
 		
-		List<AccessDecisionVoter> list = macgyverAccessDecisionVoterList();
+		List<AccessDecisionVoter> list = macAccessDecisionVoterList();
 		
 		return new MacGyverAccessDecisionManager(list);
 	}

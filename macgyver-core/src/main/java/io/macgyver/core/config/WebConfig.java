@@ -44,7 +44,7 @@ public class WebConfig implements EnvironmentAware {
 	}
 
 	@Bean
-	public CoreApiController coreApiController() {
+	public CoreApiController macCoreApiController() {
 		return new CoreApiController();
 	}
 	
@@ -57,16 +57,16 @@ public class WebConfig implements EnvironmentAware {
 
 	
 	@Bean
-	public MacgyverWeb macgyverWebConfig() {
+	public MacgyverWeb macWebConfig() {
 		return new MacgyverWeb();
 	}
 	@Bean
-	public RythmViewResolver rythmViewResolver() {
+	public RythmViewResolver macRythmViewResolver() {
 		return new RythmViewResolver();
 	}
 	
-	@Bean(name="io.macgyver.web.RythmEngine")
-	public RythmEngine macgyverRythmEngine() {
+	@Bean(name="macRythmEngine")
+	public RythmEngine macRythmEngine() {
 		Map<String,String> cfg = Maps.newHashMap();	
 		cfg.put(RythmConfigurationKey.RESOURCE_LOADER_IMPLS.getKey(), MacGyverRythmResourceLoader.class.getName());
 		cfg.put(RythmConfigurationKey.ENGINE_MODE.getKey(), "dev");
@@ -78,12 +78,12 @@ public class WebConfig implements EnvironmentAware {
 
 	
 	@Bean
-	public MenuManager menuManager() {
+	public MenuManager macMenuManager() {
 		return new MenuManager();
 	}
 	
 	@Bean
-	public StandardMenuDecorator standardMenuDecorator() {
+	public StandardMenuDecorator macStandardMenuDecorator() {
 		return new StandardMenuDecorator();
 	}
 }

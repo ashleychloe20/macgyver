@@ -15,7 +15,7 @@ import com.google.common.base.Optional;
 import com.google.gson.Gson;
 
 @RequestMapping("/api/core")
-@Controller
+@Controller("macCoreApiController")
 public class CoreApiController {
 
 	@Autowired

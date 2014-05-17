@@ -22,7 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.Maps;
 
-@Component
+@Component("macAdminController")
 @Controller
 @RequestMapping("/admin")
 public class AdminController {

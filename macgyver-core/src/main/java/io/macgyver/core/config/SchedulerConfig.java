@@ -23,7 +23,7 @@ public class SchedulerConfig {
 	ApplicationContext applicationContext;
 
 	@Bean
-	public SchedulerFactoryBean scheduler() {
+	public SchedulerFactoryBean macSchedulerFactoryBean() {
 
 		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
 		schedulerFactoryBean.setAutoStartup(schedulerEnabled);
@@ -42,19 +42,19 @@ public class SchedulerConfig {
 	}
 
 	@Bean
-	public AutoWiringSpringJobFactory springJobFactory() {
+	public AutoWiringSpringJobFactory macSpringJobFactory() {
 		return new AutoWiringSpringJobFactory();
 	}
 
 	@Bean
-	public SchedulerUtil schedulerUtil() {
+	public SchedulerUtil macSchedulerUtil() {
 		return new SchedulerUtil();
 	}
 	
 
 	
 	@Bean
-	public AutoScheduler autoScheduler() {
+	public AutoScheduler macAutoScheduler() {
 		return new AutoScheduler();
 	}
 
