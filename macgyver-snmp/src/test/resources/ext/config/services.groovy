@@ -1,0 +1,6 @@
+
+
+snmpTest {
+	
+	serviceType="snmp"
+}
