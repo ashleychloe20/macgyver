@@ -10,6 +10,11 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.support.PersistenceExceptionTranslator;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoExceptionTranslator;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Preconditions;
@@ -41,8 +46,6 @@ public class MongoDBServiceFactory extends ServiceFactory<MongoClient> {
 
 
 
-	
-	
 	public class ExtendedMongoClient extends MongoClient {
 
 		MongoClientURI mongoClientUri;
@@ -121,8 +124,10 @@ public class MongoDBServiceFactory extends ServiceFactory<MongoClient> {
 		
 		ExtendedMongoClient c = (ExtendedMongoClient) primaryBean;
 		DB db = c.getDB(c.getDatabaseName());
+		MongoTemplate template = new MongoTemplate(db.getMongo(),c.getDatabaseName());
 		
 		registry.registerCollaborator(primaryDefinition.getName()+"DB", db);
+		registry.registerCollaborator(primaryDefinition.getName()+"Template", template);
 		
 	}
 

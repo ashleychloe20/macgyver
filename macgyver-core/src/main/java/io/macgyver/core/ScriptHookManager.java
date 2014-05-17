@@ -11,28 +11,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Preconditions;
 
-public class HookScriptManager {
+public class ScriptHookManager {
 
-	Logger logger = LoggerFactory.getLogger(HookScriptManager.class);
+	Logger logger = LoggerFactory.getLogger(ScriptHookManager.class);
 	@Autowired
 	Kernel kernel;
-	
-	public void invokeHook(String name, Map<String,Object> data) {
+
+	public Object invokeHook(String name, Map<String, Object> data) {
 		Preconditions.checkNotNull(name);
-		
+
 		File hooksDir = kernel.getExtensionDir("scripts/hooks");
-		
-		File hookFile = new File(hooksDir,name+".groovy");
-		
-		logger.info("running hook script: {}",hookFile);
-		logger.info("hook script vars: {}",data);
-		
+
+		File hookFile = new File(hooksDir, name + ".groovy");
+
+		logger.info("running hook script: {}", hookFile);
+		logger.info("hook script vars: {}", data);
+
 		if (hookFile.exists()) {
 			ScriptExecutor se = new ScriptExecutor();
-			se.run(hookFile, data, false);
+			return se.run(hookFile, data, false);
+		} else {
+			logger.info("hook file not found: {}", hookFile);
 		}
-		else {
-			logger.info("hook file not found: {}",hookFile);
-		}
+		return null;
 	}
 }

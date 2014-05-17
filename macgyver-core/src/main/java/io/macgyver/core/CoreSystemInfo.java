@@ -2,8 +2,6 @@ package io.macgyver.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.io.Closer;
 

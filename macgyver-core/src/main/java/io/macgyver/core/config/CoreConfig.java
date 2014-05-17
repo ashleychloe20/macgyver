@@ -2,18 +2,19 @@ package io.macgyver.core.config;
 
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
-import io.macgyver.core.HookScriptManager;
+import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
 import io.macgyver.core.CoreSystemInfo;
 import io.macgyver.core.Startup;
+import io.macgyver.core.auth.InternalAuthenticationProvider;
+import io.macgyver.core.auth.UserManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 import io.macgyver.core.mapdb.BootstrapMapDB;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.core.web.auth.InternalAuthenticationProvider;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -27,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties;
+import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellAuthenticationProperties;
+import org.springframework.boot.actuate.autoconfigure.ShellProperties.SpringAuthenticationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -142,42 +145,45 @@ public class CoreConfig {
 		return sw.toString().contains("at org.junit");
 	
 	}
-	/*
-	 * This might be used in the future.
-	@Bean
-	public ShellProperties.SpringAuthenticationProperties crashAuthProperties() {
-		
-		ShellProperties.SpringAuthenticationProperties x = new ShellProperties.SpringAuthenticationProperties() {
-			
-			@Override
-			protected void applyToCrshShellConfig(Properties config) {
-				super.applyToCrshShellConfig(config);
 	
-			}
-		};
-		return x;
+	
+/*
+	@Bean
+	public CrshShellAuthenticationProperties macCrashAuth() {
+		// In case no shell.auth property is provided fall back to Spring Security
+		// based authentication and get role to access shell from
+		// ManagementServerProperties.
+		// In case shell.auth is set to spring and roles are configured using
+		// shell.auth.spring.roles the below default role will be overridden by
+		// ConfigurationProperties.
+		SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();
+		authenticationProperties.setRoles(new String[] {"FOOR"});
+		
+		return authenticationProperties;
 	}
 	*/
-	@Bean
-	public InternalAuthenticationProvider internalAuthenticationProvider() {
-		return new InternalAuthenticationProvider();
-	}
+
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyPlaceholderConfigurer() {
 	    return new PropertySourcesPlaceholderConfigurer();
 	}
 	
 	@Bean
-	public HookScriptManager hookScriptManager() {
-		return new HookScriptManager();
+	public ScriptHookManager macHookScriptManager() {
+		return new ScriptHookManager();
 	}
 	
 	@Bean
 	public MacGyverBeanFactoryPostProcessor macGyverBeanFactoryPostProcessor() {
 		return new MacGyverBeanFactoryPostProcessor(Kernel.getExtensionDir("."));
 	}
-	@Bean(name="io.macgyver.CoreRevisionInfo")
+	@Bean(name="macCoreRevisionInfo")
 	public CoreSystemInfo revisionInfo() {
 		return new CoreSystemInfo();
+	}
+	
+	@Bean(name="macUserManager")
+	public UserManager macUserManager() {
+		return new UserManager();
 	}
 }

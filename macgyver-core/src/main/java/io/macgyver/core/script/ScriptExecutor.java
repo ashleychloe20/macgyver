@@ -100,8 +100,8 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 	}
 
-	public void run(String arg) {
-		run(arg, null, true);
+	public Object run(String arg) {
+		return run(arg, null, true);
 	}
 	public boolean isSupportedScript(File f) {
 		try {
@@ -115,23 +115,23 @@ public class ScriptExecutor implements ApplicationContextAware {
 		}
 
 	}
-	public void run(String arg, Map<String, Object> vars, boolean failIfNotFound) {
+	public Object run(String arg, Map<String, Object> vars, boolean failIfNotFound) {
 		File scriptDir = new File(Kernel.getInstance().getExtensionDir(), "scripts");
 
 		File f = new File(scriptDir, arg);
 
-		run(f, vars, failIfNotFound);
+		return run(f, vars, failIfNotFound);
 	}
 
-	public void run(File f, Map<String, Object> vars, boolean failIfNotFound) {
+	public Object run(File f, Map<String, Object> vars, boolean failIfNotFound) {
 		Closer closer = Closer.create();
-
+		Object rval = null;
 		try {
 
 			logger.info("script {}", f.getAbsolutePath());
 			if (!f.exists() && !failIfNotFound) {
 				logger.info("init script not found: {}", f.getAbsolutePath());
-				return;
+				return null;
 			}
 			ScriptEngineManager factory = new ScriptEngineManager();
 			ScriptEngine engine = factory.getEngineByExtension(Files
@@ -156,7 +156,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 			collectBindings(bindings, Optional.fromNullable(engine.getFactory().getLanguageName()));
 
 		
-			engine.eval(fr, bindings);
+			rval = engine.eval(fr, bindings);
 
 			fr.close();
 
@@ -174,6 +174,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 			}
 
 		}
+		return rval;
 	}
 
 	public Bindings getBindings() {

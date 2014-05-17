@@ -1,7 +1,7 @@
 package io.macgyver.core;
 
+import io.macgyver.core.auth.InternalAuthenticationProvider;
 import io.macgyver.core.script.ScriptExecutor;
-import io.macgyver.core.web.auth.InternalAuthenticationProvider;
 
 import java.io.File;
 import java.util.Iterator;
