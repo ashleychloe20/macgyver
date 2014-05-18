@@ -3,12 +3,15 @@ package io.macgyver.core;
 import groovy.lang.Binding;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -19,6 +22,8 @@ import org.springframework.beans.factory.support.AbstractBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 
 import com.google.common.collect.Sets;
 
@@ -36,9 +41,10 @@ public class MacGyverBeanFactoryPostProcessor implements
 	@Override
 	public void postProcessBeanFactory(
 			ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		File beansGroovyFile = new File(Kernel.getExtensionConfigDir(),"springConfig.groovy");
+		try {
+		FileObject beansGroovyFile = Bootstrap.getInstance().getVfsManager().getConfigLocation().resolveFile("springConfig.groovy");
 		if (beansGroovyFile.exists()) {
-			logger.info("adding beans from: {}",beansGroovyFile.getAbsolutePath());
+			logger.info("adding beans from: {}",beansGroovyFile);
 			GroovyBeanDefinitionReader gbdr = new GroovyBeanDefinitionReader(
 					(BeanDefinitionRegistry) beanFactory);
 			Binding b = new Binding();
@@ -46,11 +52,26 @@ public class MacGyverBeanFactoryPostProcessor implements
 			PropertiesAccessor pa = new PropertiesAccessor((AbstractBeanFactory)beanFactory);
 			b.setProperty("properties", pa);
 			gbdr.setBinding(b);
-			gbdr.loadBeanDefinitions(new FileSystemResource(beansGroovyFile));
+			
+			InputStreamResource isr = new InputStreamResource(beansGroovyFile.getContent().getInputStream()) {
+
+				@Override
+				public String getFilename() {
+					// GroovyBeanDefinitionLoader chokes without this
+					return "springConfig.groovy";
+				}
+				
+			};
+			
+			gbdr.loadBeanDefinitions(isr);
 			
 		}
 		else {
-			logger.info("groovy bean config file not found: {}",beansGroovyFile.getAbsolutePath());
+			logger.info("groovy bean config file not found: {}",beansGroovyFile);
+		}
+		}
+		catch (FileSystemException e) {
+			throw new MacGyverException("",e);
 		}
 	}
 

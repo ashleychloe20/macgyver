@@ -6,14 +6,14 @@ apply plugin: 'maven'
 apply plugin: 'groovy'
 apply plugin:'application'
 
-/*
-configurations {
-	all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
-	all*.exclude group: 'log4j'
-	all*.exclude group: 'xml-apis'
-    all*.exclude group: 'commons-logging'
-}*/
 
+configurations {
+all*.exclude group: 'org.apache.maven.scm'
+all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
+all*.exclude group: 'log4j'
+all*.exclude group: 'xml-apis'
+all*.exclude group: 'commons-logging'
+}
 mainClassName = 'io.macgyver.core.ServerMain'
 
 
@@ -47,6 +47,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security:${SPRING_BOOT_VERSION}")
     compile "org.springframework.security:spring-security-ldap:${SPRING_SECURITY_VERSION}"
      compile 'org.rythmengine:rythm-engine:1.0'
+     compile 'org.apache.commons:commons-vfs2:2.0'
 
      compile 'org.webjars:bootstrap:3.1.1-1'
      compile "org.webjars:jquery:2.1.1"

@@ -1,5 +1,6 @@
 package io.macgyver.core.config;
 
+import io.macgyver.core.Bootstrap;
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
 import io.macgyver.core.ScriptHookManager;
@@ -7,6 +8,7 @@ import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
 import io.macgyver.core.CoreSystemInfo;
 import io.macgyver.core.Startup;
+import io.macgyver.core.VfsManager;
 import io.macgyver.core.auth.InternalAuthenticationProvider;
 import io.macgyver.core.auth.UserManager;
 import io.macgyver.core.crypto.Crypto;
@@ -19,8 +21,13 @@ import io.macgyver.core.service.ServiceRegistry;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.util.Properties;
 
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileSystemManager;
+import org.apache.commons.vfs2.VFS;
 import org.mapdb.DBMaker;
 import org.mapdb.TxMaker;
 import org.slf4j.Logger;
@@ -45,7 +52,6 @@ public class CoreConfig {
 	ApplicationContext applicationContext;
 
 	static Logger logger = LoggerFactory.getLogger(CoreConfig.class);
-
 
 	@Bean
 	public ContextRefreshApplicationListener macContextRefreshApplicationListener() {
@@ -115,75 +121,86 @@ public class CoreConfig {
 		return new ServiceRegistry();
 	}
 
-
-	@Bean(name="macTxMaker")
+	@Bean(name = "macTxMaker")
 	public TxMaker txMaker() {
 		if (isUnitTest()) {
-			TxMaker txm = DBMaker.newMemoryDB()
-					.makeTxMaker();
+			TxMaker txm = DBMaker.newMemoryDB().makeTxMaker();
 			return txm;
-		}
-		else {
+		} else {
 			Optional<TxMaker> txm = BootstrapMapDB.getInstance().getTxMaker();
 			if (txm.isPresent()) {
 				return txm.get();
-			}
-			else {
+			} else {
 				BootstrapMapDB.getInstance().init();
 				return BootstrapMapDB.getInstance().getTxMaker().get();
 			}
-		
+
 		}
-	
+
 	}
+
 	public boolean isUnitTest() {
-		
+
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		new RuntimeException().printStackTrace(pw);
 		pw.close();
 		return sw.toString().contains("at org.junit");
-	
+
 	}
-	
-	
-/*
-	@Bean
-	public CrshShellAuthenticationProperties macCrashAuth() {
-		// In case no shell.auth property is provided fall back to Spring Security
-		// based authentication and get role to access shell from
-		// ManagementServerProperties.
-		// In case shell.auth is set to spring and roles are configured using
-		// shell.auth.spring.roles the below default role will be overridden by
-		// ConfigurationProperties.
-		SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();
-		authenticationProperties.setRoles(new String[] {"FOOR"});
-		
-		return authenticationProperties;
-	}
-	*/
+
+	/*
+	 * @Bean public CrshShellAuthenticationProperties macCrashAuth() { // In
+	 * case no shell.auth property is provided fall back to Spring Security //
+	 * based authentication and get role to access shell from //
+	 * ManagementServerProperties. // In case shell.auth is set to spring and
+	 * roles are configured using // shell.auth.spring.roles the below default
+	 * role will be overridden by // ConfigurationProperties.
+	 * SpringAuthenticationProperties authenticationProperties = new
+	 * SpringAuthenticationProperties(); authenticationProperties.setRoles(new
+	 * String[] {"FOOR"});
+	 * 
+	 * return authenticationProperties; }
+	 */
 
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer macPropertyPlaceholderConfigurer() {
-	    return new PropertySourcesPlaceholderConfigurer();
+		return new PropertySourcesPlaceholderConfigurer();
 	}
-	
+
 	@Bean
 	public ScriptHookManager macHookScriptManager() {
 		return new ScriptHookManager();
 	}
-	
+
 	@Bean
 	public MacGyverBeanFactoryPostProcessor macBeanFactoryPostProcessor() {
 		return new MacGyverBeanFactoryPostProcessor(Kernel.getExtensionDir("."));
 	}
-	@Bean(name="macCoreRevisionInfo")
+
+	@Bean(name = "macCoreRevisionInfo")
 	public CoreSystemInfo macCoreRevisionInfo() {
 		return new CoreSystemInfo();
 	}
-	
-	@Bean(name="macUserManager")
+
+	@Bean(name = "macUserManager")
 	public UserManager macUserManager() {
 		return new UserManager();
+	}
+
+	@Bean(name = "macFileSystemManager")
+	public FileSystemManager macFileSystemManager() throws FileSystemException {
+		return VFS.getManager();
+	}
+
+	@Bean(name = "macVfsManager")
+	public VfsManager macVfsManager() throws FileSystemException,
+			MalformedURLException {
+
+		VfsManager mgr = Bootstrap.getInstance().getVfsManager();
+
+		logger.info("macVfsManager: {}", mgr);
+		return mgr;
+
 	}
 }

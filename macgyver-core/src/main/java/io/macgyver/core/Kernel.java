@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.commons.vfs2.FileObject;
 import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -185,9 +186,7 @@ public class Kernel implements ApplicationContextAware {
 	public static File getExtensionDataDir() {
 		return getExtensionDir("data");
 	}
-	public static File getExtensionConfigDir() {
-		return getExtensionDir("config");
-	}
+
 	public static File getExtensionDir(String subDir) {
 		File ext = determineExtensionDir();
 		return new File(ext,subDir);
@@ -211,6 +210,9 @@ public class Kernel implements ApplicationContextAware {
 
 	}
 
+
+	
+	
 	public static class KernelStartedEvent {
 
 	}
