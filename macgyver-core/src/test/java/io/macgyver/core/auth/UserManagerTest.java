@@ -16,8 +16,9 @@ import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 
 import io.macgyver.core.CoreIntegrationTestCase;
+import io.macgyver.test.MacIntegrationTest;
 
-public class UserManagerTest extends CoreIntegrationTestCase {
+public class UserManagerTest extends MacIntegrationTest {
 
 	@Autowired
 	UserManager userManager;

@@ -1,13 +1,13 @@
 package io.macgyver.metrics.graphite;
 
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.test.MacgyverIntegrationTest;
+import io.macgyver.test.MacIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class HostedGraphiteTest extends MacgyverIntegrationTest {
+public class HostedGraphiteTest extends MacIntegrationTest {
 
 	@Autowired
 	ServiceRegistry registry;

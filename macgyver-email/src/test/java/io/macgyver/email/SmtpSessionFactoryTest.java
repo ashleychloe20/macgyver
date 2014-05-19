@@ -1,6 +1,6 @@
 package io.macgyver.email;
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.test.MacgyverIntegrationTest;
+import io.macgyver.test.MacIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 
-public class SmtpSessionFactoryTest extends MacgyverIntegrationTest{
+public class SmtpSessionFactoryTest extends MacIntegrationTest{
 
 
 	@Autowired

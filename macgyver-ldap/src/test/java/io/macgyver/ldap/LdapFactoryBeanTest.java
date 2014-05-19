@@ -1,7 +1,7 @@
 package io.macgyver.ldap;
 
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.test.MacgyverIntegrationTest;
+import io.macgyver.test.MacIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
-public class LdapFactoryBeanTest extends MacgyverIntegrationTest {
+public class LdapFactoryBeanTest extends MacIntegrationTest {
 
 	@Autowired
 	ServiceRegistry registry;

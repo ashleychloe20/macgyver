@@ -1,13 +1,13 @@
 package io.macgyver.mongodb;
 
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.test.MacgyverIntegrationTest;
+import io.macgyver.test.MacIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class MongoDBFactoryBeanTest extends MacgyverIntegrationTest {
+public class MongoDBFactoryBeanTest extends MacIntegrationTest {
 
 	@Autowired
 	ServiceRegistry reg;

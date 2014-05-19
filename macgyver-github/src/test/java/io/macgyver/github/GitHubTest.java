@@ -1,7 +1,7 @@
 package io.macgyver.github;
 
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.test.MacgyverIntegrationTest;
+import io.macgyver.test.MacIntegrationTest;
 
 import java.io.IOException;
 
@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.kohsuke.github.GitHub;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class GitHubTest extends MacgyverIntegrationTest {
+public class GitHubTest extends MacIntegrationTest {
 
 	@Autowired
 	ServiceRegistry reg;

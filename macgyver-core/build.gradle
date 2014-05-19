@@ -55,7 +55,7 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test:${SPRING_BOOT_VERSION}")
 	testCompile "org.springframework:spring-test:${SPRING_VERSION}"
 	testCompile group: "junit", name: "junit", version: "${JUNIT_VERSION}"
-
+    testCompile project(':macgyver-test')
 }
 
 compileJava.doLast() {

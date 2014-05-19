@@ -16,7 +16,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 @ContextConfiguration(loader=AnnotationConfigContextLoader.class,  classes={TestConfig.class})
 @RunWith(SpringJUnit4ClassRunner.class)
-public abstract class MacgyverIntegrationTest extends AbstractJUnit4SpringContextTests {
+public abstract class MacIntegrationTest extends AbstractJUnit4SpringContextTests {
 	
 	@Autowired
 	protected ApplicationContext applicationContext;
@@ -28,6 +28,6 @@ public abstract class MacgyverIntegrationTest extends AbstractJUnit4SpringContex
 	@BeforeClass 
 	public static void setup() {
 		System.setProperty("macgyver.ext.location", new java.io.File("./src/test/resources/ext").getAbsolutePath());
-		//Kernel.initialize();
+	
 	}
 }
