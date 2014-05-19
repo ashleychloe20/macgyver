@@ -24,7 +24,7 @@ public class ScriptHookManager {
 	public Object invokeHook(String name, Map<String, Object> data) throws IOException {
 		Preconditions.checkNotNull(name);
 
-		FileObject hookFile = vfsManager.getScriptsLocation().resolveFile("hooks/+"+name+".groovy");
+		FileObject hookFile = vfsManager.getScriptsLocation().resolveFile("hooks/"+name+".groovy");
 		
 		
 
