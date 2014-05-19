@@ -5,7 +5,7 @@ import groovy.util.ConfigSlurper;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.ServiceNotFoundException;
-import io.macgyver.core.VfsManager;
+import io.macgyver.core.VirtualFileSystem;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
@@ -217,7 +217,7 @@ public class ServiceRegistry {
 		Properties p = new Properties();
 
 		
-		FileObject configGroovy = applicationContext.getBean(VfsManager.class).getConfigLocation().resolveFile("services.groovy");
+		FileObject configGroovy = applicationContext.getBean(VirtualFileSystem.class).getConfigLocation().resolveFile("services.groovy");
 		
 		
 

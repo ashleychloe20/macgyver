@@ -5,7 +5,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import io.macgyver.core.Kernel;
-import io.macgyver.core.VfsManager;
+import io.macgyver.core.VirtualFileSystem;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -35,7 +35,7 @@ public class AutoSchedulerFileWatcher implements Runnable {
 	Kernel kernel;
 
 	@Autowired
-	VfsManager vfsManager;
+	VirtualFileSystem vfsManager;
 	
 	WatchService watcher;
 
@@ -45,7 +45,7 @@ public class AutoSchedulerFileWatcher implements Runnable {
 		try {
 			watcher = FileSystems.getDefault().newWatchService();
 			
-			Path p = VfsManager.asLocalFile(vfsManager.getScriptsLocation()).toPath();  // transitional
+			Path p = VirtualFileSystem.asLocalFile(vfsManager.getScriptsLocation()).toPath();  // transitional
 			
 			
 			WatchKey key = p.register(watcher, ENTRY_CREATE, ENTRY_DELETE,

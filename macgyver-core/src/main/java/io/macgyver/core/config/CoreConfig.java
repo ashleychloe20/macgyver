@@ -8,7 +8,7 @@ import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
 import io.macgyver.core.CoreSystemInfo;
 import io.macgyver.core.Startup;
-import io.macgyver.core.VfsManager;
+import io.macgyver.core.VirtualFileSystem;
 import io.macgyver.core.auth.InternalAuthenticationProvider;
 import io.macgyver.core.auth.UserManager;
 import io.macgyver.core.crypto.Crypto;
@@ -126,12 +126,12 @@ public class CoreConfig {
 			TxMaker txm = DBMaker.newMemoryDB().makeTxMaker();
 			return txm;
 		} else {
-			Optional<TxMaker> txm = BootstrapMapDB.getInstance().getTxMaker();
+			Optional<TxMaker> txm = Bootstrap.getInstance().getBootstrapMapDB().getTxMaker();
 			if (txm.isPresent()) {
 				return txm.get();
 			} else {
-				BootstrapMapDB.getInstance().init();
-				return BootstrapMapDB.getInstance().getTxMaker().get();
+			
+				return  Bootstrap.getInstance().getBootstrapMapDB().getTxMaker().get();
 			}
 
 		}
@@ -193,10 +193,10 @@ public class CoreConfig {
 	}
 
 	@Bean(name = "macVfsManager")
-	public VfsManager macVfsManager() throws FileSystemException,
+	public VirtualFileSystem macVfsManager() throws FileSystemException,
 			MalformedURLException {
 
-		VfsManager mgr = Bootstrap.getInstance().getVfsManager();
+		VirtualFileSystem mgr = Bootstrap.getInstance().getVirtualFileSystem();
 
 		logger.info("macVfsManager: {}", mgr);
 		return mgr;

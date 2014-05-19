@@ -1,7 +1,7 @@
 package io.macgyver.core.scheduler;
 
 import io.macgyver.core.Kernel;
-import io.macgyver.core.VfsManager;
+import io.macgyver.core.VirtualFileSystem;
 import io.macgyver.core.script.ScriptExecutor;
 
 import java.io.File;
@@ -56,7 +56,7 @@ public class AutoScheduler implements InitializingBean {
 	Kernel kernel;
 
 	@Autowired
-	VfsManager vfsManager;
+	VirtualFileSystem vfsManager;
 	
 	public static String AUTO_SCHEDULER_GROUP = "AUTO_SCHEDULER";
 
@@ -166,7 +166,7 @@ public class AutoScheduler implements InitializingBean {
 			}
 		};
 
-		File scriptsDir = VfsManager.asLocalFile(vfsManager.getScriptsLocation().resolveFile("scheduler"));  // Transitional
+		File scriptsDir = VirtualFileSystem.asLocalFile(vfsManager.getScriptsLocation().resolveFile("scheduler"));  // Transitional
 
 		logger.debug("scanning: {}",scriptsDir);
 		

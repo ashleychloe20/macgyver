@@ -46,7 +46,7 @@ public class KeyStoreManager {
 
 		} else {
 
-			FileObject fo = Bootstrap.getInstance().getVfsManager()
+			FileObject fo = Bootstrap.getInstance().getVirtualFileSystem()
 					.getConfigLocation().resolveFile("keystore.jceks");
 			return fo;
 		}

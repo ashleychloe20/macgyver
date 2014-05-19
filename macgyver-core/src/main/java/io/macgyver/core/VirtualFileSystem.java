@@ -9,14 +9,14 @@ import org.apache.commons.vfs2.provider.local.LocalFile;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
-public class VfsManager {
+public class VirtualFileSystem {
 
 	private FileObject configLocation;
 	private FileObject scriptsLocation;
 	private FileObject dataLocation;
 	private FileObject webLocation;
 
-	public VfsManager(FileObject configLocation, FileObject scriptsLocation,
+	public VirtualFileSystem(FileObject configLocation, FileObject scriptsLocation,
 			FileObject dataLocation, FileObject webLocation) {
 		this.configLocation = configLocation;
 		this.scriptsLocation = scriptsLocation;

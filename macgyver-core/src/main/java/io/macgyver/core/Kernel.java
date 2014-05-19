@@ -113,16 +113,6 @@ public class Kernel implements ApplicationContextAware {
 
 	}
 
-
-
-	@Deprecated
-	public static File getExtensionDir(String subDir) {
-	
-		return new File(Bootstrap.getInstance().determineExtensionDir(),subDir);
-	}
-	
-
-
 	
 	
 	public static class KernelStartedEvent {

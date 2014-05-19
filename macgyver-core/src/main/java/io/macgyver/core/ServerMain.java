@@ -40,19 +40,11 @@ public class ServerMain {
 
 	public static void main(String[] args) throws Exception {
 
-		printBanner();
+	
 
-		BootstrapMapDB bootstrap = BootstrapMapDB.getInstance();
-		bootstrap.init();
+		Bootstrap.getInstance();
+		Bootstrap.getInstance();
 
-		TxBlock b = new TxBlock() {
-
-			@Override
-			public void tx(DB db) throws TxRollbackException {
-
-			}
-		};
-		bootstrap.getTxMaker().get().execute(b);
 		SpringApplication app = new SpringApplication(ServerMain.class);
 		app.setShowBanner(false);
 		ConfigurableApplicationContext ctx = app.run(args);
@@ -63,38 +55,5 @@ public class ServerMain {
 
 	}
 
-	public static void printBanner() {
 
-		// Spring boot doesn't support alternate banner until 1.1.x
-		String bannerText = "\n";
-		try {
-			URL url = ServerMain.class.getResource("/banner.txt");
-			if (url != null) {
-				try (InputStreamReader reader = new InputStreamReader(
-						url.openStream(), Charsets.UTF_8)) {
-					String text = CharStreams.toString(reader);
-
-					bannerText += text;
-				}
-			}
-
-			url = null;
-			url = ServerMain.class
-					.getResource("/macgyver-core-revision.properties");
-			if (url != null) {
-				Properties p = new Properties();
-				try (InputStream x = url.openStream()) {
-					p.load(x);
-				}
-
-				bannerText += String.format("\n\n                      (v%s rev:%s)\n",
-								p.getProperty("version"),
-								p.getProperty("gitShortCommitId"));
-			}
-
-		} catch (Exception e) {
-			logger.warn("could not load banner");
-		}
-		System.out.println(bannerText);
-	}
 }

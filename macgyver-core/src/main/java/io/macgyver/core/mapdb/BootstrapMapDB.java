@@ -3,6 +3,7 @@ package io.macgyver.core.mapdb;
 import io.macgyver.core.Bootstrap;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
+import io.macgyver.core.VirtualFileSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,29 +14,24 @@ import org.mapdb.DBMaker;
 import org.mapdb.TxMaker;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 public class BootstrapMapDB {
 
-	private static BootstrapMapDB instance = new BootstrapMapDB();
-
 	TxMaker txMaker;
-
-	public static BootstrapMapDB getInstance() {
-		return instance;
-	}
 
 	public synchronized Optional<TxMaker> getTxMaker() {
 		return Optional.fromNullable(txMaker);
 	}
 
-	public synchronized void init() {
+	public synchronized void init(VirtualFileSystem vfs) {
+		Preconditions.checkNotNull(vfs);
 		try {
 			if (txMaker != null) {
 				throw new IllegalStateException();
 			}
 
-			FileObject fo = Bootstrap.getInstance().getVfsManager()
-					.getDataLocation();
+			FileObject fo = vfs.getDataLocation();
 			if (!(fo instanceof LocalFile)) {
 				throw new IllegalStateException(
 						"dataLocation must be a local directory");

@@ -39,7 +39,7 @@ public class Startup implements InitializingBean {
 	InternalAuthenticationProvider internalAuthenticationProvider;
 
 	@Autowired
-	VfsManager vfsManager;
+	VirtualFileSystem vfsManager;
 	
 	@Subscribe
 	public void onStart(ContextRefreshedEvent event) throws IOException {

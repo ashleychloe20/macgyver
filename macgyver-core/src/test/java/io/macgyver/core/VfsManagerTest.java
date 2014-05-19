@@ -14,7 +14,7 @@ import com.google.common.io.Files;
 public class VfsManagerTest extends CoreIntegrationTestCase {
 
 	@Autowired
-	VfsManager vfsManager;
+	VirtualFileSystem vfsManager;
 
 	@Test
 	public void testConfigVfs() throws IOException {
