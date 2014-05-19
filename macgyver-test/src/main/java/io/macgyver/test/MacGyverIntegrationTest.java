@@ -53,7 +53,6 @@ public abstract class MacGyverIntegrationTest extends
 	/**
 	 * Allows integration tests to be written using properties that are held outside the project.
 	 * @param key
-	 * @return
 	 */
 	public String getPrivateProperty(String key) {
 		return privateProperties.getProperty(key);

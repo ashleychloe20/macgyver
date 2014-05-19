@@ -119,7 +119,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 	}
 
-	@Bean
+	@Bean(name="macGrantedAuthoritiesTranslatorChain")
 	public GrantedAuthoritiesTranslatorChain macGrantedAuthoritiesTranslatorChain() {
 		GrantedAuthoritiesTranslatorChain chain = new GrantedAuthoritiesTranslatorChain();
 		chain.addTranslator(macGrantedAuthoritiesTranslatorScriptHook());
