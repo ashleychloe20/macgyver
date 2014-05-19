@@ -2,25 +2,25 @@ package io.macgyver.elb;
 
 import io.macgyver.core.MacGyverException;
 
-public class ELBException extends MacGyverException {
+public class ElbException extends MacGyverException {
 
-	public ELBException() {
+	public ElbException() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
 
-	public ELBException(String message, Throwable cause) {
+	public ElbException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ELBException(String message) {
+	public ElbException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ELBException(Throwable cause) {
+	public ElbException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}

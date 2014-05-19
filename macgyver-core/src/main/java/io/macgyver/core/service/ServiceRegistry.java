@@ -212,35 +212,36 @@ public class ServiceRegistry {
 		syncBus.post(event);
 	}
 
-	protected Properties reloadProperties() throws MalformedURLException, IOException {
+	protected Properties reloadProperties() throws MalformedURLException,
+			IOException {
 		Properties p = new Properties();
 
-		
-		FileObject configGroovy = applicationContext.getBean(VirtualFileSystem.class).getConfigLocation().resolveFile("services.groovy");
-		
-		
+		FileObject configGroovy = applicationContext
+				.getBean(VirtualFileSystem.class).getConfigLocation()
+				.resolveFile("services.groovy");
 
 		ConfigSlurper slurper = new ConfigSlurper();
 		if (Kernel.getExecutionProfile().isPresent()) {
 			slurper.setEnvironment(Kernel.getExecutionProfile().get());
 		}
-		
-		ConfigObject obj = slurper.parse(configGroovy.getURL());
 
-		p = obj.toProperties();
+		if (configGroovy.exists()) {
+			ConfigObject obj = slurper.parse(configGroovy.getURL());
 
-		p = crypto.decryptProperties(p);
+			p = obj.toProperties();
 
-		TxBlock b = new TxBlock() {
+			p = crypto.decryptProperties(p);
 
-			@Override
-			public void tx(DB db) throws TxRollbackException {
-		
+			TxBlock b = new TxBlock() {
 
-			}
-		};
-		txMaker.execute(b);
+				@Override
+				public void tx(DB db) throws TxRollbackException {
+
+				}
+			};
+			txMaker.execute(b);
+		}
 		return p;
-		
+
 	}
 }
