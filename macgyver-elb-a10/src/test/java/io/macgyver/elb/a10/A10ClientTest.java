@@ -61,8 +61,7 @@ public class A10ClientTest extends MacGyverIntegrationTest {
 		String t1 = client.getAuthToken();
 		Thread.sleep(100);
 		String t2 = client.getAuthToken();
-		System.out.println(t1);
-		System.out.println(t2);
+	
 		Assert.assertNotEquals(t1, t2);
 		
 

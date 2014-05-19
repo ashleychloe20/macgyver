@@ -37,7 +37,7 @@ public class BootstrapMapDB {
 
 			LocalFile localFile = (LocalFile) fo;
 			File dataDir = new File(localFile.getURL().getFile());
-			System.out.println("FT: " + dataDir);
+			
 
 			dataDir.mkdirs();
 			File dbFile = new File(dataDir, "macgyver-mapdb");

@@ -83,7 +83,7 @@ public class UserManagerTest extends MacGyverIntegrationTest {
 
 		Assert.assertTrue(b.isPresent());
 
-		System.out.println(b.get());
+
 
 	}
 
