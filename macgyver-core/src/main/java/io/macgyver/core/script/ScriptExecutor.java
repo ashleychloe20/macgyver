@@ -4,8 +4,6 @@ import io.macgyver.core.Kernel;
 import io.macgyver.core.VirtualFileSystem;
 import io.macgyver.core.service.ServiceRegistry;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -30,7 +28,6 @@ import org.springframework.context.ApplicationContextAware;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Closer;
-import com.google.common.io.Files;
 
 public class ScriptExecutor implements ApplicationContextAware {
 

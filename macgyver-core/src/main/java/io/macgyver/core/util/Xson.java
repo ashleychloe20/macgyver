@@ -25,7 +25,7 @@ public class Xson {
 		registerConverters();
 	}
 
-	Map<Class, Converter> converters = Maps.newConcurrentMap();
+	Map<Class<? extends Object>, Converter> converters = Maps.newConcurrentMap();
 
 	public static <T> T convert(Object input, Class<T> output) {
 		Preconditions.checkNotNull(output);
@@ -43,7 +43,7 @@ public class Xson {
 
 	}
 
-	public Converter findConverter(Class target) {
+	public Converter findConverter(Class<? extends Object> target) {
 		return converters.get(target);
 	}
 

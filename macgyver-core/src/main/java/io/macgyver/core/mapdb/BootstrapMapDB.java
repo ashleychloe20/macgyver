@@ -1,7 +1,5 @@
 package io.macgyver.core.mapdb;
 
-import io.macgyver.core.Bootstrap;
-import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.VirtualFileSystem;
 

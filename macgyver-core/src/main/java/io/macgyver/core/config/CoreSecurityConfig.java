@@ -7,7 +7,6 @@ import io.macgyver.core.auth.InternalAuthenticationProvider;
 import io.macgyver.core.auth.LogOnlyAccessDecisionVoter;
 import io.macgyver.core.auth.MacGyverAccessDecisionManager;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -17,15 +16,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
-import org.springframework.security.core.Authentication;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

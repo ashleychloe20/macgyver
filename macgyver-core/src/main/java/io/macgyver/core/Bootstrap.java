@@ -9,11 +9,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.VFS;
-import org.mapdb.TxMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

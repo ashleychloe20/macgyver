@@ -1,25 +1,15 @@
 package io.macgyver.core;
 
-import groovy.lang.GroovyShell;
-import io.macgyver.core.config.CoreConfig;
-import io.macgyver.core.eventbus.MacGyverEventBus;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.vfs2.FileObject;
-import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.StandardEnvironment;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 
 public class Kernel implements ApplicationContextAware {
 

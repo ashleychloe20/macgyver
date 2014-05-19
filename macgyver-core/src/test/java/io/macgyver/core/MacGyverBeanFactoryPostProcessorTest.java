@@ -1,7 +1,5 @@
 package io.macgyver.core;
 
-import java.util.HashMap;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

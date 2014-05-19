@@ -3,9 +3,7 @@ package io.macgyver.core;
 import io.macgyver.core.auth.InternalAuthenticationProvider;
 import io.macgyver.core.script.ScriptExecutor;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
@@ -16,11 +14,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.TreeTraverser;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.io.Files;
 
 public class Startup implements InitializingBean {
 

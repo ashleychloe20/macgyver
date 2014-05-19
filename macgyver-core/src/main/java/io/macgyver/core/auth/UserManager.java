@@ -3,8 +3,6 @@ package io.macgyver.core.auth;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.json.Json;
-
 import org.mapdb.DB;
 import org.mapdb.TxBlock;
 import org.mapdb.TxMaker;

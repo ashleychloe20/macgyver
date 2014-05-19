@@ -2,7 +2,6 @@ package io.macgyver.core;
 
 import io.macgyver.core.script.ScriptExecutor;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 

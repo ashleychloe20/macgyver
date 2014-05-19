@@ -2,7 +2,6 @@ package io.macgyver.core.util;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 public class GsonConverter implements Xson.Converter {
 
