@@ -1,5 +1,7 @@
 package io.macgyver.core.auth;
 
+import io.macgyver.test.MacGyverIntegrationTest;
+
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,10 +17,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 
-import io.macgyver.core.CoreIntegrationTestCase;
-import io.macgyver.test.MacIntegrationTest;
-
-public class UserManagerTest extends MacIntegrationTest {
+public class UserManagerTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	UserManager userManager;

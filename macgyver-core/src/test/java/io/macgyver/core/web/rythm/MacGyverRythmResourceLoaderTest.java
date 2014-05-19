@@ -1,7 +1,6 @@
 package io.macgyver.core.web.rythm;
 
-import io.macgyver.core.CoreIntegrationTestCase;
-import io.macgyver.core.web.rythm.MacGyverRythmResourceLoader;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +8,7 @@ import org.rythmengine.RythmEngine;
 import org.rythmengine.resource.ITemplateResource;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class MacGyverRythmResourceLoaderTest extends CoreIntegrationTestCase {
+public class MacGyverRythmResourceLoaderTest extends MacGyverIntegrationTest {
 
 
 	@Autowired

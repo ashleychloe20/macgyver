@@ -1,6 +1,5 @@
-package io.macgyver.core;
+package io.macgyver.test;
 
-import io.macgyver.test.config.CoreIntegrationTestConfig;
 
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -14,9 +13,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 
-@ContextConfiguration(loader=AnnotationConfigContextLoader.class,  classes={CoreIntegrationTestConfig.class})
+
+@ContextConfiguration(loader=AnnotationConfigContextLoader.class,  classes={TestConfig.class})
 @RunWith(SpringJUnit4ClassRunner.class)
-public abstract class CoreIntegrationTestCase extends AbstractJUnit4SpringContextTests {
+public abstract class MacGyverIntegrationTest extends AbstractJUnit4SpringContextTests {
 	
 	@Autowired
 	protected ApplicationContext applicationContext;
@@ -25,9 +25,10 @@ public abstract class CoreIntegrationTestCase extends AbstractJUnit4SpringContex
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
+
 	@BeforeClass 
 	public static void setup() {
 		System.setProperty("macgyver.ext.location", new java.io.File("./src/test/resources/ext").getAbsolutePath());
-		//Kernel.initialize();
+	
 	}
 }

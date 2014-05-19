@@ -1,6 +1,6 @@
 package io.macgyver.core.mapdb;
 
-import io.macgyver.core.CoreIntegrationTestCase;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import org.mapdb.DBMaker;
 import org.mapdb.TxMaker;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class MapDBTest extends CoreIntegrationTestCase {
+public class MapDBTest extends MacGyverIntegrationTest {
 
 	@Autowired(required=true)
 	TxMaker txMaker;

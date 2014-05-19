@@ -1,14 +1,14 @@
 package io.macgyver.core.factory;
 
-import io.macgyver.core.CoreIntegrationTestCase;
 import io.macgyver.core.ServiceNotFoundException;
 import io.macgyver.core.service.ServiceRegistry;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ServiceIntanceRegistryTest extends CoreIntegrationTestCase {
+public class ServiceIntanceRegistryTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	ServiceRegistry reg;

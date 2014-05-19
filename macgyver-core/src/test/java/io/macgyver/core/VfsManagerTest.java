@@ -1,5 +1,7 @@
 package io.macgyver.core;
 
+import io.macgyver.test.MacGyverIntegrationTest;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -11,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.io.Files;
 
-public class VfsManagerTest extends CoreIntegrationTestCase {
+public class VfsManagerTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	VirtualFileSystem vfsManager;

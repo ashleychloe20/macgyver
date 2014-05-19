@@ -1,6 +1,6 @@
 package io.macgyver.core.crypto;
 
-import io.macgyver.core.CoreIntegrationTestCase;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.io.BaseEncoding;
 
-public class CryptoTest extends CoreIntegrationTestCase {
+public class CryptoTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	Crypto crypto;

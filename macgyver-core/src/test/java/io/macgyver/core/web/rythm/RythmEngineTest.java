@@ -1,6 +1,6 @@
 package io.macgyver.core.web.rythm;
 
-import io.macgyver.core.CoreIntegrationTestCase;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,7 +8,7 @@ import org.rythmengine.RythmEngine;
 import org.rythmengine.template.ITemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class RythmEngineTest extends CoreIntegrationTestCase {
+public class RythmEngineTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	RythmEngine engine;

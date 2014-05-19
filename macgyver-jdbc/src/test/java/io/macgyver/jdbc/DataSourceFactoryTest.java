@@ -2,7 +2,7 @@ package io.macgyver.jdbc;
 
 import io.macgyver.core.Kernel;
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.test.MacIntegrationTest;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.sql.SQLException;
 
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class DataSourceFactoryTest extends MacIntegrationTest {
+public class DataSourceFactoryTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	ApplicationContext applicationContext;

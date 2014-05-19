@@ -1,7 +1,7 @@
 package io.macgyver.metrics.statsd;
 
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.test.MacIntegrationTest;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class StatsDTest extends MacIntegrationTest{
+public class StatsDTest extends MacGyverIntegrationTest{
 
 	static Logger logger = LoggerFactory.getLogger(StatsDTest.class);
 	static volatile boolean running = true;

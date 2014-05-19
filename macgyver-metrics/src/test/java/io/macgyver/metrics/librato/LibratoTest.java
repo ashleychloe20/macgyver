@@ -1,13 +1,13 @@
 package io.macgyver.metrics.librato;
 
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.test.MacIntegrationTest;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class LibratoTest extends MacIntegrationTest{
+public class LibratoTest extends MacGyverIntegrationTest{
 
 	@Autowired
 	ServiceRegistry registry;

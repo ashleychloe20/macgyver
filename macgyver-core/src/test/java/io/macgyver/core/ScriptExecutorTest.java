@@ -1,11 +1,12 @@
 package io.macgyver.core;
 
 import io.macgyver.core.script.ScriptExecutor;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ScriptExecutorTest extends CoreIntegrationTestCase {
+public class ScriptExecutorTest extends MacGyverIntegrationTest {
 
 	
 	@Test

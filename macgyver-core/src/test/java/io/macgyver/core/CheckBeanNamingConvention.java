@@ -1,5 +1,7 @@
 package io.macgyver.core;
 
+import io.macgyver.test.MacGyverIntegrationTest;
+
 import java.util.Map;
 
 import org.junit.Assert;
@@ -8,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class CheckBeanNamingConvention extends CoreIntegrationTestCase {
+public class CheckBeanNamingConvention extends MacGyverIntegrationTest {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired
