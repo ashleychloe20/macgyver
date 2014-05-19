@@ -76,9 +76,8 @@ public class CoreConfig {
 
 	@Bean(name = "macKernel")
 	public Kernel macKernel() {
-		File extLocation = Kernel.determineExtensionDir();
-		logger.info("macgyver.ext.location: {}", extLocation);
-		return new Kernel(extLocation);
+		
+		return new Kernel();
 	}
 
 	@Bean
@@ -175,7 +174,7 @@ public class CoreConfig {
 
 	@Bean
 	public MacGyverBeanFactoryPostProcessor macBeanFactoryPostProcessor() {
-		return new MacGyverBeanFactoryPostProcessor(Kernel.getExtensionDir("."));
+		return new MacGyverBeanFactoryPostProcessor();
 	}
 
 	@Bean(name = "macCoreRevisionInfo")

@@ -3,7 +3,10 @@ package io.macgyver.core.scheduler;
 import io.macgyver.core.script.ScriptExecutor;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.VFS;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -20,13 +23,20 @@ public class ScriptJob implements Job {
 	@Override
 	public void execute(JobExecutionContext context)
 			throws JobExecutionException {
-		String path = context.getJobDetail().getJobDataMap()
-				.getString(ScriptJob.SCRIPT_PATH_KEY);
-		File f = new File(path);
-		logger.info("executing: " + path);
+		try {
+			String path = context.getJobDetail().getJobDataMap()
+					.getString(ScriptJob.SCRIPT_PATH_KEY);
+			File f = new File(path);
 
-		ScriptExecutor executor = new ScriptExecutor();
-		executor.run(f,null,true);
+			FileObject target = VFS.getManager().resolveFile(
+					f.getAbsoluteFile().toURI().toURL().toString());
+			logger.info("executing: " + target);
+
+			ScriptExecutor executor = new ScriptExecutor();
+			executor.run(target, null, true);
+		} catch (IOException  e) {
+			throw new JobExecutionException(e);
+		}
 	}
 
 }

@@ -1,8 +1,13 @@
 package io.macgyver.core;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.provider.local.LocalFile;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 
 public class VfsManager {
 
@@ -39,5 +44,16 @@ public class VfsManager {
 		return Objects.toStringHelper(this).add("dataLocation", dataLocation)
 				.add("scriptsLocation", scriptsLocation)
 				.add("configLocation", configLocation).toString();
+	}
+
+	public static File asLocalFile(FileObject f) {
+		try {
+			Preconditions.checkArgument(f instanceof LocalFile,
+					"not an instance of LocalFile: " + f);
+
+			return new File(f.getURL().getFile());
+		} catch (IOException e) {
+			throw new IllegalArgumentException("could not obtain local file: "+f);
+		}
 	}
 }

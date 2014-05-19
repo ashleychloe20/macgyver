@@ -3,8 +3,10 @@ package io.macgyver.core;
 import io.macgyver.core.script.ScriptExecutor;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.vfs2.FileObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +19,17 @@ public class ScriptHookManager {
 	@Autowired
 	Kernel kernel;
 
-	public Object invokeHook(String name, Map<String, Object> data) {
+	@Autowired
+	VfsManager vfsManager;
+	
+	public Object invokeHook(String name, Map<String, Object> data) throws IOException {
 		Preconditions.checkNotNull(name);
 
-		File hooksDir = kernel.getExtensionDir("scripts/hooks");
+		FileObject hookFile = vfsManager.getScriptsLocation().resolveFile("hooks/+"+name+".groovy");
+		
+		
 
-		File hookFile = new File(hooksDir, name + ".groovy");
-
+	
 		logger.info("running hook script: {}", hookFile);
 		logger.info("hook script vars: {}", data);
 

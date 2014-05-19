@@ -1,8 +1,10 @@
 package io.macgyver.core.auth;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
+import io.macgyver.core.MacGyverException;
 import io.macgyver.core.ScriptHookManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +20,17 @@ public class GrantedAuthoritiesTranslatorScriptHook extends
 	@Override
 	protected void translate(Collection<? extends GrantedAuthority> source,
 			Collection<? extends GrantedAuthority> target) {
-	
-		Map<String,Object> m = Maps.newConcurrentMap();
-		m.put("source",source);
-		m.put("target",target);
-		
-		hookScriptManager.invokeHook("translateGrantedAuthorities", m);
-	
+
+		try {
+			Map<String, Object> m = Maps.newConcurrentMap();
+			m.put("source", source);
+			m.put("target", target);
+
+			hookScriptManager.invokeHook("translateGrantedAuthorities", m);
+		} catch (IOException e) {
+			throw new MacGyverException("", e);
+		}
+
 	}
-	
-	
+
 }

@@ -5,16 +5,19 @@ import groovy.util.ConfigSlurper;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.ServiceNotFoundException;
+import io.macgyver.core.VfsManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.vfs2.FileObject;
 import org.mapdb.DB;
 import org.mapdb.TxBlock;
 import org.mapdb.TxMaker;
@@ -210,19 +213,20 @@ public class ServiceRegistry {
 		syncBus.post(event);
 	}
 
-	protected Properties reloadProperties() throws MalformedURLException {
+	protected Properties reloadProperties() throws MalformedURLException, IOException {
 		Properties p = new Properties();
 
-		File extDir = Kernel.determineExtensionDir();
-		File confDir = new File(extDir, "config");
-
-		File configGroovy = new File(confDir, "services.groovy");
+		
+		FileObject configGroovy = applicationContext.getBean(VfsManager.class).getConfigLocation().resolveFile("services.groovy");
+		
+		
 
 		ConfigSlurper slurper = new ConfigSlurper();
 		if (Kernel.getExecutionProfile().isPresent()) {
 			slurper.setEnvironment(Kernel.getExecutionProfile().get());
 		}
-		ConfigObject obj = slurper.parse(configGroovy.toURI().toURL());
+		
+		ConfigObject obj = slurper.parse(configGroovy.getURL());
 
 		p = obj.toProperties();
 
@@ -238,5 +242,6 @@ public class ServiceRegistry {
 		};
 		txMaker.execute(b);
 		return p;
+		
 	}
 }

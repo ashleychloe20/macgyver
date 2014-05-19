@@ -28,21 +28,11 @@ public class Kernel implements ApplicationContextAware {
 	static AtomicReference<Kernel> kernelRef = new AtomicReference<Kernel>();
 
 	private ApplicationContext applicationContext;
-	private File extensionDir;
+
 	private static Throwable startupError = null;
 
-	public Kernel(File extensionDir) {
+	public Kernel() {
 
-		this.extensionDir = extensionDir.getAbsoluteFile();
-		if (this.extensionDir.exists()) {
-			try {
-				extensionDir = extensionDir.getCanonicalFile();
-			} catch (IOException e) {
-				logger.warn(
-						"could not determine canonical directory name for: {}",
-						extensionDir);
-			}
-		}
 	}
 
 	public static Optional<Throwable> getStartupError() {
@@ -59,64 +49,6 @@ public class Kernel implements ApplicationContextAware {
 		return startupError == null;
 	}
 
-	@SuppressWarnings({ "resource", "rawtypes" })
-	public synchronized static void initialize_DEPRECATED() {
-		if (kernelRef.get() == null) {
-
-			Kernel k = new Kernel(Kernel.determineExtensionDir());
-			kernelRef.set(k);
-
-			AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-
-			k.applicationContext = ctx;
-
-			File gbf = new File(Kernel.determineExtensionDir(),
-					"conf/beans.groovy");
-			if (gbf.exists()) {
-
-				// Need to move all of this into a BeanFactoryPostProcessor
-				logger.info("loading spring java config from: {}", gbf);
-
-				try {
-					GroovyShell gs = new GroovyShell(Thread.currentThread()
-							.getContextClassLoader());
-					Object x = gs.evaluate(gbf);
-					if (x == null || (!(x instanceof Class))) {
-						throw new IllegalStateException(gbf
-								+ " must return a java.lang.Class");
-					}
-					Class theClass = (Class) x;
-					ctx.setClassLoader((theClass.getClassLoader()));
-					ctx.scan(CoreConfig.class.getPackage().getName());
-
-					ctx.register(theClass);
-
-				} catch (IOException e) {
-					throw new IllegalStateException(e);
-				} catch (MultipleCompilationErrorsException e) {
-					throw e;
-				} catch (RuntimeException e) {
-					throw new IllegalStateException(gbf
-							+ " must return a java.lang.Class", e);
-				}
-			} else {
-				ctx.scan(CoreConfig.class.getPackage().getName());
-
-			}
-			ctx.refresh();
-
-			MacGyverEventBus bus = ctx.getBean(MacGyverEventBus.class);
-			kernelRef.set(k);
-			
-		} else {
-			throw new IllegalStateException(
-					"spring context already initialized");
-		}
-		if (startupError != null) {
-			throw new MacGyverException(startupError);
-		}
-
-	}
 
 	public synchronized static Kernel getInstance() {
 		Kernel k = kernelRef.get();
@@ -138,9 +70,7 @@ public class Kernel implements ApplicationContextAware {
 		return applicationContext;
 	}
 
-	public File getExtensionDir() {
-		return extensionDir;
-	}
+
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
@@ -183,32 +113,14 @@ public class Kernel implements ApplicationContextAware {
 
 	}
 
-	public static File getExtensionDataDir() {
-		return getExtensionDir("data");
-	}
 
+
+	@Deprecated
 	public static File getExtensionDir(String subDir) {
-		File ext = determineExtensionDir();
-		return new File(ext,subDir);
+	
+		return new File(Bootstrap.getInstance().determineExtensionDir(),subDir);
 	}
-	public static File determineExtensionDir() {
-		try {
-			String location = System.getProperty("macgyver.ext.location");
-
-			if (!Strings.isNullOrEmpty(location)) {
-				return new File(location).getCanonicalFile();
-			}
-			File extLocation = new File("./src/test/resources/ext");
-			if (extLocation.exists()) {
-				return extLocation.getCanonicalFile();
-			}
-			return new File(".").getCanonicalFile();
-
-		} catch (IOException e) {
-			throw new ConfigurationException(e);
-		}
-
-	}
+	
 
 
 	

@@ -1,11 +1,14 @@
 package io.macgyver.core.script;
 
 import io.macgyver.core.Kernel;
+import io.macgyver.core.VfsManager;
 import io.macgyver.core.service.ServiceRegistry;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.util.Map;
 
@@ -16,6 +19,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
+import org.apache.commons.vfs2.FileObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -24,6 +28,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.google.common.io.Closer;
 import com.google.common.io.Files;
 
@@ -37,6 +42,8 @@ public class ScriptExecutor implements ApplicationContextAware {
 	@Autowired
 	Kernel kernel;
 
+
+	
 	ScriptException evalException;
 	Object evalResult;
 	ScriptContext scriptContext;
@@ -45,7 +52,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 	StringWriter errWriter;
 
 	public ScriptExecutor() {
-		
+
 	}
 
 	public String getStandardOutputString() {
@@ -63,7 +70,9 @@ public class ScriptExecutor implements ApplicationContextAware {
 		b.put("log", LoggerFactory.getLogger("io.macgyver.script"));
 		b.put("beans", new SpringMapAdapter(Kernel.getInstance()
 				.getApplicationContext()));
-		b.put("services", Kernel.getInstance().getApplicationContext().getBean(ServiceRegistry.class).mapAdapter());
+		b.put("services",
+				Kernel.getInstance().getApplicationContext()
+						.getBean(ServiceRegistry.class).mapAdapter());
 		BindingSupplierManager bsm = Kernel.getInstance()
 				.getApplicationContext().getBean(BindingSupplierManager.class);
 		Map<String, Object> m = bsm.collect(lang);
@@ -85,13 +94,13 @@ public class ScriptExecutor implements ApplicationContextAware {
 			scriptContext.setErrorWriter(errWriter);
 
 			Bindings bindings = new SimpleBindings();
-			collectBindings(bindings, Optional.fromNullable(engine.getFactory().getLanguageName()));
+			collectBindings(bindings, Optional.fromNullable(engine.getFactory()
+					.getLanguageName()));
 
 			engine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
 
 			Object response = engine.eval(script);
 
-	
 			return response;
 		} catch (ScriptException e) {
 			this.evalException = e;
@@ -100,13 +109,14 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 	}
 
-	public Object run(String arg) {
+	public Object run(String arg) throws IOException{
 		return run(arg, null, true);
 	}
-	public boolean isSupportedScript(File f) {
+
+	public boolean isSupportedScript(FileObject f) {
 		try {
 			ScriptEngineManager m = new ScriptEngineManager();
-			String extension = Files.getFileExtension(f.getName());
+			String extension = getExtension(f);
 			ScriptEngine engine = m.getEngineByExtension(extension);
 
 			return engine != null;
@@ -115,47 +125,57 @@ public class ScriptExecutor implements ApplicationContextAware {
 		}
 
 	}
-	public Object run(String arg, Map<String, Object> vars, boolean failIfNotFound) {
-		File scriptDir = new File(Kernel.getInstance().getExtensionDir(), "scripts");
 
-		File f = new File(scriptDir, arg);
-
-		return run(f, vars, failIfNotFound);
+	public Object run(String arg, Map<String, Object> vars,
+			boolean failIfNotFound) throws IOException {
+		
+		FileObject fo = Kernel.getInstance().getApplicationContext().getBean(VfsManager.class).getScriptsLocation();
+		
+		FileObject script = fo.resolveFile(arg);
+		
+		
+		return run(script, vars, failIfNotFound);
 	}
 
-	public Object run(File f, Map<String, Object> vars, boolean failIfNotFound) {
+	String getExtension(FileObject fo) {
+		Preconditions.checkNotNull(fo);
+		int idx = fo.toString().lastIndexOf(".");
+		return fo.toString().substring(idx + 1);
+	}
+
+	public Object run(FileObject f, Map<String, Object> vars,
+			boolean failIfNotFound) {
 		Closer closer = Closer.create();
 		Object rval = null;
 		try {
 
-			logger.info("script {}", f.getAbsolutePath());
+			logger.info("script {}", f);
 			if (!f.exists() && !failIfNotFound) {
-				logger.info("init script not found: {}", f.getAbsolutePath());
+				logger.info("init script not found: {}", f);
 				return null;
 			}
 			ScriptEngineManager factory = new ScriptEngineManager();
-			ScriptEngine engine = factory.getEngineByExtension(Files
-					.getFileExtension(f.getPath()));
+			ScriptEngine engine = factory.getEngineByExtension(getExtension(f));
 
 			if (engine == null) {
 				throw new ScriptExecutionException(
 						"could not create ScriptEngine for extension: "
-								+ Files.getFileExtension(f.getPath()));
+								+ getExtension(f));
 			}
 
 			ApplicationContext ctx = Kernel.getInstance()
 					.getApplicationContext();
 
-			FileReader fr = new FileReader(f);
+			Reader fr = new InputStreamReader(f.getContent().getInputStream());
 			closer.register(fr);
 
 			if (vars != null) {
 				bindings.putAll(vars);
 			}
 
-			collectBindings(bindings, Optional.fromNullable(engine.getFactory().getLanguageName()));
+			collectBindings(bindings, Optional.fromNullable(engine.getFactory()
+					.getLanguageName()));
 
-		
 			rval = engine.eval(fr, bindings);
 
 			fr.close();

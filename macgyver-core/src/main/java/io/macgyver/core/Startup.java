@@ -4,8 +4,11 @@ import io.macgyver.core.auth.InternalAuthenticationProvider;
 import io.macgyver.core.script.ScriptExecutor;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileType;
 import org.mapdb.TxMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +38,11 @@ public class Startup implements InitializingBean {
 	@Autowired
 	InternalAuthenticationProvider internalAuthenticationProvider;
 
+	@Autowired
+	VfsManager vfsManager;
+	
 	@Subscribe
-	public void onStart(ContextRefreshedEvent event) {
+	public void onStart(ContextRefreshedEvent event) throws IOException {
 		if (kernel.getApplicationContext() != event.getSource()) {
 			return;
 		}
@@ -52,26 +58,27 @@ public class Startup implements InitializingBean {
 
 	}
 
-	public void runInitScripts() {
-
-		File initRoot = new File(kernel.getExtensionDir(), "scripts/init");
-		if (!initRoot.exists() || !initRoot.isDirectory()) {
-			logger.info("init scripts dir does not exist: {}", initRoot);
+	public void runInitScripts() throws IOException {
+		FileObject initScriptsFileObject = vfsManager.getScriptsLocation().resolveFile("init");
+		
+		
+		if (!initScriptsFileObject.exists() ) {
+			logger.info("init scripts dir does not exist: {}", initScriptsFileObject);
 			return;
 		}
-		TreeTraverser<File> traverser = Files.fileTreeTraverser();
-
-		FluentIterable<File> t = traverser.preOrderTraversal(initRoot);
-		Iterator<File> x = t.iterator();
-		while (x.hasNext()) {
-			File f = x.next();
-			runInitScript(f);
+		
+		FileObject [] childObjects = initScriptsFileObject.getChildren();
+		
+		for (int i=0; childObjects!=null && i<childObjects.length; i++) {
+			runInitScript(childObjects[i]);
 		}
-
+	
 	}
 
-	public void runInitScript(File f) {
-		if (f.isDirectory()) {
+	public void runInitScript(FileObject f) throws IOException {
+		
+		
+		if (f.getType().equals(FileType.FOLDER)) {
 			return;
 		}
 		ScriptExecutor se = new ScriptExecutor();

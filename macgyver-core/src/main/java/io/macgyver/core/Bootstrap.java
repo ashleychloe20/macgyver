@@ -47,7 +47,7 @@ public class Bootstrap {
 	public VfsManager getVfsManager() {
 		return vfsManager;
 	}
-	private File determineExtensionDir() {
+	public File determineExtensionDir() {
 		try {
 			String location = System.getProperty("macgyver.ext.location");
 

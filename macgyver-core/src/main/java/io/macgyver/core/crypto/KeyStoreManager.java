@@ -1,5 +1,6 @@
 package io.macgyver.core.crypto;
 
+import io.macgyver.core.Bootstrap;
 import io.macgyver.core.ConfigurationException;
 import io.macgyver.core.Kernel;
 
@@ -17,6 +18,9 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.VFS;
+
 import com.google.common.base.Strings;
 import com.google.common.io.Closer;
 
@@ -31,14 +35,20 @@ public class KeyStoreManager {
 
 	public static final String KEYSTORE_LOCATION_SYSTEM_PROPERTY = "macgyver.keyStore";
 
-	public File getKeyStoreLocation() {
+	public FileObject getKeyStoreLocation() throws IOException{
 
 		String location = System.getProperty(KEYSTORE_LOCATION_SYSTEM_PROPERTY);
 		if (!Strings.isNullOrEmpty(location)) {
-			return new File(location);
+			File f = new File(location);
+			FileObject keyStoreLocation = VFS.getManager().resolveFile(
+					f.getAbsoluteFile().toURI().toURL().toString());
+			return keyStoreLocation;
+
 		} else {
-			return new File(Kernel.determineExtensionDir(),
-					"config/keystore.jceks");
+
+			FileObject fo = Bootstrap.getInstance().getVfsManager()
+					.getConfigLocation().resolveFile("keystore.jceks");
+			return fo;
 		}
 	}
 
@@ -62,8 +72,7 @@ public class KeyStoreManager {
 
 		Closer c = Closer.create();
 		try {
-			BufferedInputStream is = new BufferedInputStream(
-					new FileInputStream(getKeyStoreLocation()));
+			BufferedInputStream is = new BufferedInputStream(getKeyStoreLocation().getContent().getInputStream());
 			c.register(is);
 			ks.load(is, getKeyStorePassword());
 			keyStore = ks;
@@ -90,9 +99,9 @@ public class KeyStoreManager {
 	public void createKeyStoreIfNotPresent() {
 		Closer closer = Closer.create();
 		try {
-			File keyStoreLocation = getKeyStoreLocation();
+			FileObject keyStoreLocation = getKeyStoreLocation();
 			if (!keyStoreLocation.exists()) {
-				keyStoreLocation.getParentFile().mkdirs();
+				
 				KeyStore ks = KeyStore.getInstance("JCEKS");
 				ks.load(null, getKeyStorePassword());
 
@@ -100,8 +109,9 @@ public class KeyStoreManager {
 				ks.setKeyEntry(keyAlias, createAESSecretKey(),
 						getPasswordForKey(keyAlias), null);
 
-				OutputStream out = new FileOutputStream(keyStoreLocation);
+				OutputStream out = keyStoreLocation.getContent().getOutputStream();
 				closer.register(out);
+			
 				ks.store(out, getKeyStorePassword());
 
 			}

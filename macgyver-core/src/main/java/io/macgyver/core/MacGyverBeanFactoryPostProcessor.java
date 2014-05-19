@@ -32,10 +32,9 @@ public class MacGyverBeanFactoryPostProcessor implements
 
 	Logger logger = LoggerFactory.getLogger(MacGyverBeanFactoryPostProcessor.class);
 	
-	File extDir;
 
-	public MacGyverBeanFactoryPostProcessor(File extDir) {
-		this.extDir = extDir;
+	public MacGyverBeanFactoryPostProcessor() {
+	
 	}
 
 	@Override

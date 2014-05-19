@@ -2,7 +2,6 @@ package io.macgyver.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.UUID;
 
 import org.apache.commons.vfs2.FileObject;
@@ -17,11 +16,12 @@ public class VfsManagerTest extends CoreIntegrationTestCase {
 	@Autowired
 	VfsManager vfsManager;
 
-/*	@Test
+	@Test
 	public void testConfigVfs() throws IOException {
 
-		File configDir = Kernel.getExtensionConfigDir();
-
+		File configDir = new File("./src/test/resources/ext/config");
+		configDir.mkdirs();
+		
 		File tempFile = new File(configDir, ".junit_"
 				+ UUID.randomUUID().toString() + ".tmp");
 		Files.touch(tempFile);
@@ -32,28 +32,7 @@ public class VfsManagerTest extends CoreIntegrationTestCase {
 			Assert.assertTrue(tempFile.exists());
 
 			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
-			Assert.assertTrue(vfsTest2.exists());
-		} finally {
-			tempFile.delete();
-		}
-
-	}
-	*/
-	@Test
-	public void testDataVfs() throws IOException {
-
-		File configDir = Kernel.getExtensionDataDir();
-
-		File tempFile = new File(configDir, ".junit_"
-				+ UUID.randomUUID().toString() + ".tmp");
-		Files.touch(tempFile);
-		try {
-
-			FileObject fo = vfsManager.getDataLocation();
-
-			Assert.assertTrue(tempFile.exists());
-
-			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
+		
 			Assert.assertTrue(vfsTest2.exists());
 		} finally {
 			tempFile.delete();
@@ -61,12 +40,14 @@ public class VfsManagerTest extends CoreIntegrationTestCase {
 
 	}
 	
+
+	
 	@Test
 	public void testWebVfs() throws IOException {
 
-		File configDir = Kernel.getExtensionDir("web");
+		File dir = new File("./src/test/resources/ext/web");
 
-		File tempFile = new File(configDir, ".junit_"
+		File tempFile = new File(dir, ".junit_"
 				+ UUID.randomUUID().toString() + ".tmp");
 		Files.touch(tempFile);
 		try {
@@ -86,9 +67,9 @@ public class VfsManagerTest extends CoreIntegrationTestCase {
 	@Test
 	public void testScriptsVfs() throws IOException {
 
-		File configDir = Kernel.getExtensionDir("scripts");
+		File dir = new File("./src/test/resources/ext/scripts");
 
-		File tempFile = new File(configDir, ".junit_"
+		File tempFile = new File(dir, ".junit_"
 				+ UUID.randomUUID().toString() + ".tmp");
 		Files.touch(tempFile);
 		try {
@@ -104,7 +85,27 @@ public class VfsManagerTest extends CoreIntegrationTestCase {
 		}
 
 	}
-	
+	@Test
+	public void testDataVfs() throws IOException {
+
+		File dataDir = new File("./src/test/resources/ext/data");
+
+		File tempFile = new File(dataDir, ".junit_"
+				+ UUID.randomUUID().toString() + ".tmp");
+		Files.touch(tempFile);
+		try {
+
+			FileObject fo = vfsManager.getDataLocation();
+
+			Assert.assertTrue(tempFile.exists());
+
+			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
+			Assert.assertTrue(vfsTest2.exists());
+		} finally {
+			tempFile.delete();
+		}
+
+	}
 	
 
 }
