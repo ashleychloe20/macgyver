@@ -13,6 +13,8 @@ import org.mapdb.TxMaker;
 import org.mapdb.TxRollbackException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
@@ -24,26 +26,32 @@ public class UserManagerTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	TxMaker txMaker;
+
+	@Test
+	public void testAutowire() {
+		Assert.assertNotNull(userManager);
+		Assert.assertNotNull(userManager.template);
+	}
 	@Test
 	public void testUserManager() {
 		Preconditions.checkNotNull(userManager);
 		String username = UUID.randomUUID().toString();
-		Optional<JsonObject> x = userManager.getUserAsJsonObject(username);
+		Optional<ObjectNode> x = userManager.getUserAsJsonObject(username);
 		Assert.assertFalse(x.isPresent());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testSaveWithInvalidArg() {
 		Preconditions.checkNotNull(userManager);
-		JsonObject u = new JsonObject();
+		ObjectNode u = new ObjectMapper().createObjectNode();
 		userManager.save(u);
 	}
 
 	@Test
 	public void testAuthenticateFailureWithNoPassword() {
 		String username = "user_" + UUID.randomUUID().toString();
-		JsonObject a = new JsonObject();
-		a.addProperty("username", username);
+		ObjectNode a = new ObjectMapper().createObjectNode();
+		a.put("username", username);
 		userManager.save(a);
 
 		Assert.assertFalse(userManager.authenticate(username, "xxx"));
@@ -52,8 +60,8 @@ public class UserManagerTest extends MacGyverIntegrationTest {
 	@Test
 	public void testAuthentication() {
 		String username = "user_" + UUID.randomUUID().toString();
-		JsonObject a = new JsonObject();
-		a.addProperty("username", username);
+		ObjectNode a = new ObjectMapper().createObjectNode();
+		a.put("username", username);
 		userManager.save(a);
 
 		String pwd = UUID.randomUUID().toString();
@@ -75,33 +83,16 @@ public class UserManagerTest extends MacGyverIntegrationTest {
 	@Test
 	public void testSaveAndLoad() {
 		String username = "user_" + UUID.randomUUID().toString();
-		JsonObject a = new JsonObject();
-		a.addProperty("username", username);
+		ObjectNode a = new ObjectMapper().createObjectNode();
+		a.put("username", username);
+		
 		userManager.save(a);
 
-		Optional<JsonObject> b = userManager.getUserAsJsonObject(username);
+		Optional<ObjectNode> b = userManager.getUserAsJsonObject(username);
 
 		Assert.assertTrue(b.isPresent());
 
-
-
 	}
 
-	@Test
-	public void testGarbage() {
-		final String username = UUID.randomUUID().toString();
-		TxBlock b = new TxBlock() {
 
-			@Override
-			public void tx(DB db) throws TxRollbackException {
-				
-				Map<String, String> x = db.getTreeMap("users");
-				x.put(username, "garbage");
-			}
-		};
-		txMaker.execute(b);
-		
-		Optional<JsonObject> x = userManager.getUserAsJsonObject(username);
-		Assert.assertFalse(x.isPresent());
-	}
 }

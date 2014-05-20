@@ -11,6 +11,7 @@ import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.mapdb.DBMaker;
 import org.mapdb.TxMaker;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
@@ -28,7 +29,8 @@ public class BootstrapMapDB {
 			if (txMaker != null) {
 				throw new IllegalStateException();
 			}
-
+			
+			
 			FileObject fo = vfs.getDataLocation();
 			if (!(fo instanceof LocalFile)) {
 				throw new IllegalStateException(

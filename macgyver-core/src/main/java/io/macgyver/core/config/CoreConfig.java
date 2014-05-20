@@ -15,6 +15,8 @@ import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
+import io.macgyver.jsondb.JsonDbTemplate;
+import io.macgyver.jsondb.impl.mapdb.JsonDbImpl;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -131,6 +133,14 @@ public class CoreConfig {
 
 	}
 
+	@Bean(name="macJsonDbTemplate") 
+	public JsonDbTemplate macJsonDbTemplate() {
+		if (isUnitTest()) {
+			return new JsonDbTemplate(new JsonDbImpl(DBMaker.newMemoryDB().makeTxMaker()));
+		}
+		return Bootstrap.getInstance().getJsonDbTemplate();
+		
+	}
 	public boolean isUnitTest() {
 
 		StringWriter sw = new StringWriter();
