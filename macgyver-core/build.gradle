@@ -21,7 +21,7 @@ dependencies {
 
    
     compile "org.slf4j:jcl-over-slf4j:${SLF4J_VERSION}"
-    
+    compile project(":macgyver-jsondb")
     compile "com.google.guava:guava:${GUAVA_VERSION}"
     compile 'com.google.code.gson:gson:2.2.4'
     compile "org.springframework:spring-context-support:${SPRING_VERSION}"
@@ -32,7 +32,7 @@ dependencies {
     compile "org.glassfish:javax.json:1.0.4"
     compile 'org.codehaus.groovy:groovy-all:2.1.9'
     
-   // compile "org.jboss.resteasy:resteasy-jaxrs-all:${RESTEASY_VERSION}"
+  
     compile "org.jboss.resteasy:jaxrs-api:${RESTEASY_VERSION}"
     compile "org.jboss.resteasy:resteasy-client:${RESTEASY_VERSION}"
     
@@ -46,16 +46,19 @@ dependencies {
     
     compile("org.springframework.boot:spring-boot-starter-security:${SPRING_BOOT_VERSION}")
     compile "org.springframework.security:spring-security-ldap:${SPRING_SECURITY_VERSION}"
-     compile 'org.rythmengine:rythm-engine:1.0'
-     compile 'org.apache.commons:commons-vfs2:2.0'
+    compile 'org.rythmengine:rythm-engine:1.0'
+    compile 'org.apache.commons:commons-vfs2:2.0'
 
-     compile 'org.webjars:bootstrap:3.1.1-1'
-     compile "org.webjars:jquery:2.1.1"
-     compile "org.webjars:ace:1.1.3"
+    compile 'org.webjars:bootstrap:3.1.1-1'
+    compile "org.webjars:jquery:2.1.1"
+    compile "org.webjars:ace:1.1.3"
+    
+    
     testCompile("org.springframework.boot:spring-boot-starter-test:${SPRING_BOOT_VERSION}")
-	testCompile "org.springframework:spring-test:${SPRING_VERSION}"
-	testCompile group: "junit", name: "junit", version: "${JUNIT_VERSION}"
+    testCompile "org.springframework:spring-test:${SPRING_VERSION}"
+    testCompile group: "junit", name: "junit", version: "${JUNIT_VERSION}"
     testCompile project(':macgyver-test')
+
 }
 
 compileJava.doLast() {
