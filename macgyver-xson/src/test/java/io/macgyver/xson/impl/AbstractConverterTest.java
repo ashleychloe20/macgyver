@@ -1,4 +1,6 @@
-package io.macgyver.xson;
+package io.macgyver.xson.impl;
+
+import io.macgyver.xson.Xson;
 
 import javax.json.Json;
 import javax.json.JsonObject;

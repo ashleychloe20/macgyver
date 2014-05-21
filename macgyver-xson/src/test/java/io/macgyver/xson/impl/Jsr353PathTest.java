@@ -1,4 +1,6 @@
-package io.macgyver.xson;
+package io.macgyver.xson.impl;
+
+import io.macgyver.xson.Xson;
 
 import java.io.IOException;
 import java.io.InputStream;
