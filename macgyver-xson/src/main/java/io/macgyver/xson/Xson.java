@@ -55,6 +55,8 @@ public class Xson {
 		return lookupPathProvider(source).path(source, path);
 	}
 
+
+	@SuppressWarnings("unchecked")
 	public static <T> T eval(Object source, String path, Object defaultVal) {
 		Object val = eval(source, path);
 		if (val == null) {
@@ -149,6 +151,7 @@ public class Xson {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> T convert(Object input, Class<T> output) {
 		Preconditions.checkNotNull(output);
 		Converter c = instance.findConverter(output);

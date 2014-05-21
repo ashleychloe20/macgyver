@@ -8,6 +8,7 @@ import org.springframework.security.access.vote.ConsensusBased;
 public class MacGyverAccessDecisionManager extends ConsensusBased {
 
 
+	@SuppressWarnings("rawtypes")
 	public MacGyverAccessDecisionManager(List<AccessDecisionVoter> decisionVoters) {
 		super(decisionVoters);
 		super.setAllowIfAllAbstainDecisions(false);

@@ -183,6 +183,7 @@ public class AutoScheduler implements InitializingBean {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void scheduleScript(ScheduledScript s, Set<JobKey> validSet)
 			throws SchedulerException, IOException, ParseException {
 

@@ -2,6 +2,7 @@ package io.macgyver.xson;
 
 import io.macgyver.xson.Xson;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.gson.JsonArray;
@@ -31,7 +32,7 @@ public class GsonConverterTest extends AbstractConverterTest {
 
 	@Test(expected = ClassCastException.class)
 	public void testInvalidTarget() {
-		 Xson.convert(jsonText, JsonArray.class);
+		Xson.convert(jsonText, JsonArray.class);
 
 	}
 
@@ -40,23 +41,21 @@ public class GsonConverterTest extends AbstractConverterTest {
 		JsonArray x = Xson.convert(
 				Xson.convert(jsonArrayText, JsonArray.class), JsonArray.class);
 
+		Assert.assertNotNull(x);
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public Class getAbstractNodeClass() {
+	public Class<?> getAbstractNodeClass() {
 		return JsonElement.class;
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public Class getObjectNodeClass() {
+	public Class<?> getObjectNodeClass() {
 		return JsonObject.class;
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public Class getArrayNodeClass() {
+	public Class<?> getArrayNodeClass() {
 		return JsonArray.class;
 	}
 }

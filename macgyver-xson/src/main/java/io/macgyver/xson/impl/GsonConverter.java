@@ -9,6 +9,7 @@ public class GsonConverter implements Xson.Converter {
 
 	Gson gson = new Gson();
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <X> X convertObject(Object input, Class<X> output) {
 

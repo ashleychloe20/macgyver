@@ -147,7 +147,7 @@ public class A10Client {
 		if (params == null) {
 			params = Maps.newConcurrentMap();
 		}
-		Map copy = Maps.newHashMap(params);
+		Map<String,String> copy = Maps.newHashMap(params);
 		copy.put("method", method);
 
 		return exec(copy);
