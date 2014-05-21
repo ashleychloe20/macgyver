@@ -15,6 +15,7 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,7 +179,8 @@ public class A10Client {
 	}
 
 	protected Client newClient() {
-		ClientBuilder builder = ClientBuilder.newBuilder().register(
+
+		ClientBuilder builder = new ResteasyClientBuilder().establishConnectionTimeout(5, TimeUnit.SECONDS).register(
 				new GsonMessageBodyHandler());
 
 		if (!validateCertificates) {

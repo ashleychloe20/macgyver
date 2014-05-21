@@ -1,7 +1,5 @@
 package io.macgyver.jsondb;
 
-import java.util.Iterator;
-
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface JsonDbCollection {

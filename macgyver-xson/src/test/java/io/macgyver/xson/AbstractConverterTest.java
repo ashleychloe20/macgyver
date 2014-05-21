@@ -1,14 +1,10 @@
 package io.macgyver.xson;
 
-import io.macgyver.xson.Xson;
-
 import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 public abstract class AbstractConverterTest {
 

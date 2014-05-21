@@ -2,13 +2,6 @@ package io.macgyver.core.auth;
 
 import io.macgyver.jsondb.JsonDbTemplate;
 
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.mapdb.DB;
-import org.mapdb.TxBlock;
-import org.mapdb.TxMaker;
-import org.mapdb.TxRollbackException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.lambdaworks.crypto.SCryptUtil;
 
 public class UserManager {

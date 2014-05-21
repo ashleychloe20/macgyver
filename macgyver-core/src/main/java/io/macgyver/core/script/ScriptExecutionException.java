@@ -4,6 +4,11 @@ import io.macgyver.core.MacGyverException;
 
 public class ScriptExecutionException extends MacGyverException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2049827783553322017L;
+
 	public ScriptExecutionException() {
 		super();
 		// TODO Auto-generated constructor stub

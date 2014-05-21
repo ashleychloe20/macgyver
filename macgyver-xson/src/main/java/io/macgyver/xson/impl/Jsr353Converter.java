@@ -1,7 +1,6 @@
 package io.macgyver.xson.impl;
 
 import io.macgyver.xson.Xson;
-import io.macgyver.xson.Xson.Converter;
 
 import java.io.StringReader;
 

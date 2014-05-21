@@ -4,6 +4,11 @@ import io.macgyver.core.MacGyverException;
 
 public class VSphereExceptionWrapper extends MacGyverException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7783119892748287877L;
+
 	public VSphereExceptionWrapper() {
 		super();
 		// TODO Auto-generated constructor stub

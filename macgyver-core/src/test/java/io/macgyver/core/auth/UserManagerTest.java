@@ -2,22 +2,17 @@ package io.macgyver.core.auth;
 
 import io.macgyver.test.MacGyverIntegrationTest;
 
-import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mapdb.DB;
-import org.mapdb.TxBlock;
 import org.mapdb.TxMaker;
-import org.mapdb.TxRollbackException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.gson.JsonObject;
 
 public class UserManagerTest extends MacGyverIntegrationTest {
 

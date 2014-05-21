@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 
 import javax.json.JsonObject;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.CharStreams;
 
 public class Jsr353PathTest extends AbstractXsonPathTest {

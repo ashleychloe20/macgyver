@@ -92,6 +92,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Bean
 	List<AccessDecisionVoter> macAccessDecisionVoterList() {
 		List<AccessDecisionVoter> x = Lists.newCopyOnWriteArrayList();
@@ -101,6 +102,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 		return x;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Bean
 	AccessDecisionManager macAccessDecisionManager() {
 		

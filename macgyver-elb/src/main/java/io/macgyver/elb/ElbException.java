@@ -4,6 +4,11 @@ import io.macgyver.core.MacGyverException;
 
 public class ElbException extends MacGyverException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6411853269464708501L;
+
 	public ElbException() {
 		super();
 		// TODO Auto-generated constructor stub

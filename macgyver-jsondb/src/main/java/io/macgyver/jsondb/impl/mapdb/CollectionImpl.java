@@ -1,8 +1,11 @@
 package io.macgyver.jsondb.impl.mapdb;
 
+import io.macgyver.jsondb.JsonDbCollection;
+import io.macgyver.jsondb.JsonDbCursor;
+import io.macgyver.jsondb.JsonDbException;
+
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -17,10 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-
-import io.macgyver.jsondb.JsonDbCollection;
-import io.macgyver.jsondb.JsonDbCursor;
-import io.macgyver.jsondb.JsonDbException;
 
 public class CollectionImpl implements JsonDbCollection {
 

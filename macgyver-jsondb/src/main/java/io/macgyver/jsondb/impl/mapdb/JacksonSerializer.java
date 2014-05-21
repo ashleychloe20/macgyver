@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.mapdb.Serializer;
-import org.mapdb.TxMaker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

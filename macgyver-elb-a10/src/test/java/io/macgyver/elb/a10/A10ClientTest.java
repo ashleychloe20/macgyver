@@ -14,24 +14,40 @@ import io.macgyver.test.MacGyverIntegrationTest;
 
 public class A10ClientTest extends MacGyverIntegrationTest {
 
-	A10Client client;
+	
+	static boolean hasConnectivity=true;
+	static A10Client client;
 
 	@Before
 	public void setupClient() {
-		String url = getPrivateProperty("a10.url");
-		String username = getPrivateProperty("a10.username");
-		String password = getPrivateProperty("a10.password");
+		Assume.assumeTrue("junit can communicate with A10",hasConnectivity);
+		if (!hasConnectivity) {
+			return;
+		}
+		if (client == null && hasConnectivity) {
+			String url = getPrivateProperty("a10.url");
+			String username = getPrivateProperty("a10.username");
+			String password = getPrivateProperty("a10.password");
 
-		Assume.assumeTrue(!Strings.isNullOrEmpty(url));
-		Assume.assumeTrue(!Strings.isNullOrEmpty(username));
-		Assume.assumeTrue(!Strings.isNullOrEmpty(password));
-		client = new A10Client(url, username, password);
-		client.setCertificateVerificationEnabled(false);
+			Assume.assumeTrue(!Strings.isNullOrEmpty(url));
+			Assume.assumeTrue(!Strings.isNullOrEmpty(username));
+			Assume.assumeTrue(!Strings.isNullOrEmpty(password));
+			client = new A10Client(url, username, password);
+			client.setCertificateVerificationEnabled(false);
+			
+			try {
+				client.authenticate();
+			}
+			catch (Exception e) {
+				hasConnectivity=false;
+				Assume.assumeTrue("junit has connectivity with A10",hasConnectivity);
+			}
+		}
 	}
 
 	@Test
 	public void testAuthFailure() {
-
+		
 		try {
 			client.setPassword("test");
 			client.authenticate();
@@ -49,29 +65,27 @@ public class A10ClientTest extends MacGyverIntegrationTest {
 
 		String t1 = client.getAuthToken();
 		String t2 = client.getAuthToken();
-		
-		Assert.assertEquals(t1,t2);
-		
+
+		Assert.assertEquals(t1, t2);
 
 	}
-	
+
 	@Test
-	public void testTokenCacheDisabled() throws InterruptedException{
+	public void testTokenCacheDisabled() throws InterruptedException {
+	
 		client.setTokenCacheDuration(0, TimeUnit.MICROSECONDS);
 		String t1 = client.getAuthToken();
 		Thread.sleep(100);
 		String t2 = client.getAuthToken();
-	
+
 		Assert.assertNotEquals(t1, t2);
-		
 
 	}
-	
+
 	@Test
 	public void testSLB() {
 
 		JsonObject obj = client.getAllSLB();
-		
 
 	}
 }

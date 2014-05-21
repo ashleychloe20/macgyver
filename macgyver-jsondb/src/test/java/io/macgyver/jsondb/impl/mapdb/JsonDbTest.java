@@ -2,7 +2,6 @@ package io.macgyver.jsondb.impl.mapdb;
 
 import io.macgyver.jsondb.JsonDb;
 import io.macgyver.jsondb.JsonDbCallback;
-import io.macgyver.jsondb.JsonDbCollection;
 import io.macgyver.jsondb.JsonDbCursor;
 import io.macgyver.jsondb.JsonDbTemplate;
 

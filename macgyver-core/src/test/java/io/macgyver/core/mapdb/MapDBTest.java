@@ -1,24 +1,17 @@
 package io.macgyver.core.mapdb;
 
-import io.macgyver.test.MacGyverIntegrationTest;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.TxMaker;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 

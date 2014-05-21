@@ -2,6 +2,11 @@ package io.macgyver.jsondb;
 
 public class JsonDbException extends RuntimeException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1036274336868282695L;
+
 	public JsonDbException() {
 		super();
 		// TODO Auto-generated constructor stub
