@@ -15,7 +15,7 @@ configurations {
 
 dependencies {
 
-    compile 'org.python:jython:2.5.3'
+    compile 'org.python:jython:2.7-b2'
     
     testCompile project(':macgyver-test')
     compile project(':macgyver-core')

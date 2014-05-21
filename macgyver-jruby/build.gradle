@@ -15,7 +15,7 @@ configurations {
 
 dependencies {
 
-    compile 'org.jruby:jruby-complete:1.7.10'
+    compile 'org.jruby:jruby-complete:1.7.12'
     
     testCompile project(':macgyver-test')
     compile project(':macgyver-core')
