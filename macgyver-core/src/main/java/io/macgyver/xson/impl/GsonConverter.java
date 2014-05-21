@@ -1,4 +1,7 @@
-package io.macgyver.core.util;
+package io.macgyver.xson.impl;
+
+import io.macgyver.xson.Xson;
+import io.macgyver.xson.Xson.Converter;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

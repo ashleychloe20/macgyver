@@ -1,4 +1,6 @@
-package io.macgyver.core.util;
+package io.macgyver.xson;
+
+import io.macgyver.xson.Xson;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,12 +8,15 @@ import java.io.InputStreamReader;
 
 import net.minidev.json.JSONObject;
 
+import org.bouncycastle.util.Strings;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -19,75 +24,59 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jayway.jsonpath.JsonPath;
 
-public class XsonTest {
+public abstract class AbstractXsonPathTest {
 
-	JsonObject obj;
-	
-	ObjectNode jacksonObject;
+
+	Object object;
 	
 	@Before
 	public void loadData() throws IOException {
-		InputStream is = getClass().getClassLoader().getResourceAsStream("json/sample.json");
-		String x = CharStreams.toString(new InputStreamReader(is));
-		 obj = new Gson().fromJson(x, JsonObject.class);
-		 
-		 jacksonObject = Xson.convert(x, ObjectNode.class);
+		loadSampleData();
 	}
+	
+	public abstract void loadSampleData() throws IOException;
+	
+
 	
 	
 	@Test
 	public void testNoMatch() {
-		Assert.assertNull(Xson.path(obj, "$.idx"));
-		Assert.assertNull(Xson.path(obj, "$.idx[3]"));
+		Assert.assertNull(Xson.eval(object, "$.idx"));
+		Assert.assertNull(Xson.eval(object, "$.idx[3]"));
 	}
 	
-	@Test
-	public void testNoMatchJackson() {
-		Assert.assertNull(Xson.path(jacksonObject, "$.idx"));
-		Assert.assertNull(Xson.path(jacksonObject, "$.idx[3]"));
-	}
+
 	
 	@Test
 	public void testInt() {
-		Assert.assertEquals(100,Xson.path(obj, "$.id"));
+		Assert.assertEquals(100,Xson.eval(object, "$.id"));
 	}
-	@Test
-	public void testIntJackson() {
-		Assert.assertEquals(100,Xson.path(jacksonObject, "$.id"));
-	}
+
 	@Test
 	public void testString() {
-		Assert.assertEquals("donut",Xson.path(obj, "$.type"));
+		Assert.assertEquals("donut",Xson.eval(object, "$.type"));
 	}
-	@Test
-	public void testStringJackson() {
-		Assert.assertEquals("donut",Xson.path(jacksonObject, "$.type"));
-	}
+
 	@Test
 	public void testBoolean() {
-		Assert.assertEquals(true,Xson.path(obj, "$.available"));
+		Assert.assertEquals(true,Xson.eval(object, "$.available"));
 	}
-	@Test
-	public void testBooleanJackson() {
-		Assert.assertEquals(true,Xson.path(jacksonObject, "$.available"));
-	}
+
 	@Test
 	public void testDouble() {
-		Assert.assertEquals(new Double(0.55),Xson.path(obj, "$.ppu"));
+		Assert.assertEquals(new Double(0.55),Xson.eval(object, "$.ppu"));
 	}
 	
 	@Test
 	public void testArray() {
-		JsonArray arr = Xson.path(obj, "$.batters.batter");
-		Assert.assertEquals("1001",arr.get(0).getAsJsonObject().get("id").getAsString());
+		Assert.assertNotNull(object);
+	
+		Object x = Xson.eval(object, "$.batters.batter");
+		Assert.assertNotNull(x);
 		
+		ArrayNode n = Xson.convert(x, ArrayNode.class);
+		Assert.assertTrue(4==n.size());
 		
-		JsonObject x = Xson.path(obj, "$.batters.batter[2]");
-		
-		Assert.assertEquals("1003",x.get("id").getAsString());
-		
-		
-		Assert.assertEquals("1003",Xson.path(obj,"$.batters.batter[2].id"));
 	}
 	/*
 {
