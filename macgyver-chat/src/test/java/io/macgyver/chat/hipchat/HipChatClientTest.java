@@ -1,7 +1,7 @@
 package io.macgyver.chat.hipchat;
 
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.test.MacgyverIntegrationTest;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.net.InetAddress;
 
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.ning.http.client.AsyncHttpClient;
 
-public class HipChatClientTest extends MacgyverIntegrationTest {
+public class HipChatClientTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	@Qualifier("macAsyncHttpClient")

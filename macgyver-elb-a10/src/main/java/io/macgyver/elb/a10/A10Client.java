@@ -1,21 +1,12 @@
 package io.macgyver.elb.a10;
 
-import io.macgyver.elb.ELBException;
+import io.macgyver.core.jaxrs.GsonMessageBodyHandler;
+import io.macgyver.core.jaxrs.SslTrust;
+import io.macgyver.elb.ElbException;
 
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.ListIterator;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -24,106 +15,186 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 public class A10Client {
 
-	String username;
-	String password;
-	String url;
-	
-	String token;
-	
+	public static final String A10_AUTH_TOKEN_KEY = "token";
+	Logger logger = LoggerFactory.getLogger(A10Client.class);
+	private String username;
+	private String password;
+	private String url;
+	Cache<String, String> tokenCache;
+
+	public static final int DEFAULT_TOKEN_CACHE_DURATION = 10;
+	private static final TimeUnit DEFAULT_TOKEN_CACHE_DURATION_TIME_UNIT = TimeUnit.MINUTES;
+
+	public boolean validateCertificates = true;
+
+	Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
+
 	public A10Client(String url, String username, String password) {
 		this.url = url;
-		this.username=username;
-		this.password=password;
+		this.username = username;
+		this.password = password;
+
+		setTokenCacheDuration(DEFAULT_TOKEN_CACHE_DURATION, DEFAULT_TOKEN_CACHE_DURATION_TIME_UNIT);
+		
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	public void setTokenCacheDuration(int duration, TimeUnit timeUnit) {
+		Preconditions.checkArgument(duration>=0, "duration must be >=0");
+		Preconditions.checkNotNull(timeUnit, "TimeUnit must be set");
+	
+		this.tokenCache = CacheBuilder.newBuilder()
+				.expireAfterWrite(duration, timeUnit).build();
+		
 	}
 	
-	
-	
-	public void authenticate() {
+	public void setCertificateVerificationEnabled(boolean b) {
+		validateCertificates = b;
+		if (validateCertificates && (!b)) {
+			logger.warn("certificate validation disabled");
+		}
+	}
+
+	void throwExceptionIfNecessary(JsonObject response) {
+
+		if (response.has("response")) {
+			JsonObject responseNode = response.get("response")
+					.getAsJsonObject();
+			if (responseNode.has("err")) {
+				JsonObject err = responseNode.get("err").getAsJsonObject();
+				String code = err.get("code").getAsString();
+				String msg = err.get("msg").getAsString();
+				logger.warn("error response: \n{}", new GsonBuilder()
+						.setPrettyPrinting().create().toJson(response));
+				A10RemoteException x = new A10RemoteException(code, msg);
+				throw x;
+			}
+		}
+
+	}
+
+	protected String authenticate() {
 		WebTarget wt = newWebTarget();
-	
-		
-		Form f = new Form().param("username", username).param("password", password).param("format", "json").param("method", "authenticate");
-		Response resp = wt.request().post(Entity.entity(f, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-		
-		JsonObject obj = resp.readEntity(JsonObject.class);
-		
-		String sid = obj.getString("session_id");
-		if (sid==null) {
-			throw new ELBException("authentication failed");
+
+		Form f = new Form().param("username", username)
+				.param("password", password).param("format", "json")
+				.param("method", "authenticate");
+		Response resp = wt.request().post(
+				Entity.entity(f, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+
+		com.google.gson.JsonObject obj = resp
+				.readEntity(com.google.gson.JsonObject.class);
+
+		throwExceptionIfNecessary(obj);
+
+		String sid = obj.get("session_id").getAsString();
+		if (sid == null) {
+			throw new ElbException("authentication failed");
 		}
-		this.token = sid;
-		
+		tokenCache.put(A10_AUTH_TOKEN_KEY, sid);
+		return sid;
+
 	}
-	
-	public void getAllSLB() {
-	WebTarget wt = newWebTarget();
-	
-		
-		Form f = new Form().param("session_id", token).param("format", "json").param("method", "slb.service_group.getAll");
-		Response resp = wt.request().post(Entity.entity(f, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-		
-		JsonObject obj = resp.readEntity(JsonObject.class);
-		JsonArray arr = obj.getJsonArray("service_group_list");
-		ListIterator<JsonValue> t = arr.listIterator();
-		while (t.hasNext()) {
-			t.next();
+
+	protected String getAuthToken() {
+		String token = tokenCache.getIfPresent(A10_AUTH_TOKEN_KEY);
+		if (token == null) {
+			token = authenticate();
 		}
-		
+
+		if (token == null) {
+			throw new ElbException("could not obtain auth token");
+		}
+		return token;
+
 	}
-	
+
+	public ObjectNode exec(String method) {
+		return exec(method, null);
+	}
+
+	public ObjectNode exec(String method, Map<String, String> params) {
+		if (params == null) {
+			params = Maps.newConcurrentMap();
+		}
+		Map<String,String> copy = Maps.newHashMap(params);
+		copy.put("method", method);
+
+		return exec(copy);
+	}
+
+	protected ObjectNode exec(Map<String, String> x) {
+		WebTarget wt = newWebTarget();
+
+		String method = x.get("method");
+		Preconditions.checkArgument(!Strings.isNullOrEmpty(method),
+				"method argument must be passed");
+		Form f = new Form().param("session_id", getAuthToken())
+				.param("format", "json").param("method", method);
+
+		Response resp = wt.request().post(
+				Entity.entity(f, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+
+		ObjectNode obj = resp
+				.readEntity(ObjectNode.class);
+		logger.debug("response: \n{}", prettyGson.toJson(obj));
+		return obj;
+	}
+
+	public ObjectNode getAllSLB() {
+
+		ObjectNode obj = exec("slb.service_group.getAll");
+
+		return obj;
+
+	}
+
+	protected Client newClient() {
+
+		ClientBuilder builder = new ResteasyClientBuilder().establishConnectionTimeout(5, TimeUnit.SECONDS).register(
+				new GsonMessageBodyHandler());
+
+		if (!validateCertificates) {
+			builder = builder.hostnameVerifier(
+					SslTrust.withoutHostnameVerification()).sslContext(
+					SslTrust.withoutCertificateValidation());
+		}
+		return builder.build();
+	}
+
 	protected WebTarget newWebTarget() {
-		try {
-		 HostnameVerifier verifier = new HostnameVerifier() {
-				
-				@Override
-				public boolean verify(String hostname, SSLSession session) {
-					// TODO Auto-generated method stub
-					return true;
-				}
-			};
-			
-			 TrustManager[] trustAllCerts = new TrustManager[]{
-				        new X509TrustManager() {
-							
-							@Override
-							public X509Certificate[] getAcceptedIssuers() {
-								// TODO Auto-generated method stub
-								return null;
-							}
-							
-							@Override
-							public void checkServerTrusted(X509Certificate[] arg0, String arg1)
-									throws CertificateException {
-								// TODO Auto-generated method stub
-								
-							}
-							
-							@Override
-							public void checkClientTrusted(X509Certificate[] arg0, String arg1)
-									throws CertificateException {
-								// TODO Auto-generated method stub
-								
-							}
-						}
-				    };
-			SSLContext sc = SSLContext.getInstance("SSL");
-	        sc.init(null, trustAllCerts, new java.security.SecureRandom());
 
-	
-		
-		Client client = ClientBuilder.newBuilder().hostnameVerifier(verifier).sslContext(sc).build();
+		return newClient().target(url);
 
-		WebTarget t = client.target(url);
-		return t;
-		}
-		catch (KeyManagementException e) {
-			
-			throw new ELBException(e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new ELBException(e);
-		}
 	}
 }

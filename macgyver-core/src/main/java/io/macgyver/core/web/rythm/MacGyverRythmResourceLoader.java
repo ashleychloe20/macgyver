@@ -1,9 +1,11 @@
 package io.macgyver.core.web.rythm;
 
 import io.macgyver.core.Kernel;
+import io.macgyver.core.VirtualFileSystem;
 
 import java.io.File;
 
+import org.apache.commons.vfs2.FileObject;
 import org.rythmengine.RythmEngine;
 import org.rythmengine.resource.ITemplateResource;
 import org.rythmengine.resource.ResourceLoaderBase;
@@ -34,8 +36,11 @@ public class MacGyverRythmResourceLoader extends ResourceLoaderBase {
 	
 		logger.trace("resolving template resource for: "+templateName);
 		
-		File templateDir = new File(Kernel.getInstance().getExtensionDir(),
-				"web");
+		VirtualFileSystem vfsManager = Kernel.getInstance().getApplicationContext().getBean(VirtualFileSystem.class);
+		
+		FileObject templateVirtualDir = vfsManager.getWebLocation();
+		
+		File templateDir = VirtualFileSystem.asLocalFile(templateVirtualDir);
 
 		
 

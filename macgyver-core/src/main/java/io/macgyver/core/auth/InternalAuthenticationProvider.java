@@ -1,46 +1,33 @@
 package io.macgyver.core.auth;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.mapdb.DB;
-import org.mapdb.TxBlock;
-import org.mapdb.TxMaker;
-import org.mapdb.TxRollbackException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.lambdaworks.crypto.SCryptUtil;
 
 public class InternalAuthenticationProvider implements AuthenticationProvider {
 
 	org.slf4j.Logger logger = LoggerFactory
 			.getLogger(InternalAuthenticationProvider.class);
 
-	@Autowired
+	@Autowired(required=true)
 	UserManager userManager;
 
 	@Autowired
@@ -56,7 +43,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 	public Authentication authenticate(final Authentication authentication)
 			throws AuthenticationException {
 		
-		Optional<JsonObject> u = userManager.getUserAsJsonObject(authentication
+		Optional<ObjectNode> u = userManager.getUserAsJsonObject(authentication
 				.getPrincipal().toString());
 		if (!u.isPresent()) {
 			throw new UsernameNotFoundException("user not found: "+authentication.getPrincipal().toString());
@@ -67,14 +54,14 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 			throw new BadCredentialsException("invalid credentials");
 		}
 		
-		JsonElement r = u.get().get("roles");
+		JsonNode r = u.get().path("roles");
 
 		List<GrantedAuthority> gaList = Lists.newArrayList();
-		if (r != null && r.isJsonArray()) {
-			JsonArray arr = r.getAsJsonArray();
+		if (r != null && r.isArray()) {
+			ArrayNode arr = (ArrayNode) r;
 			for (int i = 0; i < arr.size(); i++) {
-				String role = arr.get(i).getAsString();
-				GrantedAuthority ga = new GrantedAuthorityImpl(role);
+				String role = arr.get(i).asText();
+				GrantedAuthority ga = new SimpleGrantedAuthority(role);
 				gaList.add(ga);
 			}
 		}
@@ -95,16 +82,16 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 
 	public void seedData() {
 
-		Optional<JsonObject> adminUser = userManager
+		Optional<ObjectNode> adminUser = userManager
 				.getUserAsJsonObject("admin");
 		if (!adminUser.isPresent()) {
-			JsonObject x = new JsonObject();
-			x.addProperty("username", "admin");
-			JsonArray arr = new JsonArray();
-			arr.add(new Gson().toJsonTree("ROLE_MACGYVER_SHELL"));
-			arr.add(new Gson().toJsonTree("ROLE_MACGYVER_USER"));
-			arr.add(new Gson().toJsonTree("ROLE_MACGYVER_ADMIN"));
-			x.add("roles", arr);
+			ObjectNode x = new ObjectMapper().createObjectNode();
+			x.put("username", "admin");
+			ArrayNode arr = new ObjectMapper().createArrayNode();
+			arr.add("ROLE_MACGYVER_SHELL");
+			arr.add("ROLE_MACGYVER_USER");
+			arr.add("ROLE_MACGYVER_ADMIN");
+			x.put("roles", arr);
 			userManager.save(x);
 			userManager.setPassword("admin", "admin");
 			

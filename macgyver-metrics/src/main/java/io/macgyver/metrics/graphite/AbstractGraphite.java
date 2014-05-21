@@ -46,8 +46,6 @@ public abstract class AbstractGraphite extends AbstractMetricRecorder {
 
 	/**
 	 * Returns the URL for making "REST" calls to graphite up to /graphite
-	 * 
-	 * @return
 	 */
 	public String getQueryBaseUrl() {
 		return graphiteQueryBaseUrl;

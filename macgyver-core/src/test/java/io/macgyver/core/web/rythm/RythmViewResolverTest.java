@@ -1,13 +1,12 @@
 package io.macgyver.core.web.rythm;
 
-import io.macgyver.core.CoreIntegrationTestCase;
-import io.macgyver.core.web.rythm.RythmViewResolver;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
-public class RythmViewResolverTest extends CoreIntegrationTestCase {
+public class RythmViewResolverTest extends MacGyverIntegrationTest {
 
 
 	@Test

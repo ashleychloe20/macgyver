@@ -1,24 +1,15 @@
 package io.macgyver.core;
 
-import groovy.lang.GroovyShell;
-import io.macgyver.core.config.CoreConfig;
-import io.macgyver.core.eventbus.MacGyverEventBus;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.StandardEnvironment;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 
 public class Kernel implements ApplicationContextAware {
 
@@ -27,21 +18,11 @@ public class Kernel implements ApplicationContextAware {
 	static AtomicReference<Kernel> kernelRef = new AtomicReference<Kernel>();
 
 	private ApplicationContext applicationContext;
-	private File extensionDir;
+
 	private static Throwable startupError = null;
 
-	public Kernel(File extensionDir) {
+	public Kernel() {
 
-		this.extensionDir = extensionDir.getAbsoluteFile();
-		if (this.extensionDir.exists()) {
-			try {
-				extensionDir = extensionDir.getCanonicalFile();
-			} catch (IOException e) {
-				logger.warn(
-						"could not determine canonical directory name for: {}",
-						extensionDir);
-			}
-		}
 	}
 
 	public static Optional<Throwable> getStartupError() {
@@ -58,64 +39,6 @@ public class Kernel implements ApplicationContextAware {
 		return startupError == null;
 	}
 
-	@SuppressWarnings({ "resource", "rawtypes" })
-	public synchronized static void initialize_DEPRECATED() {
-		if (kernelRef.get() == null) {
-
-			Kernel k = new Kernel(Kernel.determineExtensionDir());
-			kernelRef.set(k);
-
-			AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-
-			k.applicationContext = ctx;
-
-			File gbf = new File(Kernel.determineExtensionDir(),
-					"conf/beans.groovy");
-			if (gbf.exists()) {
-
-				// Need to move all of this into a BeanFactoryPostProcessor
-				logger.info("loading spring java config from: {}", gbf);
-
-				try {
-					GroovyShell gs = new GroovyShell(Thread.currentThread()
-							.getContextClassLoader());
-					Object x = gs.evaluate(gbf);
-					if (x == null || (!(x instanceof Class))) {
-						throw new IllegalStateException(gbf
-								+ " must return a java.lang.Class");
-					}
-					Class theClass = (Class) x;
-					ctx.setClassLoader((theClass.getClassLoader()));
-					ctx.scan(CoreConfig.class.getPackage().getName());
-
-					ctx.register(theClass);
-
-				} catch (IOException e) {
-					throw new IllegalStateException(e);
-				} catch (MultipleCompilationErrorsException e) {
-					throw e;
-				} catch (RuntimeException e) {
-					throw new IllegalStateException(gbf
-							+ " must return a java.lang.Class", e);
-				}
-			} else {
-				ctx.scan(CoreConfig.class.getPackage().getName());
-
-			}
-			ctx.refresh();
-
-			MacGyverEventBus bus = ctx.getBean(MacGyverEventBus.class);
-			kernelRef.set(k);
-			
-		} else {
-			throw new IllegalStateException(
-					"spring context already initialized");
-		}
-		if (startupError != null) {
-			throw new MacGyverException(startupError);
-		}
-
-	}
 
 	public synchronized static Kernel getInstance() {
 		Kernel k = kernelRef.get();
@@ -137,9 +60,7 @@ public class Kernel implements ApplicationContextAware {
 		return applicationContext;
 	}
 
-	public File getExtensionDir() {
-		return extensionDir;
-	}
+
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
@@ -182,35 +103,8 @@ public class Kernel implements ApplicationContextAware {
 
 	}
 
-	public static File getExtensionDataDir() {
-		return getExtensionDir("data");
-	}
-	public static File getExtensionConfigDir() {
-		return getExtensionDir("config");
-	}
-	public static File getExtensionDir(String subDir) {
-		File ext = determineExtensionDir();
-		return new File(ext,subDir);
-	}
-	public static File determineExtensionDir() {
-		try {
-			String location = System.getProperty("macgyver.ext.location");
-
-			if (!Strings.isNullOrEmpty(location)) {
-				return new File(location).getCanonicalFile();
-			}
-			File extLocation = new File("./src/test/resources/ext");
-			if (extLocation.exists()) {
-				return extLocation.getCanonicalFile();
-			}
-			return new File(".").getCanonicalFile();
-
-		} catch (IOException e) {
-			throw new ConfigurationException(e);
-		}
-
-	}
-
+	
+	
 	public static class KernelStartedEvent {
 
 	}

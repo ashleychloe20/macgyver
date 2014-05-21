@@ -1,6 +1,6 @@
 package io.macgyver.redis;
 
-import io.macgyver.test.MacgyverIntegrationTest;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -12,7 +12,7 @@ import redis.clients.jedis.JedisPool;
 
 
 
-public class RedisFactoryBeanTest extends MacgyverIntegrationTest {
+public class RedisFactoryBeanTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	JedisPool pool;

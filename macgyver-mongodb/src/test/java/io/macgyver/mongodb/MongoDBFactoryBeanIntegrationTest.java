@@ -1,6 +1,6 @@
 package io.macgyver.mongodb;
 
-import io.macgyver.test.MacgyverIntegrationTest;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.net.UnknownHostException;
 
@@ -16,7 +16,7 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
-public class MongoDBFactoryBeanIntegrationTest extends MacgyverIntegrationTest {
+public class MongoDBFactoryBeanIntegrationTest extends MacGyverIntegrationTest {
 
 	
 	@Autowired

@@ -1,6 +1,7 @@
 package io.macgyver.core.scheduler;
 
 import io.macgyver.core.Kernel;
+import io.macgyver.core.VirtualFileSystem;
 import io.macgyver.core.script.ScriptExecutor;
 
 import java.io.File;
@@ -20,6 +21,8 @@ import java.util.UUID;
 import javax.json.Json;
 import javax.json.JsonObject;
 
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.VFS;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
@@ -52,6 +55,9 @@ public class AutoScheduler implements InitializingBean {
 	@Autowired
 	Kernel kernel;
 
+	@Autowired
+	VirtualFileSystem vfsManager;
+	
 	public static String AUTO_SCHEDULER_GROUP = "AUTO_SCHEDULER";
 
 	public static class CrontabLineProcessor implements
@@ -111,7 +117,7 @@ public class AutoScheduler implements InitializingBean {
 		final List<ScheduledScript> list = Lists.newArrayList();
 		final FileVisitor fv = new SimpleFileVisitor<Path>() {
 
-			ScriptExecutor se = new ScriptExecutor();
+			
 
 			@Override
 			public FileVisitResult preVisitDirectory(final Path dir,
@@ -124,10 +130,13 @@ public class AutoScheduler implements InitializingBean {
 			public FileVisitResult visitFile(Path file,
 					BasicFileAttributes attrs) throws IOException {
 				logger.debug("scanning: {}",file);
+				ScriptExecutor se = new ScriptExecutor();
 				// TODO Auto-generated method stub
 				Optional<JsonObject> schedule = extractCronExpression(file
 						.toFile());
-				if (schedule.isPresent() && se.isSupportedScript(file.toFile())) {
+				
+				FileObject fobj = VFS.getManager().resolveFile(file.toFile().toURI().toURL().toString());
+				if (schedule.isPresent() && se.isSupportedScript(fobj)) {
 					JsonObject descriptor = schedule.get();
 				
 					if (descriptor.containsKey("cron")) {
@@ -157,7 +166,8 @@ public class AutoScheduler implements InitializingBean {
 			}
 		};
 
-		File scriptsDir = Kernel.getExtensionDir("scripts/scheduler");
+		File scriptsDir = VirtualFileSystem.asLocalFile(vfsManager.getScriptsLocation().resolveFile("scheduler"));  // Transitional
+
 		logger.debug("scanning: {}",scriptsDir);
 		
 		Files.walkFileTree(scriptsDir.toPath(), fv);
@@ -173,6 +183,7 @@ public class AutoScheduler implements InitializingBean {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public void scheduleScript(ScheduledScript s, Set<JobKey> validSet)
 			throws SchedulerException, IOException, ParseException {
 

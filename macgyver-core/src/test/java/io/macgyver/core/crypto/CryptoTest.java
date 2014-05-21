@@ -1,6 +1,6 @@
 package io.macgyver.core.crypto;
 
-import io.macgyver.core.CoreIntegrationTestCase;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.io.BaseEncoding;
 
-public class CryptoTest extends CoreIntegrationTestCase {
+public class CryptoTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	Crypto crypto;
@@ -38,8 +38,7 @@ public class CryptoTest extends CoreIntegrationTestCase {
 	public void testDecryptWithMac0() throws GeneralSecurityException {
 	
 		String input = "eyJrIjoibWFjMCIsImQiOiJKZXE2SXptUEQrZFNHcEhBWUxLODJYTW5JS2JlQ0czMng5U3g5OTNxaTZzPSJ9";
-		//String x = BaseEncoding.base64().encode(input.getBytes(Charsets.UTF_8));
-		System.out.println(crypto.getKeyStoreManager().getKeyStoreLocation());
+		
 		String plain = crypto.decryptString(input);
 
 		Assert.assertEquals("abcdefg", plain);

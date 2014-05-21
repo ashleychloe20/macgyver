@@ -4,6 +4,11 @@ import io.macgyver.core.MacGyverException;
 
 public class MailException extends MacGyverException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8373694143084229632L;
+
 	public MailException() {
 		super();
 		// TODO Auto-generated constructor stub
