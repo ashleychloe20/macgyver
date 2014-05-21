@@ -1,11 +1,14 @@
 package io.macgyver.core.util;
 
+import java.io.IOException;
 import java.util.Map;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BaseJsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -33,7 +36,8 @@ public class Xson {
 
 	Map<Class<? extends Object>, Converter> converters = Maps.newConcurrentMap();
 
-	
+
+
 	public static <T> T path(JsonElement element, String path) {
 		return read(element,path);
 	}
@@ -48,7 +52,58 @@ public class Xson {
 		return (T) val;
 	}
 	
+	public static <T> T path(JsonNode element, String path) {
+		return read(element,path);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T path(JsonNode element, String path, Object notFoundVal) {
+		Object val = read(element,path);
+		if (val==null) {
+			return (T) notFoundVal;
+		}
+		return (T) val;
+	}
 
+	
+
+	
+	
+	@SuppressWarnings("unchecked")
+	protected static <T> T read(JsonNode element, String path) {
+		try {
+			String s = element.toString();
+
+			Object val = JsonPath.read(s, path);
+
+			if (val == null) {
+				return (T) val;
+			} else if (val instanceof Number) {
+				return (T) val;
+			} else if (val instanceof String) {
+				return (T) val;
+			}
+			else if (val instanceof Boolean) {
+				return (T) val;
+			} else if (val instanceof JSONObject) {
+				return (T) new ObjectMapper().readTree(val.toString());
+			}
+			else if (val instanceof JSONArray) {
+				return (T) new ObjectMapper().readTree(val.toString());
+			}
+			throw new IllegalArgumentException("invalid type: "
+					+ val.getClass());
+		} catch (PathNotFoundException e) {
+			return null;
+		}
+		catch (JsonProcessingException e) {
+			return null;
+		}
+		catch (IOException e) {
+			return null;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	protected static <T> T read(JsonElement element, String path) {
 		try {
