@@ -7,6 +7,7 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 
@@ -85,7 +86,7 @@ public class A10ClientTest extends MacGyverIntegrationTest {
 	@Test
 	public void testSLB() {
 
-		JsonObject obj = client.getAllSLB();
+		ObjectNode obj = client.getAllSLB();
 
 	}
 }

@@ -19,6 +19,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
@@ -138,11 +139,11 @@ public class A10Client {
 
 	}
 
-	public JsonObject exec(String method) {
+	public ObjectNode exec(String method) {
 		return exec(method, null);
 	}
 
-	public JsonObject exec(String method, Map<String, String> params) {
+	public ObjectNode exec(String method, Map<String, String> params) {
 		if (params == null) {
 			params = Maps.newConcurrentMap();
 		}
@@ -152,7 +153,7 @@ public class A10Client {
 		return exec(copy);
 	}
 
-	protected JsonObject exec(Map<String, String> x) {
+	protected ObjectNode exec(Map<String, String> x) {
 		WebTarget wt = newWebTarget();
 
 		String method = x.get("method");
@@ -164,15 +165,15 @@ public class A10Client {
 		Response resp = wt.request().post(
 				Entity.entity(f, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-		com.google.gson.JsonObject obj = resp
-				.readEntity(com.google.gson.JsonObject.class);
+		ObjectNode obj = resp
+				.readEntity(ObjectNode.class);
 		logger.debug("response: \n{}", prettyGson.toJson(obj));
 		return obj;
 	}
 
-	public JsonObject getAllSLB() {
+	public ObjectNode getAllSLB() {
 
-		com.google.gson.JsonObject obj = exec("slb.service_group.getAll");
+		ObjectNode obj = exec("slb.service_group.getAll");
 
 		return obj;
 
