@@ -5,7 +5,7 @@ import io.macgyver.xson.Xson;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
-public class GsonConverter implements Xson.Converter {
+public class GsonConverter implements TreeModelConverter {
 
 	Gson gson = new Gson();
 

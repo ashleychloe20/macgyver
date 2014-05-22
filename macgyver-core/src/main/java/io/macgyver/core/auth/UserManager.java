@@ -24,7 +24,7 @@ public class UserManager {
 	public Optional<ObjectNode> getUserAsJsonObject(final String id) {
 		
 		Preconditions.checkNotNull(template);
-		return template.findOne("users", id);
+		return template.findOneById("users", id);
 		
 
 	}

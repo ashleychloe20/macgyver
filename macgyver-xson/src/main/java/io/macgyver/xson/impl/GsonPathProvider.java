@@ -1,6 +1,5 @@
 package io.macgyver.xson.impl;
 
-import io.macgyver.xson.Xson.JsonPathProvider;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
