@@ -14,6 +14,6 @@ public class PrettyTimeTest {
 	
 		String s = pt.format(new Date(System.currentTimeMillis()-200010));
 		
-		System.out.println(s);
+	
 	}
 }

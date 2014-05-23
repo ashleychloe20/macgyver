@@ -26,7 +26,7 @@ public class JacksonPathProvider implements JsonPathProvider {
 			JsonNode node = (JsonNode) element;
 			String valToEval = element.toString();
 		
-			System.out.println("EVAL: "+valToEval);
+		
 			Object val = JsonPath.read(valToEval, path);
 		
 			if (val == null) {

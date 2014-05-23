@@ -52,14 +52,14 @@ public class JsonPathComparatorTest {
 	@Test
 	public void testXX() {
 		List<ObjectNode> filteredList = ImmutableList.copyOf(Iterables.filter(movieList, Xson.pathPredicate("$.[?(@name==\"Pulp Fiction\")]")));
-		System.out.println(filteredList);
+
 	}
 	
 	@Test
 	public void testStringSort2() {
 		
 		Collections.sort(movieList,Xson.pathComparator("$.name"));
-		System.out.println(movieList);
+
 		org.junit.Assert.assertEquals("Big Lebowski, The", movieList.get(0).get("name").asText());
 		org.junit.Assert.assertEquals("Nebraska", movieList.get(1).get("name").asText());
 		org.junit.Assert.assertEquals("Pulp Fiction", movieList.get(2).get("name").asText());
@@ -69,7 +69,7 @@ public class JsonPathComparatorTest {
 	public void testStringSortReverse() {
 		
 		Collections.sort(movieList,Xson.pathComparator("$.name",SortOrder.DESCENDING));
-		System.out.println(movieList);
+	
 		org.junit.Assert.assertEquals("Big Lebowski, The", movieList.get(2).get("name").asText());
 		org.junit.Assert.assertEquals("Nebraska", movieList.get(1).get("name").asText());
 		org.junit.Assert.assertEquals("Pulp Fiction", movieList.get(0).get("name").asText());
@@ -78,7 +78,7 @@ public class JsonPathComparatorTest {
 	public void testNumberSort() {
 		
 		Collections.sort(movieList,Xson.pathComparator("$.id"));
-		System.out.println(movieList);
+		
 		org.junit.Assert.assertEquals(1,movieList.get(0).path("id").asInt());
 		org.junit.Assert.assertEquals(22,movieList.get(1).path("id").asInt());
 		org.junit.Assert.assertEquals(120,movieList.get(2).path("id").asInt());
