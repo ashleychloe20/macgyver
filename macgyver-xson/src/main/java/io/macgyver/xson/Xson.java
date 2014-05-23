@@ -69,6 +69,10 @@ public class Xson {
 		public int compare(Object o1, Object o2) {
 			return pc.compare(o1, o2);
 		}
+		
+		public JsonPathComparator<Object> build() {
+			return this;
+		}
 
 	}
 
@@ -99,14 +103,14 @@ public class Xson {
 
 	
 
-	public static JsonPathComparator<Object> pathComparator(String jsonPath, Xson.SortOrder order) {
+	public static ComparatorBuilder pathComparator(String jsonPath, Xson.SortOrder order) {
 		Preconditions.checkNotNull(jsonPath);
 		ComparatorBuilder cb = new ComparatorBuilder();
 		cb.sortBy(jsonPath,order);
 		return cb;
 		
 	}
-	public static JsonPathComparator<Object> pathComparator(String jsonPath) {
+	public static ComparatorBuilder pathComparator(String jsonPath) {
 		return pathComparator(jsonPath,Xson.SortOrder.ASCENDING);
 		
 	}
