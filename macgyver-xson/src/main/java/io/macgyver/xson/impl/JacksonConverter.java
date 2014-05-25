@@ -6,14 +6,14 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JacksonConverter implements Xson.Converter {
+public class JacksonConverter implements TreeModelConverter {
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <X> X convertObject(Object input, Class<X> output) {
 
 		try {
-		
+
 			if (input == null) {
 				return null;
 			}

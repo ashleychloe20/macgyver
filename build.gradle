@@ -97,6 +97,15 @@ subprojects {
 	            repository(id: 'macgyver-bintray', url: 'https://api.bintray.com/maven/robschoening/io-macgyver/io-macgyver'){
 	                authentication(userName: bintrayUser, password: bintrayKey)
 				}
+                pom.project {
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                
+                }
 	        }
 	    }
 	}

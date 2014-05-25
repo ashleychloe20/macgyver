@@ -1,7 +1,5 @@
 package io.macgyver.xson.impl;
 
-import io.macgyver.xson.Xson.JsonPathProvider;
-
 import java.io.IOException;
 
 import net.minidev.json.JSONArray;
@@ -26,8 +24,11 @@ public class JacksonPathProvider implements JsonPathProvider {
 	public <T> T path(Object element, String path, Object defaultVal) {
 		try {
 			JsonNode node = (JsonNode) element;
-
-			Object val = JsonPath.read(element.toString(), path);
+			String valToEval = element.toString();
+		
+		
+			Object val = JsonPath.read(valToEval, path);
+		
 			if (val == null) {
 				return (T) defaultVal;
 			}
@@ -50,6 +51,8 @@ public class JacksonPathProvider implements JsonPathProvider {
 		} catch (JsonProcessingException e) {
 			return (T) defaultVal;
 		} catch (IOException e) {
+			return (T) defaultVal;
+		} catch (RuntimeException e) {
 			return (T) defaultVal;
 		}
 	}

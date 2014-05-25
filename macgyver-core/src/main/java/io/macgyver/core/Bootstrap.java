@@ -22,26 +22,26 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
 
-
 /**
- * The purpose of bootstrap is to collect configuration settings that need to be configured before
- * they are passed to Spring for initialization.  
+ * The purpose of bootstrap is to collect configuration settings that need to be
+ * configured before they are passed to Spring for initialization.
+ * 
  * @author rschoening
- *
+ * 
  */
 public class Bootstrap {
 
 	Logger logger = LoggerFactory.getLogger(Bootstrap.class);
-	
+
 	public static Bootstrap instance = new Bootstrap();
 	VirtualFileSystem vfsManager = null;
 
 	BootstrapMapDB mapDb;
-	
+
 	JsonDbTemplate template;
-	
+
 	public static Bootstrap getInstance() {
-		if (instance==null) {
+		if (instance == null) {
 			throw new IllegalStateException();
 		}
 		return instance;
@@ -54,12 +54,15 @@ public class Bootstrap {
 	public JsonDbTemplate getJsonDbTemplate() {
 		return template;
 	}
+
 	public BootstrapMapDB getBootstrapMapDB() {
 		return mapDb;
 	}
+
 	public VirtualFileSystem getVirtualFileSystem() {
 		return vfsManager;
 	}
+
 	private File determineExtensionDir() {
 		try {
 			String location = System.getProperty("macgyver.ext.location");
@@ -67,24 +70,31 @@ public class Bootstrap {
 			if (!Strings.isNullOrEmpty(location)) {
 				return new File(location).getCanonicalFile();
 			}
-			File extLocation = new File("./src/test/resources/ext");
+
+			File extLocation = new File("./config");
+			if (extLocation.exists()) {
+				return extLocation.getParentFile().getCanonicalFile();
+			}
+
+			extLocation = new File("./src/test/resources/ext");
 			if (extLocation.exists()) {
 				return extLocation.getCanonicalFile();
 			}
-			return new File(".").getCanonicalFile();
-
+			throw new ConfigurationException("macgyver.ext.location not set");
 		} catch (IOException e) {
 			throw new ConfigurationException(e);
 		}
 
 	}
+
 	AtomicBoolean initialized = new AtomicBoolean(false);
+
 	public synchronized void init() {
 		if (initialized.get()) {
 			throw new IllegalStateException("Already initialized");
 		}
 		printBanner();
-		
+
 		File extDir = determineExtensionDir();
 		try {
 			FileObject configLocation = VFS.getManager().resolveFile(
@@ -95,28 +105,24 @@ public class Bootstrap {
 					new File(extDir, "data").toURI().toURL().toString());
 			FileObject webLocation = VFS.getManager().resolveFile(
 					new File(extDir, "web").toURI().toURL().toString());
-			
+
 			vfsManager = new VirtualFileSystem(configLocation, scriptsLocation,
 					dataLocation, webLocation);
 			mapDb = new BootstrapMapDB();
 			mapDb.init(vfsManager);
-			
+
 			JsonDb db = new JsonDbImpl(mapDb.getTxMaker().get());
 			template = new JsonDbTemplate(db);
-			
-			
-			
+
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		
-		
-		
+
 		initialized.set(true);
-		
+
 	}
-	
-	public  void printBanner() {
+
+	public void printBanner() {
 
 		// Spring boot doesn't support alternate banner until 1.1.x
 		String bannerText = "\n";
@@ -140,9 +146,10 @@ public class Bootstrap {
 					p.load(x);
 				}
 
-				bannerText += String.format("\n\n                      (v%s rev:%s)\n",
-								p.getProperty("version"),
-								p.getProperty("gitShortCommitId"));
+				bannerText += String.format(
+						"\n\n                      (v%s rev:%s)\n",
+						p.getProperty("version"),
+						p.getProperty("gitShortCommitId"));
 			}
 
 		} catch (Exception e) {

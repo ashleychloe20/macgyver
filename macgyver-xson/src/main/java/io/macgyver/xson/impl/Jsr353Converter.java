@@ -6,7 +6,7 @@ import java.io.StringReader;
 
 import javax.json.Json;
 
-public class Jsr353Converter implements Xson.Converter {
+public class Jsr353Converter implements TreeModelConverter {
 
 	@Override
 	public <X> X convertObject(Object input, Class<X> output) {

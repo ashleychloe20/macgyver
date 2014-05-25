@@ -1,7 +1,5 @@
 package io.macgyver.xson.impl;
 
-import io.macgyver.xson.Xson.JsonPathProvider;
-
 import java.io.StringReader;
 
 import javax.json.Json;

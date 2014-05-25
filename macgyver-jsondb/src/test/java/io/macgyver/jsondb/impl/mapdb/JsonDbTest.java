@@ -69,7 +69,7 @@ public class JsonDbTest {
 		template.save("test",n);
 		
 		
-		final Optional<ObjectNode> other = template.findOne("test", n.get("_id").asText());
+		final Optional<ObjectNode> other = template.findOneById("test", n.get("_id").asText());
 	
 		Assert.assertNotNull(other);
 		
@@ -88,7 +88,7 @@ public class JsonDbTest {
 		};
 		template.execute(cb);
 		
-		Assert.assertFalse(template.findOne("test", other.get().get("_id").asText()).isPresent());
+		Assert.assertFalse(template.findOneById("test", other.get().get("_id").asText()).isPresent());
 	}
 	
 }
