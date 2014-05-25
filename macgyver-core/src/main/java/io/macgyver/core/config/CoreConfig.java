@@ -22,14 +22,12 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.util.Properties;
 
+import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.provider.local.LocalFile;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +37,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import com.ning.http.client.AsyncHttpClient;
-import com.stevesoft.pat.apps.TestGroup;
+import com.thinkaurelius.titan.core.TitanFactory;
+import com.thinkaurelius.titan.core.TitanGraph;
 
 @Configuration
 public class CoreConfig {
@@ -119,24 +117,7 @@ public class CoreConfig {
 		return new ServiceRegistry();
 	}
 
-	@Bean(name = "macGraphDatabaseService",destroyMethod="shutdown")
-	public GraphDatabaseService graphDatabaseService() {
-		if (isUnitTest()) {
-			
-			return new GraphDatabaseFactory().newEmbeddedDatabase(Files.createTempDir().getAbsolutePath());
-		
-		} else {
-			FileObject obj = Bootstrap.getInstance().getVirtualFileSystem().getDataLocation();
-			if (!(obj instanceof LocalFile)) {
-				throw new IllegalStateException("data location must be local filesystem");
-			}
-			LocalFile file = (LocalFile) obj;
-			File dir = new java.io.File(file.getName().getPath(),"neo4j");
-			return new GraphDatabaseFactory().newEmbeddedDatabase(dir.getAbsolutePath());
 
-		}
-
-	}
 
 
 	public boolean isUnitTest() {
@@ -201,6 +182,37 @@ public class CoreConfig {
 
 		logger.info("macVfsManager: {}", mgr);
 		return mgr;
+
+	}
+	
+	@Bean(name = "titanGraph", destroyMethod = "shutdown")
+	public TitanGraph titanGraph() {
+		if (isUnitTest()) {
+
+			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
+
+			conf.setProperty("storage.directory", Files.createTempDir().getAbsolutePath());
+
+			TitanGraph g = TitanFactory.open(conf);
+			return g;
+
+		} else {
+			FileObject obj = Bootstrap.getInstance().getVirtualFileSystem()
+					.getDataLocation();
+			if (!(obj instanceof LocalFile)) {
+				throw new IllegalStateException(
+						"data location must be local filesystem");
+			}
+			LocalFile file = (LocalFile) obj;
+			File dir = new java.io.File(file.getName().getPath(), "titandb");
+			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
+
+			conf.setProperty("storage.directory", dir.getAbsolutePath());
+
+			TitanGraph g = TitanFactory.open(conf);
+			return g;
+
+		}
 
 	}
 }
