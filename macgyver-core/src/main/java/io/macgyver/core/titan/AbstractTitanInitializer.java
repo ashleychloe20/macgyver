@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.thinkaurelius.titan.core.TitanGraph;
 
-public abstract class TitanInitializer {
+public abstract class AbstractTitanInitializer {
 
 	@Autowired
 	TitanGraph graph;

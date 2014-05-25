@@ -25,3 +25,4 @@ dump.rdb
 *-local.properties
 macgyver-core/src/test/resources/ext/data
 macgyver-core-revision.properties
+macgyver-cmdb/src/test/resources/ext/data

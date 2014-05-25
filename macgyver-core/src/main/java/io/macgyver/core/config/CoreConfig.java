@@ -15,6 +15,7 @@ import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
+import io.macgyver.core.titan.CoreIndexInitializer;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -214,5 +215,10 @@ public class CoreConfig {
 
 		}
 
+	}
+	
+	@Bean
+	public CoreIndexInitializer macCoreIndexInitializer() {
+		return new CoreIndexInitializer();
 	}
 }
