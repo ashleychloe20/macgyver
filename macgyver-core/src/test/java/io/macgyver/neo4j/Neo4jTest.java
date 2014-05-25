@@ -77,10 +77,7 @@ public class Neo4jTest {
 					userNodes.add(users.next());
 				}
 
-				for (Node node : userNodes) {
-					System.out.println(node);
-
-				}
+				
 			}
 		}
 		
@@ -100,7 +97,7 @@ String rows="";
 		        }
 		        rows += "\n";
 		    }
-		    System.out.println(rows);
+	
 		    ignored.success();
 		}
 

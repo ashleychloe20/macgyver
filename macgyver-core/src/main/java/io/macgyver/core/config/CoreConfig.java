@@ -9,7 +9,7 @@ import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
 import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.Startup;
 import io.macgyver.core.VirtualFileSystem;
-import io.macgyver.core.auth.UserManager;
+import io.macgyver.core.auth.InternalUserManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
@@ -42,6 +42,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import com.ning.http.client.AsyncHttpClient;
+import com.stevesoft.pat.apps.TestGroup;
 
 @Configuration
 public class CoreConfig {
@@ -118,14 +119,15 @@ public class CoreConfig {
 		return new ServiceRegistry();
 	}
 
-	@Bean(name = "macGraphDatabaseService")
+	@Bean(name = "macGraphDatabaseService",destroyMethod="shutdown")
 	public GraphDatabaseService graphDatabaseService() {
 		if (isUnitTest()) {
+			
 			return new GraphDatabaseFactory().newEmbeddedDatabase(Files.createTempDir().getAbsolutePath());
 		
 		} else {
 			FileObject obj = Bootstrap.getInstance().getVirtualFileSystem().getDataLocation();
-			if ((obj instanceof LocalFile)) {
+			if (!(obj instanceof LocalFile)) {
 				throw new IllegalStateException("data location must be local filesystem");
 			}
 			LocalFile file = (LocalFile) obj;
@@ -182,8 +184,8 @@ public class CoreConfig {
 	}
 
 	@Bean(name = "macUserManager")
-	public UserManager macUserManager() {
-		return new UserManager();
+	public InternalUserManager macUserManager() {
+		return new InternalUserManager();
 	}
 
 	@Bean(name = "macFileSystemManager")
