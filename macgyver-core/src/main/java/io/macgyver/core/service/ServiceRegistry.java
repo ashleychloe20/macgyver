@@ -17,10 +17,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.vfs2.FileObject;
-import org.mapdb.DB;
-import org.mapdb.TxBlock;
-import org.mapdb.TxMaker;
-import org.mapdb.TxRollbackException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +48,6 @@ public class ServiceRegistry {
 	@Autowired
 	Crypto crypto;
 
-	@Autowired
-	TxMaker txMaker;
 
 	@SuppressWarnings("unchecked")
 	public <T> T get(String name, Class<T> t) {
@@ -232,14 +226,7 @@ public class ServiceRegistry {
 
 			p = crypto.decryptProperties(p);
 
-			TxBlock b = new TxBlock() {
-
-				@Override
-				public void tx(DB db) throws TxRollbackException {
-
-				}
-			};
-			txMaker.execute(b);
+			
 		}
 		return p;
 

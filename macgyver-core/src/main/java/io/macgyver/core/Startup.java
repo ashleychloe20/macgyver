@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
-import org.mapdb.TxMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,8 +26,6 @@ public class Startup implements InitializingBean {
 	@Autowired
 	Kernel kernel;
 
-	@Autowired
-	TxMaker txMaker;
 
 	@Autowired
 	InternalAuthenticationProvider internalAuthenticationProvider;

@@ -9,25 +9,27 @@ import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
 import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.Startup;
 import io.macgyver.core.VirtualFileSystem;
-import io.macgyver.core.auth.UserManager;
+import io.macgyver.core.auth.InternalUserManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.jsondb.JsonDbTemplate;
-import io.macgyver.jsondb.impl.mapdb.JsonDbImpl;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.util.Properties;
 
+import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
-import org.mapdb.DBMaker;
-import org.mapdb.TxMaker;
+import org.apache.commons.vfs2.provider.local.LocalFile;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.factory.GraphDatabaseBuilder;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +40,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.google.common.base.Optional;
+import com.google.common.io.Files;
 import com.ning.http.client.AsyncHttpClient;
+import com.stevesoft.pat.apps.TestGroup;
 
 @Configuration
 public class CoreConfig {
@@ -115,32 +119,26 @@ public class CoreConfig {
 		return new ServiceRegistry();
 	}
 
-	@Bean(name = "macTxMaker")
-	public TxMaker txMaker() {
+	@Bean(name = "macGraphDatabaseService",destroyMethod="shutdown")
+	public GraphDatabaseService graphDatabaseService() {
 		if (isUnitTest()) {
-			TxMaker txm = DBMaker.newMemoryDB().makeTxMaker();
-			return txm;
-		} else {
-			Optional<TxMaker> txm = Bootstrap.getInstance().getBootstrapMapDB().getTxMaker();
-			if (txm.isPresent()) {
-				return txm.get();
-			} else {
 			
-				return  Bootstrap.getInstance().getBootstrapMapDB().getTxMaker().get();
-			}
-
-		}
-
-	}
-
-	@Bean(name="macJsonDbTemplate") 
-	public JsonDbTemplate macJsonDbTemplate() {
-		if (isUnitTest()) {
-			return new JsonDbTemplate(new JsonDbImpl(DBMaker.newMemoryDB().makeTxMaker()));
-		}
-		return Bootstrap.getInstance().getJsonDbTemplate();
+			return new GraphDatabaseFactory().newEmbeddedDatabase(Files.createTempDir().getAbsolutePath());
 		
+		} else {
+			FileObject obj = Bootstrap.getInstance().getVirtualFileSystem().getDataLocation();
+			if (!(obj instanceof LocalFile)) {
+				throw new IllegalStateException("data location must be local filesystem");
+			}
+			LocalFile file = (LocalFile) obj;
+			File dir = new java.io.File(file.getName().getPath(),"neo4j");
+			return new GraphDatabaseFactory().newEmbeddedDatabase(dir.getAbsolutePath());
+
+		}
+
 	}
+
+
 	public boolean isUnitTest() {
 
 		StringWriter sw = new StringWriter();
@@ -186,8 +184,8 @@ public class CoreConfig {
 	}
 
 	@Bean(name = "macUserManager")
-	public UserManager macUserManager() {
-		return new UserManager();
+	public InternalUserManager macUserManager() {
+		return new InternalUserManager();
 	}
 
 	@Bean(name = "macFileSystemManager")

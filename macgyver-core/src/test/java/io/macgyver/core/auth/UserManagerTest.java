@@ -2,71 +2,36 @@ package io.macgyver.core.auth;
 
 import io.macgyver.test.MacGyverIntegrationTest;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mapdb.TxMaker;
+import org.neo4j.graphdb.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
 public class UserManagerTest extends MacGyverIntegrationTest {
 
 	@Autowired
-	UserManager userManager;
-
-	@Autowired
-	TxMaker txMaker;
+	InternalUserManager userManager;
 
 	@Test
 	public void testAutowire() {
 		Assert.assertNotNull(userManager);
-		Assert.assertNotNull(userManager.template);
-	}
-	@Test
-	public void testUserManager() {
-		Preconditions.checkNotNull(userManager);
-		String username = UUID.randomUUID().toString();
-		Optional<ObjectNode> x = userManager.getUserAsJsonObject(username);
-		Assert.assertFalse(x.isPresent());
-	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testSaveWithInvalidArg() {
-		Preconditions.checkNotNull(userManager);
-		ObjectNode u = new ObjectMapper().createObjectNode();
-		userManager.save(u);
-	}
-
-	@Test
-	public void testAuthenticateFailureWithNoPassword() {
-		String username = "user_" + UUID.randomUUID().toString();
-		ObjectNode a = new ObjectMapper().createObjectNode();
-		a.put("username", username);
-		userManager.save(a);
-
-		Assert.assertFalse(userManager.authenticate(username, "xxx"));
 	}
 
 	@Test
 	public void testAuthentication() {
-		String username = "user_" + UUID.randomUUID().toString();
-		ObjectNode a = new ObjectMapper().createObjectNode();
-		a.put("username", username);
-		userManager.save(a);
 
-		String pwd = UUID.randomUUID().toString();
-		userManager.setPassword(username, pwd);
-		Assert.assertTrue(userManager.authenticate(username, pwd));
-		Assert.assertFalse(userManager.authenticate(username, pwd + "XXX"));
-		Assert.assertFalse(userManager.authenticate(username, ""));
-		Assert.assertFalse(userManager.authenticate(null, null));
-		Assert.assertFalse(userManager.authenticate("", null));
-		Assert.assertFalse(userManager.authenticate("not_found", "xx"));
+		Assert.assertFalse(userManager.authenticate("admin", "xxx"));
+
 	}
 
 	@Test
@@ -76,18 +41,39 @@ public class UserManagerTest extends MacGyverIntegrationTest {
 	}
 
 	@Test
+	public void testUpdateRoles() {
+		String username = "user_" + UUID.randomUUID().toString();
+		userManager.createUser(username, Lists.newArrayList("ROLE_A"));
+		
+		Assert.assertTrue(userManager.getInternalUser(username).get().getRoles().contains("ROLE_A"));
+		Assert.assertFalse(userManager.getInternalUser(username).get().getRoles().contains("ROLE_B"));
+		userManager.setRoles(username, Lists.newArrayList("ROLE_A","ROLE_B"));
+		
+		Assert.assertTrue(userManager.getInternalUser(username).get().getRoles().contains("ROLE_A"));
+		Assert.assertTrue(userManager.getInternalUser(username).get().getRoles().contains("ROLE_B"));
+	}
+	@Test
 	public void testSaveAndLoad() {
 		String username = "user_" + UUID.randomUUID().toString();
-		ObjectNode a = new ObjectMapper().createObjectNode();
-		a.put("username", username);
-		
-		userManager.save(a);
 
-		Optional<ObjectNode> b = userManager.getUserAsJsonObject(username);
-
-		Assert.assertTrue(b.isPresent());
+		userManager.createUser(username, Lists.newArrayList("MAC"));
+		Assert.assertFalse(userManager.authenticate(username, "abc123"));
+		userManager.setPassword(username, "abc123");
+		Assert.assertTrue(userManager.authenticate(username, "abc123"));
 
 	}
 
+	@Test(expected = ConstraintViolationException.class)
+	public void testUnique() {
+		String username = "bob";
+		List<String> roles = Lists.newArrayList();
+
+		userManager.createUser(username, roles);
+
+		Assert.assertTrue(userManager.getInternalUser("bob").isPresent());
+
+		userManager.createUser(username, roles);
+
+	}
 
 }

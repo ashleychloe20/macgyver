@@ -1,10 +1,5 @@
 package io.macgyver.core;
 
-import io.macgyver.core.mapdb.BootstrapMapDB;
-import io.macgyver.jsondb.JsonDb;
-import io.macgyver.jsondb.JsonDbTemplate;
-import io.macgyver.jsondb.impl.mapdb.JsonDbImpl;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,9 +31,7 @@ public class Bootstrap {
 	public static Bootstrap instance = new Bootstrap();
 	VirtualFileSystem vfsManager = null;
 
-	BootstrapMapDB mapDb;
-
-	JsonDbTemplate template;
+	
 
 	public static Bootstrap getInstance() {
 		if (instance == null) {
@@ -51,13 +44,7 @@ public class Bootstrap {
 		init();
 	}
 
-	public JsonDbTemplate getJsonDbTemplate() {
-		return template;
-	}
 
-	public BootstrapMapDB getBootstrapMapDB() {
-		return mapDb;
-	}
 
 	public VirtualFileSystem getVirtualFileSystem() {
 		return vfsManager;
@@ -108,11 +95,9 @@ public class Bootstrap {
 
 			vfsManager = new VirtualFileSystem(configLocation, scriptsLocation,
 					dataLocation, webLocation);
-			mapDb = new BootstrapMapDB();
-			mapDb.init(vfsManager);
+	
 
-			JsonDb db = new JsonDbImpl(mapDb.getTxMaker().get());
-			template = new JsonDbTemplate(db);
+		
 
 		} catch (IOException e) {
 			throw new RuntimeException(e);

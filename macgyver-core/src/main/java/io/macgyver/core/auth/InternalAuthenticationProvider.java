@@ -28,7 +28,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 			.getLogger(InternalAuthenticationProvider.class);
 
 	@Autowired(required=true)
-	UserManager userManager;
+	InternalUserManager userManager;
 
 	@Autowired
 	AccessDecisionManager adm;
@@ -43,8 +43,10 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 	public Authentication authenticate(final Authentication authentication)
 			throws AuthenticationException {
 		
-		Optional<ObjectNode> u = userManager.getUserAsJsonObject(authentication
-				.getPrincipal().toString());
+		Optional<InternalUser> u = Optional.absent();
+		u = userManager.getInternalUser(authentication.getPrincipal().toString());
+		//userManager.getUserAsJsonObject(authentication
+			//	.getPrincipal().toString());
 		if (!u.isPresent()) {
 			throw new UsernameNotFoundException("user not found: "+authentication.getPrincipal().toString());
 		}
@@ -54,17 +56,15 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 			throw new BadCredentialsException("invalid credentials");
 		}
 		
-		JsonNode r = u.get().path("roles");
-
 		List<GrantedAuthority> gaList = Lists.newArrayList();
-		if (r != null && r.isArray()) {
-			ArrayNode arr = (ArrayNode) r;
-			for (int i = 0; i < arr.size(); i++) {
-				String role = arr.get(i).asText();
-				GrantedAuthority ga = new SimpleGrantedAuthority(role);
-				gaList.add(ga);
-			}
+		for (String role: u.get().getRoles()) {
+			
+			GrantedAuthority ga = new SimpleGrantedAuthority(role);
+			gaList.add(ga);
 		}
+		
+
+
 
 		UsernamePasswordAuthenticationToken upt = new UsernamePasswordAuthenticationToken(
 				authentication.getPrincipal().toString(), authentication
@@ -81,22 +81,19 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 	}
 
 	public void seedData() {
-
-		Optional<ObjectNode> adminUser = userManager
-				.getUserAsJsonObject("admin");
-		if (!adminUser.isPresent()) {
-			ObjectNode x = new ObjectMapper().createObjectNode();
-			x.put("username", "admin");
-			ArrayNode arr = new ObjectMapper().createArrayNode();
-			arr.add("ROLE_MACGYVER_SHELL");
-			arr.add("ROLE_MACGYVER_USER");
-			arr.add("ROLE_MACGYVER_ADMIN");
-			x.put("roles", arr);
-			userManager.save(x);
-			userManager.setPassword("admin", "admin");
+		
+		Optional<InternalUser> admin = userManager.getInternalUser("admin");
+		if (admin.isPresent()) {
+			logger.info("admin user already exists");
+		}
+		else {
+			List<String> roleList = Lists.newArrayList("ROLE_MACGYVER_SHELL","ROLE_MACGYVER_UI", "ROLE_MACGYVER_ADMIN");
 			
+			userManager.createUser("admin", roleList);
+			userManager.setPassword("admin", "admin");
 		}
 		
+
 	}
 
 }

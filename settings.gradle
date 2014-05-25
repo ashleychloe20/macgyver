@@ -16,6 +16,7 @@ include   'macgyver-core',
             'macgyver-jsondb',
             'macgyver-mongodb',
             'macgyver-xson',
+		
             'macgyver-jdbc', 
             'macgyver-git',
             'macgyver-chat',
