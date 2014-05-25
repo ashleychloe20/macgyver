@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mapdb.TxMaker;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,14 +18,12 @@ public class UserManagerTest extends MacGyverIntegrationTest {
 	@Autowired
 	UserManager userManager;
 
-	@Autowired
-	TxMaker txMaker;
-
 	@Test
 	public void testAutowire() {
 		Assert.assertNotNull(userManager);
-		Assert.assertNotNull(userManager.template);
+
 	}
+
 	@Test
 	public void testUserManager() {
 		Preconditions.checkNotNull(userManager);
@@ -80,7 +77,7 @@ public class UserManagerTest extends MacGyverIntegrationTest {
 		String username = "user_" + UUID.randomUUID().toString();
 		ObjectNode a = new ObjectMapper().createObjectNode();
 		a.put("username", username);
-		
+
 		userManager.save(a);
 
 		Optional<ObjectNode> b = userManager.getUserAsJsonObject(username);
@@ -88,6 +85,5 @@ public class UserManagerTest extends MacGyverIntegrationTest {
 		Assert.assertTrue(b.isPresent());
 
 	}
-
 
 }

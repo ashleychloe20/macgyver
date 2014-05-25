@@ -1,7 +1,5 @@
 package io.macgyver.core.auth;
 
-import io.macgyver.jsondb.JsonDbTemplate;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +14,13 @@ public class UserManager {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Autowired(required=true)
-	JsonDbTemplate template;
+
 
 
 
 	public Optional<ObjectNode> getUserAsJsonObject(final String id) {
 		
-		Preconditions.checkNotNull(template);
-		return template.findOneById("users", id);
+		throw new UnsupportedOperationException();
 		
 
 	}
@@ -42,7 +38,7 @@ public class UserManager {
 			obj.put("roles", new ObjectMapper().createArrayNode());
 		}
 		
-		template.save("users", obj);
+	//	template.save("users", obj);
 	}
 
 	public boolean authenticate(String username, String password) {
