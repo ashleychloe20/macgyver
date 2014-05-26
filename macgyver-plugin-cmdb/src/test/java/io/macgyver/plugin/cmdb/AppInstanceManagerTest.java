@@ -1,5 +1,6 @@
 package io.macgyver.plugin.cmdb;
 
+import java.util.List;
 import java.util.Map;
 
 import io.macgyver.test.MacGyverIntegrationTest;
@@ -9,6 +10,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Vertex;
@@ -31,7 +34,7 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 			Vertex v = graph.addVertex(null);
 			v.setProperty("host", host);
 			v.setProperty("appId",appId);
-			v.setProperty("vertexId", AppInstance.calculateVertexId(host, appId));
+			v.setProperty("vertexId", AppInstance.calculateVertexId(host, appId,null));
 		}
 		finally {
 			graph.rollback();
@@ -42,7 +45,7 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		String host = "unknown_" + System.currentTimeMillis();
 		String appId = "myapp";
 		
-		String vid = AppInstance.calculateVertexId(host, appId);
+		String vid = AppInstance.calculateVertexId(host, appId,null);
 		assertFalse(manager.getAppInstance(host, "myapp").isPresent());
 		
 		Map<String,Object> p = Maps.newHashMap();
@@ -71,12 +74,14 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 	
 	@Test
 	public void testSort() throws Exception {
-		manager.getOrCreateAppInstance("abc.example.com", "xyz");
-		manager.getOrCreateAppInstance("abc.example.com", "xyz");
-		manager.getOrCreateAppInstance("abc.example.com", "abc");
+
+		manager.getOrCreateAppInstance("abc.example.com", "xxx");
+		manager.getOrCreateAppInstance("abc.example.com", "aaa");
 		
-		for (AppInstance ai: manager.search()) {
-			System.out.println(ai);
-		}
+		List<AppInstance> list = Lists.newArrayList();
+		Iterables.addAll(list,manager.findAll());
+		
+		Assert.assertTrue(2==list.size());
+		
 	}
 }

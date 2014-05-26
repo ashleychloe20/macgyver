@@ -1,7 +1,5 @@
 package io.macgyver.plugin.cmdb;
 
-import io.macgyver.core.titan.TitanProperties;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +12,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.thinkaurelius.titan.core.Order;
 import com.thinkaurelius.titan.core.TitanGraph;
 import com.tinkerpop.blueprints.Vertex;
 
@@ -46,6 +43,14 @@ public class AppInstanceManager {
 					.entrySet()) {
 				v.setProperty(entry.getKey().toString(), entry.getValue());
 			}
+			
+			
+			Map<String,Object> appInstanceProperties = app.getProperties();
+			for (String vertexKey : v.getPropertyKeys()) {
+				if (!appInstanceProperties.containsKey(vertexKey)) {
+					v.removeProperty(vertexKey);
+				}
+			}
 		} finally {
 			graph.commit();
 		}
@@ -70,7 +75,7 @@ public class AppInstanceManager {
 			v.setProperty("appId", appId);
 			v.setProperty("vertexType", "AppInstance");
 			v.setProperty("vertexId",
-					AppInstance.calculateVertexId(host, appId));
+					AppInstance.calculateVertexId(host, appId,null));
 			if (props != null) {
 				for (Map.Entry<String, Object> entry : props.entrySet()) {
 					v.setProperty(entry.getKey(), entry.getValue());
@@ -104,9 +109,8 @@ public class AppInstanceManager {
 			if (t.hasNext()) {
 				Vertex v = t.next();
 
-				AppInstance ai = new AppInstance();
-				ai.setHost(v.getProperty("host").toString());
-				ai.setAppId(v.getProperty("appId").toString());
+				AppInstance ai = new AppInstance(v.getProperty("host").toString(),v.getProperty("appId").toString());
+			
 				for (String key : v.getPropertyKeys()) {
 					if (!isFilteredKey(key)) {
 						ai.props.put(key, v.getProperty(key));
@@ -128,22 +132,20 @@ public class AppInstanceManager {
 	}
 
 	public AppInstance fromVertex(Vertex v) {
-		AppInstance ai = new AppInstance();
-		String host = v.getProperty("host");
-		String appId = v.getProperty("appId");
-		ai.setHost(host);
-		ai.setAppId(appId);
+		AppInstance ai = new AppInstance(v.getProperty("host").toString(),v.getProperty("appId").toString());
+		
 		for (String p : v.getPropertyKeys()) {
 			ai.getProperties().put(p, v.getProperty(p));
 		}
 		return ai;
 	}
 
-	public Iterable<AppInstance> search() {
+	public Iterable<AppInstance> findAll() {
+		
 		List<AppInstance> list = Lists.newArrayList();
 		for (Vertex v : graph.query()
 				.has(AppInstance.VERTEX_TYPE_PROP, AppInstance.VERTEX_TYPE)
-				
+
 				.vertices()) {
 			AppInstance ai = fromVertex(v);
 			list.add(ai);

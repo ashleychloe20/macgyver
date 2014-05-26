@@ -13,22 +13,20 @@ public class AppInstanceTest {
 
 	@Test
 	public void testVertexId() {
-		assertEquals("eb40856932a1f1095a133af674a45ac46aec3b72", AppInstance.calculateVertexId("localhost", "myapp",""));
-		assertEquals("eb40856932a1f1095a133af674a45ac46aec3b72", AppInstance.calculateVertexId("localhost", "myapp",null));
-		assertEquals("eb40856932a1f1095a133af674a45ac46aec3b72", AppInstance.calculateVertexId("localhost", "myapp"));
+		assertEquals("0f1e5ec7c345a2701bbdf74f048ff49a54f32d85", AppInstance.calculateVertexId("localhost", "myapp",""));
+		assertEquals("0f1e5ec7c345a2701bbdf74f048ff49a54f32d85", AppInstance.calculateVertexId("localhost", "myapp",null));
 	}
 	
 	@Test
 	public void testProperty() {
-		AppInstance ai = new AppInstance();
+		AppInstance ai = new AppInstance("dummy","dummy");
 		assertEquals("123", ai.getStringProperty("foobar", "123"));
 	}
 	
 	@Test
 	public void testJackson() throws JsonProcessingException,IOException {
-		AppInstance ai = new AppInstance();
-		ai.setAppId("myapp");
-		ai.setHost("myhost");
+		AppInstance ai = new AppInstance("myhost","myapp");
+		
 		ai.getProperties().put("foo.x", "bar");
 		
 		String json = new ObjectMapper().writeValueAsString(ai);

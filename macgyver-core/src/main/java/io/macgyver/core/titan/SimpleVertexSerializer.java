@@ -16,11 +16,15 @@ public class SimpleVertexSerializer extends JsonSerializer<Vertex> {
 	public void serialize(Vertex value, JsonGenerator jgen,
 			SerializerProvider provider) throws IOException,
 			JsonProcessingException {
-		
+
 		jgen.writeStartObject();
-		
+
+		Object idVal = value.getId();
+		if (idVal != null) {
+			jgen.writeStringField("_id", idVal.toString());
+		}
 		jgen.writeObjectFieldStart("props");
-		for (String key: value.getPropertyKeys()) {
+		for (String key : value.getPropertyKeys()) {
 			jgen.writeObjectField(key, value.getProperty(key));
 		}
 		jgen.writeEndObject();
