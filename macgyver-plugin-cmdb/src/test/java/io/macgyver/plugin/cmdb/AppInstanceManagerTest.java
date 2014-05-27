@@ -69,7 +69,7 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		AppInstance ai = manager.getOrCreateAppInstance("localhost", "test");
 		Assert.assertNotNull(manager.getOrCreateAppInstance("localhost", "test"));
 		Assert.assertTrue(manager.getAppInstance("localhost", "test").isPresent());
-		System.out.println(ai);
+	
 	}
 	
 	@Test
