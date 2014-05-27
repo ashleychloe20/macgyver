@@ -13,7 +13,7 @@ public class HomeController {
 	@RequestMapping("/")
 	@ResponseBody
 	public ModelAndView home() {
-		ModelAndView m = new ModelAndView("home.rythm");
+		ModelAndView m = new ModelAndView("home");
 		return m;
 		
 	}

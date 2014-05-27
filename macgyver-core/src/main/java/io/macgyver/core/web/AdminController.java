@@ -37,7 +37,7 @@ public class AdminController {
 	@RequestMapping(value="/encryptString",method=RequestMethod.GET)
 	@ResponseBody
 	public ModelAndView encryptString() {
-		ModelAndView m = new ModelAndView("admin.encryptString.rythm");
+		ModelAndView m = new ModelAndView("admin/encryptString");
 		return m;
 	}
 	
@@ -47,7 +47,7 @@ public class AdminController {
 			@ModelAttribute ModelAndView m) throws GeneralSecurityException {
 		
 	
-		m.setViewName("admin/script.rythm");
+		m.setViewName("admin/script");
 	
 		return m;
 	}	
@@ -69,7 +69,7 @@ public class AdminController {
 			@RequestParam(value = "input") String input,
 			@RequestParam(value = "key") String key,
 			@ModelAttribute ModelAndView m) throws GeneralSecurityException {
-		m.setViewName("admin/encryptString.rythm");
+		m.setViewName("admin/encryptString");
 		m.addObject("cipherText", crypto.encryptString(input, key));
 		return m;
 	}
@@ -102,7 +102,7 @@ public class AdminController {
 
 		m.addObject("beans", list);
 
-		m.setViewName("/admin/beans.rythm");
+		m.setViewName("admin/beans");
 
 		return m;
 	}

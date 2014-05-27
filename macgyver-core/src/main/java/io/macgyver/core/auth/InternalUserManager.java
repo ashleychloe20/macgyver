@@ -112,6 +112,9 @@ public class InternalUserManager {
 
 	@PostConstruct
 	public void initializeGraphDatabase() {
-		graph.makeKey("macUsername").dataType(String.class).indexed(Vertex.class).unique().make();
+		try {
+			graph.makeKey("macUsername").dataType(String.class).indexed(Vertex.class).unique().make();
+		}
+		catch (Exception e) {}
 	}
 }

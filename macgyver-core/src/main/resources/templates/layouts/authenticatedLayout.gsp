@@ -1,5 +1,11 @@
-@import io.macgyver.core.*
-@import io.macgyver.core.web.navigation.*
+
+<%@ page import="io.macgyver.core.*" %>
+<%@ page import="io.macgyver.core.web.navigation.*" %>
+<%
+	MenuManager menuManager = Kernel.getInstance().getApplicationContext().getBean(MenuManager.class);
+	MenuItem rootMenu = menuManager.getRootMenuForCurrentUser();
+
+%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,10 +23,7 @@
     <link href="/webjars/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
 
 
-	@{
-		MenuManager menuManager = Kernel.getInstance().getApplicationContext().getBean(MenuManager.class);
-		MenuItem rootMenu = menuManager.getRootMenuForCurrentUser();
-	}
+
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
 
@@ -31,6 +34,8 @@
     <![endif]-->
 	    <script src="/webjars/jquery/2.1.1/jquery.min.js"></script>
 	    <script src="/webjars/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+	    
+	      <g:layoutHead />
   </head>
 
   <body>
@@ -57,20 +62,21 @@
               <li><a href="#">Link</a></li>
 					-->
 					
-			@for(MenuItem item: rootMenu.getChildMenuItems()) {
+			<g:each in="${rootMenu.getChildMenuItems()}" var="c">
              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">@item.getDisplayName() <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">${c.getDisplayName()} <b class="caret"></b></a>
 				
                 <ul class="dropdown-menu">
-					@for(MenuItem child: item.getChildMenuItems()) {
+                	<g:each in="${c.getChildMenuItems()}" var="child">
+				
 					
-                  		  <li><a href="@child.getUriPath()">@child.getDisplayName()</a></li>
+                  		  <li><a href="${child.getUriPath()}">${child.getDisplayName()}</a></li>
 					
-                  	}
+                  	</g:each>
 		
                 </ul>
               </li>
-			  }
+			  </g:each>
         
              
             </ul>
@@ -83,10 +89,9 @@
       </div>
 
 
+   <g:layoutBody />
 
-   
-
-	@doLayout()
  </div> <!-- /container -->
+
   </body>
 </html>

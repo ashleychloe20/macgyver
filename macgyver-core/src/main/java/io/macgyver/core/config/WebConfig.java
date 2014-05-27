@@ -6,13 +6,10 @@ import io.macgyver.core.web.HomeController;
 import io.macgyver.core.web.MacgyverWeb;
 import io.macgyver.core.web.navigation.MenuManager;
 import io.macgyver.core.web.navigation.StandardMenuDecorator;
-import io.macgyver.core.web.rythm.MacGyverRythmResourceLoader;
-import io.macgyver.core.web.rythm.RythmViewResolver;
+
 
 import java.util.Map;
 
-import org.rythmengine.RythmEngine;
-import org.rythmengine.conf.RythmConfigurationKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -60,21 +57,9 @@ public class WebConfig implements EnvironmentAware {
 	public MacgyverWeb macWebConfig() {
 		return new MacgyverWeb();
 	}
-	@Bean
-	public RythmViewResolver macRythmViewResolver() {
-		return new RythmViewResolver();
-	}
+
 	
-	@Bean(name="macRythmEngine")
-	public RythmEngine macRythmEngine() {
-		Map<String,String> cfg = Maps.newHashMap();	
-		cfg.put(RythmConfigurationKey.RESOURCE_LOADER_IMPLS.getKey(), MacGyverRythmResourceLoader.class.getName());
-		cfg.put(RythmConfigurationKey.ENGINE_MODE.getKey(), "dev");
-		RythmEngine re = new RythmEngine(cfg);
-		
-		MacGyverRythmResourceLoader.setRhythmEngine(re);
-		return re;
-	}
+
 
 	
 	@Bean

@@ -1,9 +1,17 @@
-@extends(layout.pageTemplate.rythm)
-@args String cipherText
+<%@page import="java.util.List" %>
 
-@if (cipherText) {
-<p class="bg-danger">Encrpyted Cipher Text: @cipherText</p>
-}
+
+<html>
+	<head>
+ 	<meta name="layout" content="authenticatedLayout" />
+	</head>
+	<body>
+
+<%
+if (cipherText) {
+%>
+<p class="bg-danger">Encrpyted Cipher Text: ${cipherText}</p>
+<%}%>
 
 <form class="form-horizontal" role="form" action="/admin/encryptString" method="post">
   <div class="form-group">
@@ -21,8 +29,9 @@
 
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-default">Sign in</button>
+      <button type="submit" class="btn btn-default">Encrypt</button>
     </div>
   </div>
 </form>
-
+</body>
+</html>

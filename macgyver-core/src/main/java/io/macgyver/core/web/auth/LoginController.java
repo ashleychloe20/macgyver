@@ -17,7 +17,7 @@ public class LoginController {
 		public ModelAndView home() {
 			
 		
-			ModelAndView m = new ModelAndView("auth/login.rythm");
+			ModelAndView m = new ModelAndView("auth/login");
 			return m;
 			
 		}

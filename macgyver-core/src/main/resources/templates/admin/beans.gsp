@@ -1,9 +1,9 @@
-@extends(layout.pageTemplate.rythm)
+<%@page import="java.util.List" %>
 
-@import java.util.List
 
-@args List beans
-
+<html>
+	<head>
+ 	<meta name="layout" content="authenticatedLayout" />
 
   <script type="text/javascript" type="text/javascript">
 
@@ -27,7 +27,8 @@
   
   </script>
   
-
+	</head>
+	<body>
   
   <div class="panel panel-primary">
     <div class="panel-heading">
@@ -47,19 +48,18 @@
 	</tr>
 </thead>
 <tbody class="searchable">
-	@for (Map result: beans) {
+	<g:each in="${beans}" var="result" >
 	  <tr>
-		  <td><small>@result.get("name")</small></td>
-		  	  <td ><small>@result.get("className")</small></td>
+		  <td><small>${result.get("name")}</small></td>
+		  	  <td ><small>${result.get("className")}</small></td>
 	
 	  </tr>
-	}
+	</g:each>
 	
 </tbody>
 	</table>
 
     </div>
   </div>
-
-
-  
+  </body>
+  </html>
