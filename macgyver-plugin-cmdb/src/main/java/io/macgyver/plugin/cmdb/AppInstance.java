@@ -13,43 +13,59 @@ import com.google.common.collect.Maps;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AppInstance {
 
-	public static final String VERTEX_TYPE_PROP = "vertexType";
-	public static final String VERTEX_TYPE = "AppInstance";
-
+	public static final String APP_INSTANCE_TYPE = "AppInstance";
+	public static final String KEY_APP_ID = "artifactId";
+	public static final String KEY_GROUP_ID = "groupId";
+	public static final String KEY_HOST = "host";
+	public static final String KEY_VERTEX_TYPE = "vertexType";
 	Map<String, Object> props = Maps.newConcurrentMap();
 
 	public AppInstance() {
-		
+
 	}
-	public AppInstance(String host, String appId) {
+	public AppInstance(String host, String groupId, String appId) {
+		this(host,groupId,appId,null);
+	}
+	public AppInstance(String host, String groupId, String appId, String qualifier) {
 		this();
 		setHost(host);
+		setGroupId(groupId);
 		setAppId(appId);
 	}
+
 	public String getHost() {
-		return getStringProperty("host", null);
+		return getStringProperty(KEY_HOST, null);
 	}
 
 	public void setHost(String host) {
-		props.put("host", host);
+		props.put(KEY_HOST, host);
+	}
+
+	public void setGroupId(String groupId) {
+		props.put(KEY_GROUP_ID, groupId);
+	}
+
+	public String getGroupId() {
+		return getStringProperty(KEY_GROUP_ID, null);
 	}
 
 	public String getAppId() {
-		return getStringProperty("appId", null);
+		return getStringProperty(KEY_APP_ID, null);
 	}
 
 	public void setAppId(String appId) {
-		props.put("appId", appId);
+		props.put(KEY_APP_ID, appId);
 	}
 
-	public String getVertexId() {
-		return calculateVertexId(getHost(), getAppId(), null);
+	public String computeVertexId() {
+		return calculateVertexId(getHost(), getGroupId(), getAppId(), null);
 	}
 
-	public static String calculateVertexId(String host, String app, String q) {
+	public static String calculateVertexId(String host, String group,
+			String app, String q) {
 
 		List<String> list = Lists.newArrayList("default", "AppInstance", host,
-				app, q);
+				group, app, q);
 
 		return HashUtils.calculateCompositeId(list.toArray(new String[0]));
 
@@ -61,7 +77,8 @@ public class AppInstance {
 
 	public String toString() {
 		return Objects.toStringHelper(this).add("host", getHost())
-				.add("appId", getAppId()).toString();
+				.add(KEY_GROUP_ID, getGroupId()).add(KEY_APP_ID, getAppId())
+				.toString();
 	}
 
 	public String getStringProperty(String key, String defaultVal) {

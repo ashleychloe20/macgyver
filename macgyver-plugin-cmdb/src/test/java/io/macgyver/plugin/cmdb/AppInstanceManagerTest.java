@@ -7,6 +7,7 @@ import io.macgyver.test.MacGyverIntegrationTest;
 import static org.junit.Assert.*;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,17 +25,20 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 	TitanGraph graph;
 	
 	
+	@Ignore
 	@Test(expected=IllegalArgumentException.class)
 	public void testUnique() {
 		String host = "unknown_" + System.currentTimeMillis();
 		String appId = "myapp";
+		String groupId = "mygroup";
 		
-		manager.getOrCreateAppInstance(host, appId);
+		manager.getOrCreateAppInstance(host, groupId, appId);
 		try {
 			Vertex v = graph.addVertex(null);
 			v.setProperty("host", host);
-			v.setProperty("appId",appId);
-			v.setProperty("vertexId", AppInstance.calculateVertexId(host, appId,null));
+			v.setProperty("artifactId",appId);
+			v.setProperty("groupId",groupId);
+			v.setProperty("vertexId", AppInstance.calculateVertexId(host, groupId, appId,null));
 		}
 		finally {
 			graph.rollback();
@@ -44,17 +48,18 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 	public void testIt() {
 		String host = "unknown_" + System.currentTimeMillis();
 		String appId = "myapp";
+		String groupId = "group";
 		
-		String vid = AppInstance.calculateVertexId(host, appId,null);
-		assertFalse(manager.getAppInstance(host, "myapp").isPresent());
+		String vid = AppInstance.calculateVertexId(host, groupId, appId,null);
+		assertFalse(manager.getAppInstance(host, groupId, appId).isPresent());
 		
 		Map<String,Object> p = Maps.newHashMap();
 		p.put("version", "12345");
-		AppInstance ai = manager.getOrCreateAppInstance(host, "myapp",p );
+		AppInstance ai = manager.getOrCreateAppInstance(host, groupId,"myapp",p );
 		assertNotNull(ai);
 		
 		
-		ai = manager.getOrCreateAppInstance(host, appId);
+		ai = manager.getOrCreateAppInstance(host, groupId,appId);
 		assertEquals("12345",ai.getProperties().get("version"));
 		
 		
@@ -65,21 +70,42 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 	@Test
 	public void x() throws Exception {
 		
-		Assert.assertFalse(manager.getAppInstance("localhost", "test").isPresent());
-		AppInstance ai = manager.getOrCreateAppInstance("localhost", "test");
-		Assert.assertNotNull(manager.getOrCreateAppInstance("localhost", "test"));
-		Assert.assertTrue(manager.getAppInstance("localhost", "test").isPresent());
+		Assert.assertFalse(manager.getAppInstance("localhost", "group","test").isPresent());
+		AppInstance ai = manager.getOrCreateAppInstance("localhost", "group","test");
+		Assert.assertNotNull(manager.getOrCreateAppInstance("localhost", "group","test"));
+		Assert.assertTrue(manager.getAppInstance("localhost", "group","test").isPresent());
 	
 	}
+	@Test
+	public void testXX() {
+		int nodesToAdd = 50;
+		List<Vertex> list = Lists.newArrayList();
+		Iterables.addAll(list,graph.query().has("vertexType", "AppInstance").vertices());
+		
+		int beforeCount = list.size();
 	
+		
+		for (int i=0; i<nodesToAdd; i++) {
+			
+			AppInstance ai = manager.getOrCreateAppInstance("host_"+i, "group","app_"+i);
+		
+			manager.save(ai);
+		
+		}
+		list.clear();
+		Iterables.addAll(list,graph.query().has("vertexType", "AppInstance").vertices());
+		int afterCount = list.size();
+		Assert.assertEquals(nodesToAdd,afterCount-beforeCount);
+		
+	}
 	@Test
 	public void testSort() throws Exception {
 
-		manager.getOrCreateAppInstance("abc.example.com", "xxx");
-		manager.getOrCreateAppInstance("abc.example.com", "aaa");
+		manager.getOrCreateAppInstance("abc.example.com","group" ,"xxx");
+		manager.getOrCreateAppInstance("abc.example.com", "group","aaa");
 		
 		List<AppInstance> list = Lists.newArrayList();
-		Iterables.addAll(list,manager.findAll());
+		Iterables.addAll(list,manager.find());
 		
 		Assert.assertTrue(2==list.size());
 		

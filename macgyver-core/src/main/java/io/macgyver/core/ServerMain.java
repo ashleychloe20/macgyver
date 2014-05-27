@@ -26,7 +26,9 @@ public class ServerMain {
 	public static void main(String[] args) throws Exception {
 
 	
-
+		System.setProperty("spring.gsp.reloadingEnabled","true");
+		System.setProperty("spring.gsp.templateRoots","file:./web/templates,classpath:/templates");
+		
 		Bootstrap.getInstance();
 		Bootstrap.getInstance();
 

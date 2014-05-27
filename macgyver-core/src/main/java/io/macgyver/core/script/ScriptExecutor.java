@@ -28,18 +28,13 @@ import org.springframework.context.ApplicationContextAware;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Closer;
+import com.thinkaurelius.titan.core.TitanGraph;
 
 public class ScriptExecutor implements ApplicationContextAware {
 
 	Logger logger = LoggerFactory.getLogger(ScriptExecutor.class);
 	Bindings bindings = new SimpleBindings();
-
-	@Autowired
-	ApplicationContext applicationContext;
-	@Autowired
-	Kernel kernel;
-
-
+	
 	
 	ScriptException evalException;
 	Object evalResult;
@@ -101,7 +96,10 @@ public class ScriptExecutor implements ApplicationContextAware {
 			return response;
 		} catch (ScriptException e) {
 			this.evalException = e;
+			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).rollback();
 			throw e;
+		} finally {
+			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).commit();
 		}
 
 	}
@@ -178,10 +176,13 @@ public class ScriptExecutor implements ApplicationContextAware {
 			fr.close();
 
 		} catch (IOException e) {
+			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).commit();
 			throw new ScriptExecutionException(e);
 		} catch (ScriptException e) {
+			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).commit();
 			throw new ScriptExecutionException(e);
 		} catch (RuntimeException e) {
+			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).rollback();
 			throw new ScriptExecutionException(e);
 		} finally {
 			try {
@@ -189,6 +190,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 			} catch (IOException e) {
 				logger.warn("problem closing reader", e);
 			}
+			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).commit();
 
 		}
 		return rval;

@@ -13,8 +13,8 @@ public class AppInstanceComparatorTest {
 	
 	@Test
 	public void testIt() {
-		AppInstance a1 = new AppInstance("b","a");
-		AppInstance a2 = new AppInstance("a","a");
+		AppInstance a1 = new AppInstance("b","group","a");
+		AppInstance a2 = new AppInstance("a","group","a");
 		
 		AppInstanceComparator c = new AppInstanceComparator();
 		c.sortAscending("host");
@@ -25,8 +25,8 @@ public class AppInstanceComparatorTest {
 	
 	@Test
 	public void testMissing() {
-		AppInstance a1 = new AppInstance("b","a");
-		AppInstance a2 = new AppInstance("a","a");
+		AppInstance a1 = new AppInstance("b","group","a");
+		AppInstance a2 = new AppInstance("a","group","a");
 		
 		AppInstanceComparator c = new AppInstanceComparator();
 		c.sortAscending("missing");
@@ -37,8 +37,8 @@ public class AppInstanceComparatorTest {
 	
 	@Test
 	public void testMissingOnLeftSide() {
-		AppInstance a1 = new AppInstance("b","a");
-		AppInstance a2 = new AppInstance("a","a");
+		AppInstance a1 = new AppInstance("b","group","a");
+		AppInstance a2 = new AppInstance("a","group","a");
 		
 		a1.getProperties().put("myprop", "a");
 		
@@ -51,8 +51,9 @@ public class AppInstanceComparatorTest {
 	}
 	@Test
 	public void testMissingOnRightSide() {
-		AppInstance a1 = new AppInstance("b","a");
-		AppInstance a2 = new AppInstance("a","a");
+		AppInstance a1 = new AppInstance("b","group","a");
+		AppInstance a2 = new AppInstance("a","group","a");
+		
 		
 		a2.getProperties().put("myprop", "a");
 		
@@ -66,12 +67,13 @@ public class AppInstanceComparatorTest {
 	
 	@Test
 	public void testComposite() {
-		AppInstance a1 = new AppInstance("a","a");
-		AppInstance a2 = new AppInstance("a","b");
+		AppInstance a1 = new AppInstance("a","group","a");
+		AppInstance a2 = new AppInstance("a","group","b");
+		
 		
 		AppInstanceComparator c = new AppInstanceComparator();
-		c.sortAscending("host");
-		c.sortAscending("appId");
+		c.sortAscending(AppInstance.KEY_HOST);
+		c.sortAscending(AppInstance.KEY_APP_ID);
 		
 		Assert.assertTrue(c.compare(a1, a2)<0);
 		Assert.assertTrue(c.compare(a2, a1)>0);
@@ -79,12 +81,12 @@ public class AppInstanceComparatorTest {
 	}
 	@Test
 	public void testCompositeDescending() {
-		AppInstance a1 = new AppInstance("a","a");
-		AppInstance a2 = new AppInstance("a","b");
+		AppInstance a1 = new AppInstance("a","group","a");
+		AppInstance a2 = new AppInstance("a","group","b");
 		
 		AppInstanceComparator c = new AppInstanceComparator();
-		c.sortDescending("host");
-		c.sortDescending("appId");
+		c.sortDescending(AppInstance.KEY_HOST);
+		c.sortDescending(AppInstance.KEY_APP_ID);
 		
 		Assert.assertTrue(c.compare(a1, a2)>0);
 		Assert.assertTrue(c.compare(a2, a1)<0);
@@ -92,12 +94,12 @@ public class AppInstanceComparatorTest {
 	}
 	@Test
 	public void testCompositeEquals() {
-		AppInstance a1 = new AppInstance("a","a");
-		AppInstance a2 = new AppInstance("a","a");
+		AppInstance a1 = new AppInstance("a","group","a");
+		AppInstance a2 = new AppInstance("a","group","a");
 		
 		AppInstanceComparator c = new AppInstanceComparator();
-		c.sortAscending("host");
-		c.sortAscending("appId");
+		c.sortAscending(AppInstance.KEY_HOST);
+		c.sortAscending(AppInstance.KEY_APP_ID);
 		
 		Assert.assertTrue(c.compare(a1, a2)==0);
 		Assert.assertTrue(c.compare(a2, a1)==0);
@@ -106,15 +108,15 @@ public class AppInstanceComparatorTest {
 	
 	@Test
 	public void testSortComposite() {
-		AppInstance a0 = new AppInstance("z","a");
-		AppInstance a1 = new AppInstance("a","a");
-		AppInstance a2 = new AppInstance("a","ab");
+		AppInstance a0 = new AppInstance("z","group","a");
+		AppInstance a1 = new AppInstance("a","group","a");
+		AppInstance a2 = new AppInstance("a","group","ab");
 		
 		List<AppInstance> list = Lists.newArrayList(a0,a1,a2);
 		
 		AppInstanceComparator c = new AppInstanceComparator();
-		c.sortAscending("host");
-		c.sortAscending("appId");
+		c.sortAscending(AppInstance.KEY_HOST);
+		c.sortAscending(AppInstance.KEY_APP_ID);
 		
 		Collections.sort(list,c);
 	

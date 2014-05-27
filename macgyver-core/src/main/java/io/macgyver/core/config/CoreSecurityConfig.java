@@ -52,7 +52,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		httpSecurity.authorizeRequests()
 
-		.antMatchers("/login", "/public/**", "/resources/**", "/webjars/**")
+		.antMatchers("/login","/error**", "/public/**", "/resources/**", "/webjars/**")
 				.permitAll().and().authorizeRequests().and()
 				.authorizeRequests().antMatchers("/**").hasAnyRole("MACGYVER_USER","MACGYVER_ADMIN").and().
 
