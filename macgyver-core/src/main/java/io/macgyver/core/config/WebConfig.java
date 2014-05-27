@@ -35,9 +35,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class WebConfig implements EnvironmentAware {
 
-	public static final String DEFAULT_PREFIX = "classpath:/templates/";
-
-	public static final String DEFAULT_SUFFIX = ".html";
+	
 
 	@Autowired
 	private final org.springframework.core.io.ResourceLoader resourceLoader = new DefaultResourceLoader();
@@ -53,7 +51,7 @@ public class WebConfig implements EnvironmentAware {
 	}
 
 	@Bean
-	public BeanPostProcessor beanPostProcessor() {
+	public BeanPostProcessor macHandlerMappingPostProcessor() {
 		return new BeanPostProcessor() {
 
 			@Override
