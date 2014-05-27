@@ -91,7 +91,8 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 	public void testDataVfs() throws IOException {
 
 		File dataDir = new File("./src/test/resources/ext/data");
-
+		dataDir.mkdirs();
+		
 		File tempFile = new File(dataDir, ".junit_"
 				+ UUID.randomUUID().toString() + ".tmp");
 		Files.touch(tempFile);
