@@ -1,5 +1,8 @@
 package io.macgyver.core;
 
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.slf4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -23,14 +26,34 @@ public class ServerMain {
 
 	static Logger logger = org.slf4j.LoggerFactory.getLogger(ServerMain.class);
 
+	public static String computeTemplateRoots() {
+		try {
+			FileObject webFileObject = Bootstrap.getInstance()
+					.getVirtualFileSystem().getWebLocation();
+			String templateRoots = "classpath:/web/templates";
+			if (!(webFileObject instanceof LocalFile)) {
+				throw new IllegalStateException(
+						"macgyver.ext web dir must resolve to local dir");
+			} else {
+				LocalFile lf = (LocalFile) webFileObject;
+				templateRoots = lf.getURL().toString() + "," + templateRoots;
+			}
+			return templateRoots;
+		} catch (FileSystemException e) {
+			throw new MacGyverConfigurationException(
+					"could not set up GSP template paths", e);
+		}
+	}
+
 	public static void main(String[] args) throws Exception {
 
-	
-		System.setProperty("spring.gsp.reloadingEnabled","true");
-		System.setProperty("spring.gsp.templateRoots","file:./web/templates,classpath:/templates");
-		
-		Bootstrap.getInstance();
-		Bootstrap.getInstance();
+		{
+			// need to move this block upstream to Bootstrap
+			System.setProperty("spring.gsp.reloadingEnabled", "true");
+			String templateRoots = computeTemplateRoots();
+			logger.info("spring.gsp.templateRoots=" + templateRoots);
+			System.setProperty("spring.gsp.templateRoots", templateRoots);
+		}
 
 		SpringApplication app = new SpringApplication(ServerMain.class);
 		app.setShowBanner(false);
@@ -41,6 +64,5 @@ public class ServerMain {
 		logger.info("Spring environment: {}", env);
 
 	}
-
 
 }
