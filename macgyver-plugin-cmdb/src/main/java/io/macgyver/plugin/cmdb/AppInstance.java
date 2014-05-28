@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -28,6 +29,9 @@ public class AppInstance {
 	}
 	public AppInstance(String host, String groupId, String appId, String qualifier) {
 		this();
+		Preconditions.checkNotNull(host);
+		Preconditions.checkNotNull(groupId);
+		Preconditions.checkNotNull(appId);
 		setHost(host);
 		setGroupId(groupId);
 		setAppId(appId);
@@ -38,10 +42,12 @@ public class AppInstance {
 	}
 
 	public void setHost(String host) {
+		Preconditions.checkNotNull(host);
 		props.put(KEY_HOST, host);
 	}
 
 	public void setGroupId(String groupId) {
+		Preconditions.checkNotNull(groupId);
 		props.put(KEY_GROUP_ID, groupId);
 	}
 
@@ -50,10 +56,12 @@ public class AppInstance {
 	}
 
 	public String getAppId() {
+		
 		return getStringProperty(KEY_APP_ID, null);
 	}
 
 	public void setAppId(String appId) {
+		Preconditions.checkNotNull(appId);
 		props.put(KEY_APP_ID, appId);
 	}
 
