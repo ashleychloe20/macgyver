@@ -2,6 +2,7 @@ package io.macgyver.plugin.cmdb;
 
 import io.macgyver.core.util.HashUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -19,54 +20,100 @@ public class AppInstance {
 	public static final String KEY_GROUP_ID = "groupId";
 	public static final String KEY_HOST = "host";
 	public static final String KEY_VERTEX_TYPE = "vertexType";
-	Map<String, Object> props = Maps.newConcurrentMap();
+	public static final String DEFAULT_INSTANCE_INDEX = "";
+
+	String artifactId;
+	String groupId;
+	String host;
+	String profile;
+	String environment;
+	String scmRevision;
+	String scmBranch;
+	String version;
+	String instanceIndex = DEFAULT_INSTANCE_INDEX;
 
 	public AppInstance() {
-
-	}
-	public AppInstance(String host, String groupId, String appId) {
-		this(host,groupId,appId,null);
-	}
-	public AppInstance(String host, String groupId, String appId, String qualifier) {
-		this();
-		Preconditions.checkNotNull(host);
-		Preconditions.checkNotNull(groupId);
-		Preconditions.checkNotNull(appId);
-		setHost(host);
-		setGroupId(groupId);
-		setAppId(appId);
+		super();
 	}
 
-	public String getHost() {
-		return getStringProperty(KEY_HOST, null);
+	public AppInstance(String host, String groupId, String artifactId) {
+		this(host, groupId, artifactId, DEFAULT_INSTANCE_INDEX);
 	}
 
-	public void setHost(String host) {
-		Preconditions.checkNotNull(host);
-		props.put(KEY_HOST, host);
+	public AppInstance(String host, String groupId, String artifactId,
+			String index) {
+		this.setHost(host);
+		this.setGroupId(groupId);
+		this.setArtifactId(artifactId);
+		this.instanceIndex = index;
 	}
 
-	public void setGroupId(String groupId) {
-		Preconditions.checkNotNull(groupId);
-		props.put(KEY_GROUP_ID, groupId);
+	public String getArtifactId() {
+		return artifactId;
+	}
+
+	public void setArtifactId(String artifactId) {
+		this.artifactId = artifactId;
 	}
 
 	public String getGroupId() {
-		return getStringProperty(KEY_GROUP_ID, null);
+		return groupId;
 	}
 
-	public String getAppId() {
-		
-		return getStringProperty(KEY_APP_ID, null);
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
 	}
 
-	public void setAppId(String appId) {
-		Preconditions.checkNotNull(appId);
-		props.put(KEY_APP_ID, appId);
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public String getProfile() {
+		return profile;
+	}
+
+	public void setProfile(String profile) {
+		this.profile = profile;
+	}
+
+	public String getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(String environment) {
+		this.environment = environment;
+	}
+
+	public String getScmRevision() {
+		return scmRevision;
+	}
+
+	public void setScmRevision(String scmRevision) {
+		this.scmRevision = scmRevision;
+	}
+
+	public String getScmBranch() {
+		return scmBranch;
+	}
+
+	public void setScmBranch(String scmBranch) {
+		this.scmBranch = scmBranch;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
 	public String computeVertexId() {
-		return calculateVertexId(getHost(), getGroupId(), getAppId(), null);
+		return calculateVertexId(getHost(), getGroupId(), getArtifactId(), null);
 	}
 
 	public static String calculateVertexId(String host, String group,
@@ -79,22 +126,10 @@ public class AppInstance {
 
 	}
 
-	public Map<String, Object> getProperties() {
-		return props;
-	}
-
 	public String toString() {
 		return Objects.toStringHelper(this).add("host", getHost())
-				.add(KEY_GROUP_ID, getGroupId()).add(KEY_APP_ID, getAppId())
-				.toString();
-	}
-
-	public String getStringProperty(String key, String defaultVal) {
-		Object val = getProperties().get(key);
-		if (val == null) {
-			return defaultVal;
-		}
-		return val.toString();
+				.add(KEY_GROUP_ID, getGroupId())
+				.add(KEY_APP_ID, getArtifactId()).toString();
 	}
 
 }

@@ -1,0 +1,280 @@
+package io.macgyver.core.titan;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.thinkaurelius.titan.core.TitanGraph;
+import com.thinkaurelius.titan.core.TitanGraphQuery;
+import com.tinkerpop.blueprints.Vertex;
+
+public class GraphRepository {
+
+	Logger logger = LoggerFactory.getLogger(GraphRepository.class);
+
+	ObjectMapper mapper;
+
+	
+	
+	TitanGraph graph;
+
+	public GraphRepository() {
+	
+		mapper = createObjectMapper();
+	}
+
+	public GraphRepository(TitanGraph g) {
+		Preconditions.checkNotNull(g);
+		this.graph = g;
+		mapper = createObjectMapper();
+	}
+
+	public Optional<ObjectNode> findOneObjectNode(String key, Object val) {
+		Map<String, Object> m = Maps.newHashMap();
+		m.put(key, val);
+
+		return findOneObjectNode(m);
+	}
+
+	public Iterable<Vertex> findVertices(String key, Object val) {
+		return findVertices(key, val, null);
+	}
+
+	public Iterable<Vertex> findVertices(String key, Object val, Comparator c) {
+		return findVertices(toTitanGraphQuery(key, val), c);
+	}
+
+	public Iterable<Vertex> findVertices(Map<String, Object> x) {
+		return findVertices(x, null);
+	}
+
+	public Iterable<Vertex> findVertices(Map<String, Object> x, Comparator c) {
+		TitanGraphQuery q = graph.query();
+		for (Map.Entry<String, Object> me : x.entrySet()) {
+			q = q.has(me.getKey(), me.getValue());
+		}
+		return findVertices(q,c);
+	}
+	public Iterable<Vertex> findVertices(TitanGraphQuery q) {
+		return findVertices(q,null);
+	}
+	public Iterable<Vertex> findVertices(TitanGraphQuery q, Comparator c) {
+		
+		Iterable<Vertex> v = q.vertices();
+		if (c != null && c instanceof VertexComparator) {
+
+			List tmp = Lists.newArrayList();
+			Iterables.addAll(tmp, v);
+			Collections.sort(tmp, c);
+			v = tmp;
+		}
+		return v;
+
+	}
+
+	public Iterable<ObjectNode> findObjectNodes(String key, Object val) {
+		return findObjectNodes(key, val, null);
+	}
+
+	public Iterable<ObjectNode> findObjectNodes(String key, Object val,
+			Comparator c) {
+		Map<String, Object> x = Maps.newHashMap();
+		x.put(key, val);
+		return findObjectNodes(x, c);
+	}
+
+	public Iterable<ObjectNode> findObjectNodes(Map<String, Object> x) {
+		return findObjectNodes(x);
+	}
+
+	public Iterable<ObjectNode> findObjectNodes(TitanGraphQuery q,
+			Comparator c) {
+		Iterable<Vertex> vt = findVertices(q, c);
+
+		List<ObjectNode> list = Lists.newArrayList();
+		for (Vertex v : vt) {
+			ObjectNode n = toObjectNode(v);
+			list.add(n);
+		}
+
+		if (c != null) {
+			Collections.sort(list, c);
+		}
+		return list;
+	
+	}
+	public Iterable<ObjectNode> findObjectNodes(Map<String, Object> x,
+			Comparator c) {
+		return findObjectNodes(toTitanGraphQuery(x), c);
+
+	}
+
+	public Optional<ObjectNode> findOneObjectNode(TitanGraphQuery q) {
+		Optional<Vertex> v = findOneVertex(q);
+		if (v.isPresent()) {
+			Vertex vx = v.get();
+			return Optional.of(toObjectNode(vx));
+		} else {
+			return Optional.absent();
+		}
+	}
+	public Optional<ObjectNode> findOneObjectNode(Map<String, Object> x) {
+		return findOneObjectNode(toTitanGraphQuery(x));
+
+	}
+
+	public Optional<Vertex> findOneVertex(String key, Object val) {
+		Map<String, Object> m = Maps.newHashMap();
+		m.put(key, val);
+		return findOneVertex(m);
+	}
+
+	public Optional<Vertex> findOneVertex(TitanGraphQuery q) {
+		
+		Iterator<Vertex> t = q.vertices().iterator();
+		
+		if (t.hasNext()) {
+		
+			return Optional.of(t.next());
+			
+		} else {
+		
+			return Optional.absent();
+		}	
+	}
+	public Optional<Vertex> findOneVertex(Map<String, Object> x) {
+		TitanGraphQuery q = toTitanGraphQuery(x);
+
+	
+		return findOneVertex(q);
+	
+	}
+
+	ObjectNode toObjectNode(Vertex v) {
+		ObjectNode n = mapper.createObjectNode();
+		Object id = v.getId();
+		if (id != null) {
+			n.put("_id", (long) id);
+		}
+		ObjectNode p = mapper.createObjectNode();
+		n.put("properties", p);
+		for (String key : v.getPropertyKeys()) {
+			Object val = v.getProperty(key);
+			if (val instanceof String) {
+				p.put(key, (String) val);
+			}
+		}
+		return n;
+	}
+
+	public <T> Iterable<T> find(Map<String, Object> m, Class<T> clazz,
+			Comparator c) {
+		Iterable<ObjectNode> t = findObjectNodes(m);
+		List<T> tmp = Lists.newArrayList();
+		for (ObjectNode n : t) {
+			try {
+				T val = mapper.treeToValue(n, clazz);
+				tmp.add(val);
+			} catch (Exception e) {
+				logger.warn("problem converting item to {}", clazz);
+			}
+		}
+		if (c != null) {
+			Collections.sort(tmp, c);
+		}
+		return tmp;
+	}
+
+	public <T> Optional<T> findOne(String key, Object val,
+			Class<? extends T> clazz) {
+		return findOne(toKeyValueMap(key, val), clazz);
+	}
+
+	public <T> Optional<T> findOne(TitanGraphQuery q, Class<? extends T> clazz) {
+		
+		
+		try {
+			Optional<ObjectNode> t = findOneObjectNode(q);
+		
+			if (!t.isPresent()) {
+				return Optional.absent();
+			}
+			JsonNode properties = t.get().path("properties");
+			return (Optional<T>) Optional
+					.of(mapper.treeToValue(properties, clazz));
+		} catch (Exception e) {
+			logger.debug("problem processing entity", e);
+			return Optional.absent();
+		}
+	}
+	public <T> Optional<T> findOne(Map<String, Object> m,
+			Class<? extends T> clazz) {
+		try {
+			Optional<ObjectNode> t = findOneObjectNode(m);
+		
+			if (!t.isPresent()) {
+				return Optional.absent();
+			}
+			JsonNode properties = t.get().path("properties");
+			return (Optional<T>) Optional
+					.of(mapper.treeToValue(properties, clazz));
+		} catch (Exception e) {
+			logger.debug("problem processing entity", e);
+			return Optional.absent();
+		}
+
+	}
+
+	private Map<String, Object> toKeyValueMap(String key, Object val) {
+		Map<String, Object> m = Maps.newHashMap();
+		if (val != null) {
+			m.put(key, val);
+		}
+		return m;
+	}
+
+	public TitanGraphQuery newQuery() {
+		return graph.query();
+	}
+	public TitanGraph getGraph() {
+		return graph;
+	}
+
+	public void setGraph(TitanGraph g) {
+		this.graph = g;
+	}
+
+	public ObjectMapper createObjectMapper() {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(
+				DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		return mapper;
+
+	}
+	public TitanGraphQuery toTitanGraphQuery(String key, Object val) {
+		return toTitanGraphQuery(toKeyValueMap(key, val));
+	}
+	public TitanGraphQuery toTitanGraphQuery(Map<String,Object> m) {
+		TitanGraphQuery q = getGraph().query();
+		for (Map.Entry<String, Object> me : m.entrySet()) {
+			q = q.has(me.getKey(), me.getValue());
+		}
+		return q;
+		
+	}
+}

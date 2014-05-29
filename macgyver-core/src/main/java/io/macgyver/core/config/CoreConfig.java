@@ -16,6 +16,7 @@ import io.macgyver.core.eventbus.MacGyverEventBus;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.core.titan.CoreIndexInitializer;
+import io.macgyver.core.titan.GraphRepository;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -36,6 +37,7 @@ import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostP
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.google.common.io.Files;
@@ -185,8 +187,12 @@ public class CoreConfig {
 		return mgr;
 
 	}
-	
-	@Bean(name = "titanGraph", destroyMethod = "shutdown")
+	@Bean(name = "macGraphRepository")
+	@Primary
+	public GraphRepository macGraphRepository() {
+		return new GraphRepository(titanGraph());
+	}
+	@Bean(name = "macTitanGraph", destroyMethod = "shutdown")
 	public TitanGraph titanGraph() {
 		if (isUnitTest()) {
 

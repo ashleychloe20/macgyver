@@ -140,6 +140,6 @@ public class Bootstrap {
 		} catch (Exception e) {
 			logger.warn("could not load banner");
 		}
-		System.out.println(bannerText);
+		logger.info(bannerText);
 	}
 }

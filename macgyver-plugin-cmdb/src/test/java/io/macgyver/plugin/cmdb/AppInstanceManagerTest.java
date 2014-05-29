@@ -2,6 +2,7 @@ package io.macgyver.plugin.cmdb;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import io.macgyver.test.MacGyverIntegrationTest;
 import static org.junit.Assert.*;
@@ -32,7 +33,7 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		String appId = "myapp";
 		String groupId = "mygroup";
 		
-		manager.getOrCreateAppInstance(host, groupId, appId);
+		manager.getOrCreateAppInstanceVertex(host, groupId, appId);
 		try {
 			Vertex v = graph.addVertex(null);
 			v.setProperty("host", host);
@@ -51,16 +52,9 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		String groupId = "group";
 		
 		String vid = AppInstance.calculateVertexId(host, groupId, appId,null);
-		assertFalse(manager.getAppInstance(host, groupId, appId).isPresent());
-		
-		Map<String,Object> p = Maps.newHashMap();
-		p.put("version", "12345");
-		AppInstance ai = manager.getOrCreateAppInstance(host, groupId,"myapp",p );
-		assertNotNull(ai);
+		assertNotNull(manager.getOrCreateAppInstanceVertex(host, groupId, appId));
 		
 		
-		ai = manager.getOrCreateAppInstance(host, groupId,appId);
-		assertEquals("12345",ai.getProperties().get("version"));
 		
 		
 		
@@ -70,10 +64,8 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 	@Test
 	public void x() throws Exception {
 		
-		Assert.assertFalse(manager.getAppInstance("localhost", "group","test").isPresent());
-		AppInstance ai = manager.getOrCreateAppInstance("localhost", "group","test");
-		Assert.assertNotNull(manager.getOrCreateAppInstance("localhost", "group","test"));
-		Assert.assertTrue(manager.getAppInstance("localhost", "group","test").isPresent());
+		
+		Assert.assertNotNull(manager.getOrCreateAppInstanceVertex("localhost", "group","test"));
 	
 	}
 	@Test
@@ -87,27 +79,17 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		
 		for (int i=0; i<nodesToAdd; i++) {
 			
-			AppInstance ai = manager.getOrCreateAppInstance("host_"+i, "group","app_"+i);
+			manager.getOrCreateAppInstanceVertex("host_"+i, "group","app_"+i);
+			manager.getOrCreateAppInstanceVertex("host_"+i, "group","app_"+i);
 		
-			manager.save(ai);
 		
 		}
+		manager.getGraph().commit();
 		list.clear();
 		Iterables.addAll(list,graph.query().has("vertexType", "AppInstance").vertices());
 		int afterCount = list.size();
 		Assert.assertEquals(nodesToAdd,afterCount-beforeCount);
 		
 	}
-	@Test
-	public void testSort() throws Exception {
 
-		manager.getOrCreateAppInstance("abc.example.com","group" ,"xxx");
-		manager.getOrCreateAppInstance("abc.example.com", "group","aaa");
-		
-		List<AppInstance> list = Lists.newArrayList();
-		Iterables.addAll(list,manager.find());
-		
-		Assert.assertTrue(2==list.size());
-		
-	}
 }

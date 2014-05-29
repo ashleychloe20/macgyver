@@ -22,24 +22,11 @@ public class AppInstanceTest {
 	
 	@Test
 	public void testProperty() {
-		AppInstance ai = new AppInstance("dummy","group","dummy");
-		assertEquals("123", ai.getStringProperty("foobar", "123"));
+		AppInstance ai = new AppInstance("dummy","group","app");
+		assertEquals("dummy",ai.getHost());
+		assertEquals("group",ai.getGroupId());
+		assertEquals("app",ai.getArtifactId());
 	}
 	
-	@Test
-	public void testJackson() throws JsonProcessingException,IOException {
-		AppInstance ai = new AppInstance("myhost","group", "myapp");
-		
-		ai.getProperties().put("foo.x", "bar");
-		
-		String json = new ObjectMapper().writeValueAsString(ai);
-		
-		
-		AppInstance ai2 = new ObjectMapper().readValue(json, AppInstance.class);
-		
-		assertEquals(ai.getAppId(),ai2.getAppId());
-		assertEquals(ai.getHost(),ai2.getHost());
-		
-		
-	}
+	
 }
