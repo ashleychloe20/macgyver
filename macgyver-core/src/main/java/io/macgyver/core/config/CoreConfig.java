@@ -44,6 +44,8 @@ import com.google.common.io.Files;
 import com.ning.http.client.AsyncHttpClient;
 import com.thinkaurelius.titan.core.TitanFactory;
 import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 
 @Configuration
 public class CoreConfig {
@@ -190,16 +192,16 @@ public class CoreConfig {
 	@Bean(name = "macGraphRepository")
 	@Primary
 	public GraphRepository macGraphRepository() {
-		return new GraphRepository(titanGraph());
+		return new GraphRepository(macGraph());
 	}
-	@Bean(name = "macTitanGraph", destroyMethod = "shutdown")
-	public TitanGraph titanGraph() {
+	@Bean(name = "macGraph", destroyMethod = "shutdown")
+	public TransactionalGraph macGraph() {
 		if (isUnitTest()) {
 
 			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
 
 			conf.setProperty("storage.directory", Files.createTempDir().getAbsolutePath());
-
+			conf.setProperty("cache.db-cache", true);
 			TitanGraph g = TitanFactory.open(conf);
 			return g;
 

@@ -19,8 +19,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanGraphQuery;
+
+import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.GraphQuery;
+import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 
 public class GraphRepository {
@@ -31,14 +33,14 @@ public class GraphRepository {
 
 	
 	
-	TitanGraph graph;
+	TransactionalGraph graph;
 
 	public GraphRepository() {
 	
 		mapper = createObjectMapper();
 	}
 
-	public GraphRepository(TitanGraph g) {
+	public GraphRepository(TransactionalGraph g) {
 		Preconditions.checkNotNull(g);
 		this.graph = g;
 		mapper = createObjectMapper();
@@ -56,7 +58,7 @@ public class GraphRepository {
 	}
 
 	public Iterable<Vertex> findVertices(String key, Object val, Comparator c) {
-		return findVertices(toTitanGraphQuery(key, val), c);
+		return findVertices(toGraphQuery(key, val), c);
 	}
 
 	public Iterable<Vertex> findVertices(Map<String, Object> x) {
@@ -64,16 +66,16 @@ public class GraphRepository {
 	}
 
 	public Iterable<Vertex> findVertices(Map<String, Object> x, Comparator c) {
-		TitanGraphQuery q = graph.query();
+		GraphQuery q = graph.query();
 		for (Map.Entry<String, Object> me : x.entrySet()) {
 			q = q.has(me.getKey(), me.getValue());
 		}
 		return findVertices(q,c);
 	}
-	public Iterable<Vertex> findVertices(TitanGraphQuery q) {
+	public Iterable<Vertex> findVertices(GraphQuery q) {
 		return findVertices(q,null);
 	}
-	public Iterable<Vertex> findVertices(TitanGraphQuery q, Comparator c) {
+	public Iterable<Vertex> findVertices(GraphQuery q, Comparator c) {
 		
 		Iterable<Vertex> v = q.vertices();
 		if (c != null && c instanceof VertexComparator) {
@@ -102,7 +104,7 @@ public class GraphRepository {
 		return findObjectNodes(x);
 	}
 
-	public Iterable<ObjectNode> findObjectNodes(TitanGraphQuery q,
+	public Iterable<ObjectNode> findObjectNodes(GraphQuery q,
 			Comparator c) {
 		Iterable<Vertex> vt = findVertices(q, c);
 
@@ -120,11 +122,11 @@ public class GraphRepository {
 	}
 	public Iterable<ObjectNode> findObjectNodes(Map<String, Object> x,
 			Comparator c) {
-		return findObjectNodes(toTitanGraphQuery(x), c);
+		return findObjectNodes(toGraphQuery(x), c);
 
 	}
 
-	public Optional<ObjectNode> findOneObjectNode(TitanGraphQuery q) {
+	public Optional<ObjectNode> findOneObjectNode(GraphQuery q) {
 		Optional<Vertex> v = findOneVertex(q);
 		if (v.isPresent()) {
 			Vertex vx = v.get();
@@ -134,7 +136,7 @@ public class GraphRepository {
 		}
 	}
 	public Optional<ObjectNode> findOneObjectNode(Map<String, Object> x) {
-		return findOneObjectNode(toTitanGraphQuery(x));
+		return findOneObjectNode(toGraphQuery(x));
 
 	}
 
@@ -144,9 +146,9 @@ public class GraphRepository {
 		return findOneVertex(m);
 	}
 
-	public Optional<Vertex> findOneVertex(TitanGraphQuery q) {
+	public Optional<Vertex> findOneVertex(GraphQuery q) {
 		
-		Iterator<Vertex> t = q.vertices().iterator();
+		Iterator<Vertex> t = q.limit(1).vertices().iterator();
 		
 		if (t.hasNext()) {
 		
@@ -156,9 +158,10 @@ public class GraphRepository {
 		
 			return Optional.absent();
 		}	
+		
 	}
 	public Optional<Vertex> findOneVertex(Map<String, Object> x) {
-		TitanGraphQuery q = toTitanGraphQuery(x);
+		GraphQuery q = toGraphQuery(x);
 
 	
 		return findOneVertex(q);
@@ -205,7 +208,7 @@ public class GraphRepository {
 		return findOne(toKeyValueMap(key, val), clazz);
 	}
 
-	public <T> Optional<T> findOne(TitanGraphQuery q, Class<? extends T> clazz) {
+	public <T> Optional<T> findOne(GraphQuery q, Class<? extends T> clazz) {
 		
 		
 		try {
@@ -248,14 +251,14 @@ public class GraphRepository {
 		return m;
 	}
 
-	public TitanGraphQuery newQuery() {
+	public GraphQuery newQuery() {
 		return graph.query();
 	}
-	public TitanGraph getGraph() {
+	public TransactionalGraph getGraph() {
 		return graph;
 	}
 
-	public void setGraph(TitanGraph g) {
+	public void setGraph(TransactionalGraph g) {
 		this.graph = g;
 	}
 
@@ -266,11 +269,11 @@ public class GraphRepository {
 		return mapper;
 
 	}
-	public TitanGraphQuery toTitanGraphQuery(String key, Object val) {
-		return toTitanGraphQuery(toKeyValueMap(key, val));
+	public GraphQuery toGraphQuery(String key, Object val) {
+		return toGraphQuery(toKeyValueMap(key, val));
 	}
-	public TitanGraphQuery toTitanGraphQuery(Map<String,Object> m) {
-		TitanGraphQuery q = getGraph().query();
+	public GraphQuery toGraphQuery(Map<String,Object> m) {
+		GraphQuery q = getGraph().query();
 		for (Map.Entry<String, Object> me : m.entrySet()) {
 			q = q.has(me.getKey(), me.getValue());
 		}

@@ -4,17 +4,17 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 
-public abstract class AbstractTitanInitializer {
+public abstract class GraphInitializer {
 
 	@Autowired
-	TitanGraph graph;
-	
+	TransactionalGraph graph;
+
 	@PostConstruct
 	public void init() {
 		doInit(graph);
 	}
-	
-	public abstract void doInit(TitanGraph graph);
+
+	public abstract void doInit(TransactionalGraph graph);
 }

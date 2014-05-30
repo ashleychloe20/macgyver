@@ -15,6 +15,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.lambdaworks.crypto.SCryptUtil;
 import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 
 public class InternalUserManager {
@@ -22,7 +23,7 @@ public class InternalUserManager {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	TitanGraph graph;
+	TransactionalGraph graph;
 
 	public Optional<InternalUser> getInternalUser(final String id) {
 		try {
@@ -113,7 +114,8 @@ public class InternalUserManager {
 	@PostConstruct
 	public void initializeGraphDatabase() {
 		try {
-			graph.makeKey("macUsername").dataType(String.class).indexed(Vertex.class).unique().make();
+			TitanGraph tg = (TitanGraph) graph;
+			tg.makeKey("macUsername").dataType(String.class).indexed(Vertex.class).unique().make();
 		}
 		catch (Exception e) {}
 	}

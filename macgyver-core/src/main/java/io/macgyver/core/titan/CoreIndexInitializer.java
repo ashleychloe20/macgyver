@@ -1,12 +1,15 @@
 package io.macgyver.core.titan;
 
 import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.KeyIndexableGraph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 
-public class CoreIndexInitializer extends AbstractTitanInitializer {
+public class CoreIndexInitializer extends GraphInitializer {
 
 	@Override
-	public void doInit(TitanGraph graph) {
+	public void doInit(TransactionalGraph g) {
+		TitanGraph graph = (TitanGraph) g;
 		try {
 			graph.makeKey("vertexType").dataType(String.class)
 					.indexed(Vertex.class).make();

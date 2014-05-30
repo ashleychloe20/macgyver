@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import io.macgyver.core.titan.TitanFilter;
+import io.macgyver.core.titan.TransactionalGraphFilter;
 import io.macgyver.core.web.CoreApiController;
 import io.macgyver.core.web.HomeController;
 import io.macgyver.core.web.MacgyverWeb;
@@ -91,14 +91,14 @@ public class WebConfig implements EnvironmentAware {
 		return new StandardMenuDecorator();
 	}
 	@Bean
-	public TitanFilter macTitanFilter() {
-		return new TitanFilter();
+	public TransactionalGraphFilter macGraphFilter() {
+		return new TransactionalGraphFilter();
 	}
 	@Bean
-	public FilterRegistrationBean macTitanFilterReg() {
+	public FilterRegistrationBean macGraphFilterRegistrationBean() {
 		FilterRegistrationBean b = new FilterRegistrationBean();
 		
-		b.setFilter(macTitanFilter());
+		b.setFilter(macGraphFilter());
 		return b;
 	}
 }

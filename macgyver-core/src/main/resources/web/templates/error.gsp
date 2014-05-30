@@ -1,20 +1,7 @@
-ERROR
-
-<%
-request.getAttributeNames().each {  
-%>
-<p/>
-	${it}
-
-<%
-
-}
-
-
-%>
-
-<p>
-
-${request.getAttribute("status")}: ${request.getAttribute("error")}
-
-${request.getAttribute("javax.servlet.error.exception")}
+<html>
+<head><title>error</title>
+</head>
+<body>
+<pre>${request.getAttribute("javax.servlet.error.exception")}</pre>
+</body>
+</html>

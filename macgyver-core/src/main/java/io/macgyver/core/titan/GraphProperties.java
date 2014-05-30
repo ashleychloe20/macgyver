@@ -1,5 +1,5 @@
 package io.macgyver.core.titan;
 
-public enum TitanProperties {
+public enum GraphProperties {
 	vertexId;
 }

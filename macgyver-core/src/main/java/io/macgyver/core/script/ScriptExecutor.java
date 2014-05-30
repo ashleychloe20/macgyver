@@ -21,14 +21,13 @@ import org.apache.commons.vfs2.FileObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Closer;
-import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 
 public class ScriptExecutor implements ApplicationContextAware {
 
@@ -96,10 +95,10 @@ public class ScriptExecutor implements ApplicationContextAware {
 			return response;
 		} catch (ScriptException e) {
 			this.evalException = e;
-			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).rollback();
+			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).rollback();
 			throw e;
 		} finally {
-			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).commit();
+			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).commit();
 		}
 
 	}
@@ -176,13 +175,13 @@ public class ScriptExecutor implements ApplicationContextAware {
 			fr.close();
 
 		} catch (IOException e) {
-			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).commit();
+			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).commit();
 			throw new ScriptExecutionException(e);
 		} catch (ScriptException e) {
-			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).commit();
+			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).commit();
 			throw new ScriptExecutionException(e);
 		} catch (RuntimeException e) {
-			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).rollback();
+			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).rollback();
 			throw new ScriptExecutionException(e);
 		} finally {
 			try {
@@ -190,7 +189,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 			} catch (IOException e) {
 				logger.warn("problem closing reader", e);
 			}
-			Kernel.getInstance().getApplicationContext().getBean(TitanGraph.class).commit();
+			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).commit();
 
 		}
 		return rval;

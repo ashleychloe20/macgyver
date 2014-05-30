@@ -1,24 +1,23 @@
 package io.macgyver.core.titan;
 
+import io.macgyver.test.MacGyverIntegrationTest;
+
 import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
-import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
-
-import io.macgyver.test.MacGyverIntegrationTest;
 
 public class GraphRepositoryTest extends MacGyverIntegrationTest{
 
 	
 	@Autowired
-	TitanGraph titanGraph;
+	TransactionalGraph titanGraph;
 	
 	
 	public static class TestBean {

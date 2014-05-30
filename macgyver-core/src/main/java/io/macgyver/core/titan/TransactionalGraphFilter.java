@@ -13,13 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 
-public class TitanFilter implements Filter {
+public class TransactionalGraphFilter implements Filter {
 
 	@Autowired
-	TitanGraph graph;
+	TransactionalGraph graph;
 	
 	Logger logger = LoggerFactory.getLogger(getClass());
 	
