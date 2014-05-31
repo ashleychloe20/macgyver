@@ -1,4 +1,4 @@
-package io.macgyver.core.titan;
+package io.macgyver.core.graph;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -171,9 +171,7 @@ public class GraphRepository {
 	ObjectNode toObjectNode(Vertex v) {
 		ObjectNode n = mapper.createObjectNode();
 		Object id = v.getId();
-		if (id != null) {
-			n.put("_id", (long) id);
-		}
+
 		ObjectNode p = mapper.createObjectNode();
 		n.put("properties", p);
 		for (String key : v.getPropertyKeys()) {

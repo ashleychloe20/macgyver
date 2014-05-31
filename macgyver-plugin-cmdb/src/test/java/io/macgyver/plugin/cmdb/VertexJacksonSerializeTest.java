@@ -1,23 +1,22 @@
 package io.macgyver.plugin.cmdb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import io.macgyver.core.graph.SimpleVertexSerializer;
+import io.macgyver.test.MacGyverIntegrationTest;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
-
-import io.macgyver.core.titan.SimpleVertexSerializer;
-import io.macgyver.test.MacGyverIntegrationTest;
 
 public class VertexJacksonSerializeTest extends MacGyverIntegrationTest{
 
 	@Autowired
-	TitanGraph graph;
+	TransactionalGraph graph;
 	
 	ObjectMapper mapper = new ObjectMapper();
 	

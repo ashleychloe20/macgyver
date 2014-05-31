@@ -1,31 +1,26 @@
 package io.macgyver.plugin.cmdb;
 
+import static org.junit.Assert.assertNotNull;
+import io.macgyver.test.MacGyverIntegrationTest;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import io.macgyver.test.MacGyverIntegrationTest;
-import static org.junit.Assert.*;
-
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.thinkaurelius.titan.core.TitanGraph;
+import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
+import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
 
 public class AppInstanceManagerTest extends MacGyverIntegrationTest {
@@ -33,7 +28,7 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 	AppInstanceManager manager;
 
 	@Autowired
-	TitanGraph graph;
+	TransactionalGraph graph;
 
 	SecureRandom secureRandom;
 	
@@ -42,7 +37,7 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		
 		secureRandom = SecureRandom.getInstance("sha1prng");
 	}
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = ORecordDuplicatedException.class)
 	public void testUnique() {
 		String host = "unknown_" + System.currentTimeMillis();
 		String appId = "myapp";
@@ -50,14 +45,14 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 
 		manager.getOrCreateAppInstanceVertex(host, groupId, appId);
 		try {
-			Vertex v = graph.addVertex(null);
+			Vertex v = graph.addVertex("class:AppInstance");
 			v.setProperty("host", host);
 			v.setProperty("artifactId", appId);
 			v.setProperty("groupId", groupId);
 			v.setProperty("vertexId",
 					AppInstance.calculateVertexId(host, groupId, appId, null));
 		} finally {
-			graph.rollback();
+			graph.commit();
 		}
 	}
 
@@ -115,8 +110,8 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 
 		long t0 = System.currentTimeMillis();
 
-		BlockingQueue<Runnable> q = new ArrayBlockingQueue<>(10000);
-		for (int i = 0; i < 10000; i++) {
+		BlockingQueue<Runnable> q = new ArrayBlockingQueue<>(2000);
+		for (int i = 0; i < 2000; i++) {
 			final Runnable r = new Runnable() {
 
 				@Override

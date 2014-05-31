@@ -1,48 +1,25 @@
 package io.macgyver.plugin.cmdb;
 
-import io.macgyver.core.titan.GraphInitializer;
+import io.macgyver.core.graph.OrientGraphInitializer;
 
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.tinkerpop.blueprints.TransactionalGraph;
-import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
-public class CmdbGraphInitializer extends GraphInitializer{
+public class CmdbGraphInitializer extends OrientGraphInitializer {
 
 	public CmdbGraphInitializer() {
-		
+
 	}
 
 	@Override
-	public void doInit(TransactionalGraph g) {
-		TitanGraph graph = (TitanGraph) g;
-		try {
-			
-			graph.makeKey("artifactId").dataType(String.class)
-					.indexed(Vertex.class).make();
-		} catch (IllegalArgumentException e) {
-
-		} finally {
-			graph.commit();
-		}
-		try {
-
-			graph.makeKey("groupId").dataType(String.class)
-					.indexed(Vertex.class).make();
-		} catch (IllegalArgumentException e) {
-
-		} finally {
-			graph.commit();
-		}
-		try {
-
-			graph.makeKey("host").dataType(String.class)
-					.indexed(Vertex.class).make();
-		} catch (IllegalArgumentException e) {
-
-		} finally {
-			graph.commit();
-		}
+	public void doInitOrientGraph(OrientGraph g) {
 		
+		g.commit();
+		createUniqueVertexIndex("vertexId");
+		createVertexIndex("host");
+		createVertexIndex("artifactId");
+		createVertexIndex("groupId");
+		
+
 	}
 
 }

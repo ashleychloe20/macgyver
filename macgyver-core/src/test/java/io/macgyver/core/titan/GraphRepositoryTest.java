@@ -1,5 +1,6 @@
 package io.macgyver.core.titan;
 
+import io.macgyver.core.graph.GraphRepository;
 import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.util.UUID;

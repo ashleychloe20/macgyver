@@ -13,10 +13,10 @@ import io.macgyver.core.auth.InternalUserManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
+import io.macgyver.core.graph.CoreIndexInitializer;
+import io.macgyver.core.graph.GraphRepository;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.core.titan.CoreIndexInitializer;
-import io.macgyver.core.titan.GraphRepository;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -42,10 +42,8 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.google.common.io.Files;
 import com.ning.http.client.AsyncHttpClient;
-import com.thinkaurelius.titan.core.TitanFactory;
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.TransactionalGraph;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 @Configuration
 public class CoreConfig {
@@ -202,7 +200,8 @@ public class CoreConfig {
 
 			conf.setProperty("storage.directory", Files.createTempDir().getAbsolutePath());
 			conf.setProperty("cache.db-cache", true);
-			TitanGraph g = TitanFactory.open(conf);
+			OrientGraph g = new OrientGraph("plocal:"+Files.createTempDir().getAbsolutePath());
+		
 			return g;
 
 		} else {
@@ -213,12 +212,12 @@ public class CoreConfig {
 						"data location must be local filesystem");
 			}
 			LocalFile file = (LocalFile) obj;
-			File dir = new java.io.File(file.getName().getPath(), "titandb");
+			File dir = new java.io.File(file.getName().getPath(), "orientdb");
 			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
 
 			conf.setProperty("storage.directory", dir.getAbsolutePath());
 
-			TitanGraph g = TitanFactory.open(conf);
+			OrientGraph g = new OrientGraph("plocal:"+dir.getAbsolutePath());
 			return g;
 
 		}

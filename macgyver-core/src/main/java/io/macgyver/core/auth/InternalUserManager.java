@@ -1,5 +1,6 @@
 package io.macgyver.core.auth;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,9 +15,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.lambdaworks.crypto.SCryptUtil;
-import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.Parameter;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 public class InternalUserManager {
 
@@ -27,24 +29,25 @@ public class InternalUserManager {
 
 	public Optional<InternalUser> getInternalUser(final String id) {
 		try {
-			Iterator<Vertex> t = graph.query().has("vertexType", "user").has("macUsername", id).vertices().iterator();
-			if  (t.hasNext()) {
+			Iterator<Vertex> t = graph.query().has("vertexType", "user")
+					.has("macUsername", id).vertices().iterator();
+			if (t.hasNext()) {
 				Vertex v = t.next();
 				InternalUser u = new InternalUser();
 				u.username = v.getProperty("username");
-				String[] roles = v.getProperty("roles");
-				if (roles==null) {
+				Object rolesObj = v.getProperty("roles");
+				if (rolesObj == null) {
 					u.roles = Lists.newArrayList();
+				} else if (rolesObj instanceof String[]) {
+					u.roles = Lists.newArrayList((String[]) rolesObj);
+				} else if (rolesObj instanceof List) {
+					u.roles = (List) rolesObj;
 				}
-				else {
-					u.roles = Lists.newArrayList(roles);
-				}
-				
+
 				return Optional.of(u);
 			}
-			
-		}
-		finally {
+
+		} finally {
 			graph.commit();
 		}
 		return Optional.absent();
@@ -52,20 +55,18 @@ public class InternalUserManager {
 
 	public boolean authenticate(String username, String password) {
 		try {
-			Vertex v = graph.getVertices("macUsername", username).iterator().next();
-			
+			Vertex v = graph.getVertices("macUsername", username).iterator()
+					.next();
+
 			String hashValue = v.getProperty("scryptHash");
 			return SCryptUtil.check(password, Strings.nullToEmpty(hashValue));
-		}
-		catch(NoSuchElementException e) {
+		} catch (NoSuchElementException e) {
 			// user not found
 			return false;
-		}
-		catch(IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// invalid or msising hash
 			return false;
-		}
-		finally {
+		} finally {
 			graph.commit();
 		}
 	}
@@ -74,39 +75,38 @@ public class InternalUserManager {
 
 		String hash = SCryptUtil.scrypt(password, 4096, 8, 1);
 		try {
-			Vertex v = graph.getVertices("macUsername", username).iterator().next();
-			
+			Vertex v = graph.getVertices("macUsername", username).iterator()
+					.next();
+
 			v.setProperty("scryptHash", hash);
-		}
-		finally {
+		} finally {
 			graph.commit();
 		}
 	}
 
 	public void setRoles(String username, List<String> roles) {
 		try {
-			Vertex v = graph.getVertices("macUsername", username).iterator().next();
+			Vertex v = graph.getVertices("macUsername", username).iterator()
+					.next();
 			v.setProperty("roles", roles.toArray(new String[0]));
-		}
-		finally {
+		} finally {
 			graph.commit();
 		}
 	}
 
 	public InternalUser createUser(String username, List<String> roles) {
 		try {
-			username=username.trim().toLowerCase();
+			username = username.trim().toLowerCase();
 			Vertex v = graph.addVertex(null);
 			v.setProperty("macUsername", username);
 			v.setProperty("roles", roles.toArray(new String[0]));
 			v.setProperty("vertexType", "user");
 			InternalUser u = new InternalUser();
-			u.username=username;
+			u.username = username;
 			u.roles = Lists.newArrayList(roles);
-			
+
 			return u;
-		}
-		finally {
+		} finally {
 			graph.commit();
 		}
 	}
@@ -114,9 +114,12 @@ public class InternalUserManager {
 	@PostConstruct
 	public void initializeGraphDatabase() {
 		try {
-			TitanGraph tg = (TitanGraph) graph;
-			tg.makeKey("macUsername").dataType(String.class).indexed(Vertex.class).unique().make();
+			OrientGraph og = (OrientGraph) graph;
+			og.createKeyIndex("macUsername", Vertex.class, new Parameter(
+					"type", "UNIQUE"));
+		} catch (Exception e) {
+			logger.info(e.toString());
 		}
-		catch (Exception e) {}
+
 	}
 }

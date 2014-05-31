@@ -53,7 +53,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 		httpSecurity.authorizeRequests()
 
 		.antMatchers("/login","/error**", "/public/**", "/resources/**", "/webjars/**")
-				.permitAll().and().authorizeRequests().and()
+				.permitAll().and()
 				.authorizeRequests().antMatchers("/**").hasAnyRole("MACGYVER_USER","MACGYVER_ADMIN").and().
 
 				formLogin().loginPage("/login").failureUrl("/login")

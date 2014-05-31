@@ -1,4 +1,4 @@
-package io.macgyver.core.titan;
+package io.macgyver.core.graph;
 
 import java.util.Comparator;
 import java.util.List;

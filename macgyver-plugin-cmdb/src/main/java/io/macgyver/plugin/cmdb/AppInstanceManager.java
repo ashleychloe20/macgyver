@@ -1,34 +1,18 @@
 package io.macgyver.plugin.cmdb;
 
-import io.macgyver.core.titan.GraphRepository;
+import io.macgyver.core.graph.GraphRepository;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-
-import javax.swing.text.html.HTMLDocument.RunElement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.thinkaurelius.titan.core.TitanGraph;
-import com.thinkaurelius.titan.core.TitanGraphQuery;
 import com.tinkerpop.blueprints.GraphQuery;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
-
+//https://github.com/orientechnologies/orientdb/wiki/Graph-Database-Tinkerpop
 public class AppInstanceManager extends GraphRepository {
 	Logger logger = LoggerFactory.getLogger(AppInstanceManager.class);
 
@@ -62,7 +46,7 @@ public class AppInstanceManager extends GraphRepository {
 				return v;
 			}
 
-			Vertex v = getGraph().addVertex(null);
+			Vertex v = getGraph().addVertex("class:AppInstance");
 			v.setProperty("vertexId",
 					AppInstance.calculateVertexId(host, groupId, appId, null));
 			v.setProperty(AppInstance.KEY_VERTEX_TYPE,

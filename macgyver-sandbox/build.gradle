@@ -1,0 +1,24 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin:'application'
+
+
+configurations {
+	all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
+	all*.exclude group: 'log4j'
+	all*.exclude group: 'xml-apis'
+    all*.exclude group: 'commons-logging'
+}
+
+
+
+dependencies {
+
+
+    compile "com.google.guava:guava:${GUAVA_VERSION}"
+
+    testCompile project(':macgyver-test')
+     
+}
+

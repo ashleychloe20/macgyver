@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import io.macgyver.core.titan.TransactionalGraphFilter;
+import io.macgyver.core.graph.TransactionalGraphFilter;
 import io.macgyver.core.web.CoreApiController;
 import io.macgyver.core.web.HomeController;
 import io.macgyver.core.web.MacgyverWeb;

@@ -1,4 +1,4 @@
-package io.macgyver.core.titan;
+package io.macgyver.core.graph;
 
 import javax.annotation.PostConstruct;
 
@@ -16,5 +16,10 @@ public abstract class GraphInitializer {
 		doInit(graph);
 	}
 
+	public abstract void createVertexIndex(String pname);
+	public abstract void createUniqueVertexIndex(String pname);
+	
 	public abstract void doInit(TransactionalGraph graph);
+	
+	
 }
