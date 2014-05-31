@@ -15,6 +15,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.lambdaworks.crypto.SCryptUtil;
+import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.tinkerpop.blueprints.Parameter;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
@@ -96,6 +97,10 @@ public class InternalUserManager {
 
 	public InternalUser createUser(String username, List<String> roles) {
 		try {
+			
+			if (getInternalUser(username).isPresent()) {
+				throw new IllegalArgumentException("user already exists: "+username);
+			}
 			username = username.trim().toLowerCase();
 			Vertex v = graph.addVertex(null);
 			v.setProperty("macUsername", username);
@@ -107,7 +112,9 @@ public class InternalUserManager {
 
 			return u;
 		} finally {
+		
 			graph.commit();
+			
 		}
 	}
 

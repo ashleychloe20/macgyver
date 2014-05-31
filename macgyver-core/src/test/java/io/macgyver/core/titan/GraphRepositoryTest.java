@@ -61,7 +61,7 @@ public class GraphRepositoryTest extends MacGyverIntegrationTest{
 		Assert.assertTrue(vx.isPresent());
 		
 		
-		Assert.assertEquals(v.getId(),vx.get().path("_id").asLong());
+	
 		Assert.assertEquals(v.getProperty("testProperty"),vx.get().path("properties").path("testProperty").asText());
 		
 	}
@@ -97,7 +97,7 @@ public class GraphRepositoryTest extends MacGyverIntegrationTest{
 		
 		Iterable<ObjectNode> vx = gr.findObjectNodes("testProperty",val);
 		for (ObjectNode n: vx) {
-			Assert.assertEquals(v.getId(),n.path("_id").asLong());
+
 			Assert.assertEquals(v.getProperty("testProperty"),n.path("properties").path("testProperty").asText());	
 		}
 		
