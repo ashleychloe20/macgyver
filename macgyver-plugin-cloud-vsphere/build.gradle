@@ -17,7 +17,7 @@ dependencies {
 
   
     testCompile project(':macgyver-test')
-     compile project(':macgyver-cloud')
+     compile project(':macgyver-plugin-cloud')
      compile 'com.vmware:vijava:5.1'
 }
 

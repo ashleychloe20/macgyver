@@ -8,17 +8,14 @@ configurations {
 	all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
 	all*.exclude group: 'log4j'
 	all*.exclude group: 'xml-apis'
-    all*.exclude group: 'commons-logging'
 }
-
 
 
 dependencies {
-
-  
-    testCompile project(':macgyver-test')
-     compile project(':macgyver-core')
-	 compile 'redis.clients:jedis:2.4.0'
-
+	compile project(':macgyver-plugin-elb')
+	compile project(':macgyver-core')
+    
+    testCompile project(":macgyver-test")
 }
+
 
