@@ -10,10 +10,11 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>Signinp</title>
+    <title>Sign In</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="/webjars/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" >
 
     <!-- Custom styles for this template -->
     <link href="/resources/auth/login.css" rel="stylesheet">
