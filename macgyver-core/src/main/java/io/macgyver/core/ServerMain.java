@@ -29,7 +29,7 @@ public class ServerMain {
 	public static String computeTemplateRoots() {
 		try {
 			FileObject webFileObject = Bootstrap.getInstance()
-					.getVirtualFileSystem().getWebLocation();
+					.getVfsManager().getWebLocation();
 			String templateRoots = "classpath:/web/templates";
 			if (!(webFileObject instanceof LocalFile)) {
 				throw new IllegalStateException(

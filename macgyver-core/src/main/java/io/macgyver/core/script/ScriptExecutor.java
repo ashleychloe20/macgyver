@@ -1,7 +1,7 @@
 package io.macgyver.core.script;
 
 import io.macgyver.core.Kernel;
-import io.macgyver.core.VirtualFileSystem;
+import io.macgyver.core.VfsManager;
 import io.macgyver.core.service.ServiceRegistry;
 
 import java.io.IOException;
@@ -123,7 +123,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 	public Object run(String arg, Map<String, Object> vars,
 			boolean failIfNotFound) throws IOException {
 		
-		FileObject fo = Kernel.getInstance().getApplicationContext().getBean(VirtualFileSystem.class).getScriptsLocation();
+		FileObject fo = Kernel.getInstance().getApplicationContext().getBean(VfsManager.class).getScriptsLocation();
 		
 		FileObject script = fo.resolveFile(arg);
 		

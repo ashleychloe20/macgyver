@@ -5,7 +5,7 @@ import groovy.util.ConfigSlurper;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.ServiceNotFoundException;
-import io.macgyver.core.VirtualFileSystem;
+import io.macgyver.core.VfsManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
@@ -211,9 +211,10 @@ public class ServiceRegistry {
 		Properties p = new Properties();
 
 		FileObject configGroovy = applicationContext
-				.getBean(VirtualFileSystem.class).getConfigLocation()
+				.getBean(VfsManager.class).getConfigLocation()
 				.resolveFile("services.groovy");
 
+		logger.info("loading services from: {}",configGroovy);
 		ConfigSlurper slurper = new ConfigSlurper();
 		if (Kernel.getExecutionProfile().isPresent()) {
 			slurper.setEnvironment(Kernel.getExecutionProfile().get());
@@ -227,6 +228,9 @@ public class ServiceRegistry {
 			p = crypto.decryptProperties(p);
 
 			
+		}
+		else {
+			logger.warn("services config file not found: {}",configGroovy);
 		}
 		return p;
 

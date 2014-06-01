@@ -17,6 +17,8 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import com.google.common.io.Files;
+
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = { TestConfig.class })
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class MacGyverIntegrationTest extends
@@ -30,7 +32,9 @@ public abstract class MacGyverIntegrationTest extends
 
 	@BeforeClass
 	public static void setup() throws IOException {
-		System.setProperty("macgyver.ext.location", new java.io.File(
+		
+		System.setProperty("macgyver.data.url", Files.createTempDir().getAbsolutePath());
+		System.setProperty("macgyver.ext.home", new java.io.File(
 				"./src/test/resources/ext").getAbsolutePath());
 
 		File f = new File(System.getProperty("user.home"),

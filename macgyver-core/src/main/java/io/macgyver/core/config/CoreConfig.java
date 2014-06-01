@@ -8,7 +8,7 @@ import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
 import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.Startup;
-import io.macgyver.core.VirtualFileSystem;
+import io.macgyver.core.VfsManager;
 import io.macgyver.core.auth.InternalUserManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
@@ -178,10 +178,10 @@ public class CoreConfig {
 	}
 
 	@Bean(name = "macVfsManager")
-	public VirtualFileSystem macVfsManager() throws FileSystemException,
+	public VfsManager macVfsManager() throws FileSystemException,
 			MalformedURLException {
 
-		VirtualFileSystem mgr = Bootstrap.getInstance().getVirtualFileSystem();
+		VfsManager mgr = Bootstrap.getInstance().getVfsManager();
 
 		logger.info("macVfsManager: {}", mgr);
 		return mgr;
@@ -205,7 +205,7 @@ public class CoreConfig {
 			return g;
 
 		} else {
-			FileObject obj = Bootstrap.getInstance().getVirtualFileSystem()
+			FileObject obj = Bootstrap.getInstance().getVfsManager()
 					.getDataLocation();
 			if (!(obj instanceof LocalFile)) {
 				throw new IllegalStateException(

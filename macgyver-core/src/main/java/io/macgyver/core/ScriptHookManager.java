@@ -19,7 +19,7 @@ public class ScriptHookManager {
 	Kernel kernel;
 
 	@Autowired
-	VirtualFileSystem vfsManager;
+	VfsManager vfsManager;
 	
 	public Object invokeHook(String name, Map<String, Object> data) throws IOException {
 		Preconditions.checkNotNull(name);

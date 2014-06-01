@@ -16,7 +16,7 @@ import com.google.common.io.Files;
 public class VfsManagerTest extends MacGyverIntegrationTest {
 
 	@Autowired
-	VirtualFileSystem vfsManager;
+	VfsManager vfsManager;
 
 	@Test
 	public void testConfigVfs() throws IOException {
@@ -90,24 +90,13 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 	@Test
 	public void testDataVfs() throws IOException {
 
-		File dataDir = new File("./src/test/resources/ext/data");
-		dataDir.mkdirs();
-		
-		File tempFile = new File(dataDir, ".junit_"
-				+ UUID.randomUUID().toString() + ".tmp");
-		Files.touch(tempFile);
-		try {
 
 			FileObject fo = vfsManager.getDataLocation();
 
-			Assert.assertTrue(tempFile.exists());
-
-			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
-			Assert.assertTrue(vfsTest2.exists());
-		} finally {
-			tempFile.delete();
-		}
-
+			
+			
+			Assert.assertTrue("location should exist: "+fo,fo.exists());
+	
 	}
 	
 

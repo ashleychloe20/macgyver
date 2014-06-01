@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.FileSystemException;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -29,7 +31,7 @@ public class Bootstrap {
 	Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
 	public static Bootstrap instance = new Bootstrap();
-	VirtualFileSystem vfsManager = null;
+	VfsManager vfsManager = null;
 
 	
 
@@ -46,28 +48,28 @@ public class Bootstrap {
 
 
 
-	public VirtualFileSystem getVirtualFileSystem() {
+	public VfsManager getVfsManager() {
 		return vfsManager;
 	}
 
 	private File determineExtensionDir() {
 		try {
-			String location = System.getProperty("macgyver.ext.location");
-
+			String location = System.getProperty("macgyver.ext.home");
 			if (!Strings.isNullOrEmpty(location)) {
 				return new File(location).getCanonicalFile();
 			}
-
+			location = System.getenv("MACGYVER_EXT_HOME");
+			if (!Strings.isNullOrEmpty(location)) {
+				return new File(location).getCanonicalFile();
+			}
+			
 			File extLocation = new File("./config");
 			if (extLocation.exists()) {
 				return extLocation.getParentFile().getCanonicalFile();
 			}
 
-			extLocation = new File("./src/test/resources/ext");
-			if (extLocation.exists()) {
-				return extLocation.getCanonicalFile();
-			}
-			throw new ConfigurationException("macgyver.ext.location not set");
+	
+			throw new ConfigurationException("macgyver.ext.dir not set");
 		} catch (IOException e) {
 			throw new ConfigurationException(e);
 		}
@@ -76,6 +78,42 @@ public class Bootstrap {
 
 	AtomicBoolean initialized = new AtomicBoolean(false);
 
+	protected FileObject findLocation(String name) throws org.apache.commons.vfs2.FileSystemException, MalformedURLException {
+		
+		String syspropKey = "macgyver."+name.toLowerCase()+".url";
+		String val = System.getProperty(syspropKey);
+		if (!Strings.isNullOrEmpty(val)) {
+			logger.info("resolved location ("+name+") via sysprop: "+syspropKey+"="+val);
+			return VFS.getManager().resolveFile(val);
+		}
+		
+		syspropKey = "macgyver."+name.toLowerCase()+".dir";
+		val = System.getProperty(syspropKey);
+		if (!Strings.isNullOrEmpty(val)) {
+			logger.info("resolved location ("+name+") via sysprop: "+syspropKey+"="+val);
+			return VFS.getManager().resolveFile(new File(val).toURI().toURL().toString());
+		}
+		
+		
+		String envKey = "MACGYVER_EXT_"+name.toUpperCase().trim()+"_URL";
+		val = System.getenv(envKey);
+		if (!Strings.isNullOrEmpty(val)) {
+			logger.info("resolved location ("+name+") via env var: "+envKey+"="+val);
+			return VFS.getManager().resolveFile(val);
+		}
+		
+		envKey = "MACGYVER_EXT_"+name.toUpperCase().trim()+"_DIR";
+		val = System.getenv(envKey);
+		if (!Strings.isNullOrEmpty(val)) {
+			logger.info("resolved location ("+name+") via env var: "+envKey+"="+val);
+			return VFS.getManager().resolveFile(new File(val).toURI().toURL().toString());
+		}
+	
+		
+		val = new File(determineExtensionDir(),name).getAbsolutePath();
+		logger.info("resolved location ("+name+") via macgyver.ext.home: "+val);
+		return VFS.getManager().resolveFile(val);
+	}
 	public synchronized void init() {
 		if (initialized.get()) {
 			throw new IllegalStateException("Already initialized");
@@ -84,16 +122,17 @@ public class Bootstrap {
 
 		File extDir = determineExtensionDir();
 		try {
-			FileObject configLocation = VFS.getManager().resolveFile(
-					new File(extDir, "config").toURI().toURL().toString());
-			FileObject scriptsLocation = VFS.getManager().resolveFile(
-					new File(extDir, "scripts").toURI().toURL().toString());
-			FileObject dataLocation = VFS.getManager().resolveFile(
-					new File(extDir, "data").toURI().toURL().toString());
-			FileObject webLocation = VFS.getManager().resolveFile(
-					new File(extDir, "web").toURI().toURL().toString());
+			FileObject configLocation = findLocation("config");
+			FileObject scriptsLocation = findLocation("scripts");
+			FileObject dataLocation = findLocation("data");
+			FileObject webLocation = findLocation("web");
+		
 
-			vfsManager = new VirtualFileSystem(configLocation, scriptsLocation,
+			logger.info("macgyver config  : {}",configLocation);
+			logger.info("macgyver scripts : {}",scriptsLocation);
+			logger.info("macgyver   data  : {}",dataLocation);
+			logger.info("macgyver    web  : {}",webLocation);
+			vfsManager = new VfsManager(configLocation, scriptsLocation,
 					dataLocation, webLocation);
 	
 

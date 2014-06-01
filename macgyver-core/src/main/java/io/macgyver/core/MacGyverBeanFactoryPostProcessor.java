@@ -37,7 +37,7 @@ public class MacGyverBeanFactoryPostProcessor implements
 	public void postProcessBeanFactory(
 			ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		try {
-		FileObject beansGroovyFile = Bootstrap.getInstance().getVirtualFileSystem().getConfigLocation().resolveFile("springConfig.groovy");
+		FileObject beansGroovyFile = Bootstrap.getInstance().getVfsManager().getConfigLocation().resolveFile("springConfig.groovy");
 		if (beansGroovyFile.exists()) {
 			logger.info("adding beans from: {}",beansGroovyFile);
 			GroovyBeanDefinitionReader gbdr = new GroovyBeanDefinitionReader(
