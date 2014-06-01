@@ -26,12 +26,16 @@ public class AppInstanceManager extends GraphRepository {
 	public synchronized Vertex getOrCreateAppInstanceVertex(String host,
 			String groupId, String appId) {
 
-		GraphQuery q = getGraph().query()
+		GraphQuery q = null;
+		
+		
+		q = getGraph().query().has(AppInstance.KEY_APP_ID,appId)
 				.has(AppInstance.KEY_VERTEX_TYPE, "AppInstance")
 				.has(AppInstance.KEY_HOST, host)
 				.has(AppInstance.KEY_GROUP_ID, groupId)
 				.has(AppInstance.KEY_APP_ID, appId);
-
+	
+		
 		Optional<Vertex> vo = findOneVertex(q);
 		if (vo.isPresent()) {
 

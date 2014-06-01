@@ -1,15 +1,14 @@
 package io.macgyver.core.graph;
 
-import com.tinkerpop.blueprints.TransactionalGraph;
-import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+import com.thinkaurelius.titan.core.TitanGraph;
 
-public class CoreIndexInitializer extends OrientGraphInitializer {
+public class CoreIndexInitializer extends TitanGraphInitailizer {
 
 	@Override
-	public void doInitOrientGraph(OrientGraph g) {
+	public void doInitTitanGraph(TitanGraph g) {
 		
-	
+		ensureUniqueVertexIndex("vertexId", String.class);
+		ensureVertexIndex("vertexType", String.class);
 	}
 	
 

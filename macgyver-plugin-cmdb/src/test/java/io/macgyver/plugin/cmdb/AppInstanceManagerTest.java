@@ -3,6 +3,7 @@ package io.macgyver.plugin.cmdb;
 import static org.junit.Assert.assertNotNull;
 import io.macgyver.test.MacGyverIntegrationTest;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.List;
@@ -19,9 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.util.io.graphson.GraphSONWriter;
 
 public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 	@Autowired
@@ -37,7 +38,7 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		
 		secureRandom = SecureRandom.getInstance("sha1prng");
 	}
-	@Test(expected = ORecordDuplicatedException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testUnique() {
 		String host = "unknown_" + System.currentTimeMillis();
 		String appId = "myapp";
@@ -106,23 +107,26 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		return secureRandom.nextInt();
 	}
 	@Test
-	public void testMultiThead() {
+	public void testMultiThead() throws IOException {
 
+		int threadCount=5;
 		long t0 = System.currentTimeMillis();
-
-		BlockingQueue<Runnable> q = new ArrayBlockingQueue<>(2000);
-		for (int i = 0; i < 2000; i++) {
+		int iterationCount=5000;
+		final int keySpace=5;
+		BlockingQueue<Runnable> q = new ArrayBlockingQueue<>(iterationCount);
+		for (int i = 0; i < iterationCount; i++) {
 			final Runnable r = new Runnable() {
 
 				@Override
 				public void run() {
-					String x = "id_" + (randomInt()% 200);
+					try {
+					String x = "id_" + (randomInt()% 20);
 					Vertex v = manager.getOrCreateAppInstanceVertex(x, x, x);
 					v.setProperty("someproperty_"
-							+ (new Random().nextInt() % 5), UUID.randomUUID()
+							+ (new Random().nextInt() % keySpace), UUID.randomUUID()
 							.toString());
 
-					try {
+					
 						manager.getGraph().commit();
 					} catch (RuntimeException e) {
 						logger.warn("problem committing transaction: {}",
@@ -134,20 +138,24 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 			q.add(r);
 		}
 
-		ThreadPoolExecutor x = new ThreadPoolExecutor(5, 5, 5,
+		ThreadPoolExecutor x = new ThreadPoolExecutor(threadCount, threadCount, 5,
 				TimeUnit.SECONDS, q);
 
 		x.prestartAllCoreThreads();
 
 		while (!q.isEmpty()) {
 			try {
-				Thread.sleep(500L);
+				Thread.sleep(10L);
 			} catch (Exception e) {
 			}
 		}
 
 		long t1 = System.currentTimeMillis();
-		System.out.println(t1 - t0);
+		long tdur = t1-t0;
+		logger.info("processed {} operations in {}ms using {} threads",iterationCount,tdur, threadCount);
+	
+		
+		GraphSONWriter.outputGraph(graph, System.out);
 	}
 
 }

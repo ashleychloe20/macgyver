@@ -1,6 +1,5 @@
 package io.macgyver.core.auth;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,11 +14,8 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.lambdaworks.crypto.SCryptUtil;
-import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
-import com.tinkerpop.blueprints.Parameter;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 public class InternalUserManager {
 
@@ -121,9 +117,9 @@ public class InternalUserManager {
 	@PostConstruct
 	public void initializeGraphDatabase() {
 		try {
-			OrientGraph og = (OrientGraph) graph;
-			og.createKeyIndex("macUsername", Vertex.class, new Parameter(
-					"type", "UNIQUE"));
+		//	OrientGraph og = (OrientGraph) graph;
+			//og.createKeyIndex("macUsername", Vertex.class, new Parameter(
+				//	"type", "UNIQUE"));
 		} catch (Exception e) {
 			logger.info(e.toString());
 		}

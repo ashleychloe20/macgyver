@@ -31,12 +31,10 @@ public class GraphRepository {
 
 	ObjectMapper mapper;
 
-	
-	
 	TransactionalGraph graph;
 
 	public GraphRepository() {
-	
+
 		mapper = createObjectMapper();
 	}
 
@@ -70,13 +68,15 @@ public class GraphRepository {
 		for (Map.Entry<String, Object> me : x.entrySet()) {
 			q = q.has(me.getKey(), me.getValue());
 		}
-		return findVertices(q,c);
+		return findVertices(q, c);
 	}
+
 	public Iterable<Vertex> findVertices(GraphQuery q) {
-		return findVertices(q,null);
+		return findVertices(q, null);
 	}
+
 	public Iterable<Vertex> findVertices(GraphQuery q, Comparator c) {
-		
+
 		Iterable<Vertex> v = q.vertices();
 		if (c != null && c instanceof VertexComparator) {
 
@@ -104,8 +104,7 @@ public class GraphRepository {
 		return findObjectNodes(x);
 	}
 
-	public Iterable<ObjectNode> findObjectNodes(GraphQuery q,
-			Comparator c) {
+	public Iterable<ObjectNode> findObjectNodes(GraphQuery q, Comparator c) {
 		Iterable<Vertex> vt = findVertices(q, c);
 
 		List<ObjectNode> list = Lists.newArrayList();
@@ -118,8 +117,9 @@ public class GraphRepository {
 			Collections.sort(list, c);
 		}
 		return list;
-	
+
 	}
+
 	public Iterable<ObjectNode> findObjectNodes(Map<String, Object> x,
 			Comparator c) {
 		return findObjectNodes(toGraphQuery(x), c);
@@ -135,6 +135,7 @@ public class GraphRepository {
 			return Optional.absent();
 		}
 	}
+
 	public Optional<ObjectNode> findOneObjectNode(Map<String, Object> x) {
 		return findOneObjectNode(toGraphQuery(x));
 
@@ -146,26 +147,28 @@ public class GraphRepository {
 		return findOneVertex(m);
 	}
 
+	
 	public Optional<Vertex> findOneVertex(GraphQuery q) {
-		
+
 		Iterator<Vertex> t = q.limit(1).vertices().iterator();
-		
+
 		if (t.hasNext()) {
-		
+
 			return Optional.of(t.next());
-			
+
 		} else {
-		
+
 			return Optional.absent();
-		}	
-		
+			
+		}
+
 	}
+
 	public Optional<Vertex> findOneVertex(Map<String, Object> x) {
 		GraphQuery q = toGraphQuery(x);
 
-	
 		return findOneVertex(q);
-	
+
 	}
 
 	ObjectNode toObjectNode(Vertex v) {
@@ -207,33 +210,33 @@ public class GraphRepository {
 	}
 
 	public <T> Optional<T> findOne(GraphQuery q, Class<? extends T> clazz) {
-		
-		
+
 		try {
 			Optional<ObjectNode> t = findOneObjectNode(q);
-		
+
 			if (!t.isPresent()) {
 				return Optional.absent();
 			}
 			JsonNode properties = t.get().path("properties");
-			return (Optional<T>) Optional
-					.of(mapper.treeToValue(properties, clazz));
+			return (Optional<T>) Optional.of(mapper.treeToValue(properties,
+					clazz));
 		} catch (Exception e) {
 			logger.debug("problem processing entity", e);
 			return Optional.absent();
 		}
 	}
+
 	public <T> Optional<T> findOne(Map<String, Object> m,
 			Class<? extends T> clazz) {
 		try {
 			Optional<ObjectNode> t = findOneObjectNode(m);
-		
+
 			if (!t.isPresent()) {
 				return Optional.absent();
 			}
 			JsonNode properties = t.get().path("properties");
-			return (Optional<T>) Optional
-					.of(mapper.treeToValue(properties, clazz));
+			return (Optional<T>) Optional.of(mapper.treeToValue(properties,
+					clazz));
 		} catch (Exception e) {
 			logger.debug("problem processing entity", e);
 			return Optional.absent();
@@ -252,6 +255,7 @@ public class GraphRepository {
 	public GraphQuery newQuery() {
 		return graph.query();
 	}
+
 	public TransactionalGraph getGraph() {
 		return graph;
 	}
@@ -262,20 +266,22 @@ public class GraphRepository {
 
 	public ObjectMapper createObjectMapper() {
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(
-				DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+				false);
 		return mapper;
 
 	}
+
 	public GraphQuery toGraphQuery(String key, Object val) {
 		return toGraphQuery(toKeyValueMap(key, val));
 	}
-	public GraphQuery toGraphQuery(Map<String,Object> m) {
+
+	public GraphQuery toGraphQuery(Map<String, Object> m) {
 		GraphQuery q = getGraph().query();
 		for (Map.Entry<String, Object> me : m.entrySet()) {
 			q = q.has(me.getKey(), me.getValue());
 		}
 		return q;
-		
+
 	}
 }

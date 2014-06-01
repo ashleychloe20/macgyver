@@ -16,10 +16,10 @@ public abstract class GraphInitializer {
 		doInit(graph);
 	}
 
-	public abstract void createVertexIndex(String pname);
-	public abstract void createUniqueVertexIndex(String pname);
-	
+	public abstract void ensureVertexIndex(String pname, Class<? extends Object> type);
+
+	public abstract void ensureUniqueVertexIndex(String pname, Class<? extends Object> type);
+
 	public abstract void doInit(TransactionalGraph graph);
-	
-	
+
 }

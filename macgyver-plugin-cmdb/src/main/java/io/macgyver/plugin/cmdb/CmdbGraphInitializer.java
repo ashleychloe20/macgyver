@@ -1,25 +1,25 @@
 package io.macgyver.plugin.cmdb;
 
-import io.macgyver.core.graph.OrientGraphInitializer;
+import com.thinkaurelius.titan.core.TitanGraph;
 
-import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+import io.macgyver.core.graph.TitanGraphInitailizer;
 
-public class CmdbGraphInitializer extends OrientGraphInitializer {
+public class CmdbGraphInitializer extends TitanGraphInitailizer {
 
 	public CmdbGraphInitializer() {
 
 	}
 
 	@Override
-	public void doInitOrientGraph(OrientGraph g) {
-		
-		g.commit();
-		createUniqueVertexIndex("vertexId");
-		createVertexIndex("host");
-		createVertexIndex("artifactId");
-		createVertexIndex("groupId");
-		
+	public void doInitTitanGraph(TitanGraph g) {
 
+		g.commit();
+
+		ensureVertexIndex("host", String.class);
+		ensureVertexIndex("artifactId", String.class);
+		ensureVertexIndex("groupId", String.class);
+
+		g.commit();
 	}
 
 }

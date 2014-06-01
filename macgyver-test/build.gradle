@@ -23,6 +23,7 @@ dependencies {
     compile "junit:junit:${JUNIT_VERSION}"
     compile "org.codehaus.groovy:groovy-all:${GROOVY_VERSION}"
     compile "com.google.guava:guava:${GUAVA_VERSION}"
+	compile 'org.kohsuke:wordnet-random-name:1.2'
     
 
 }

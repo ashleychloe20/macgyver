@@ -42,8 +42,8 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.google.common.io.Files;
 import com.ning.http.client.AsyncHttpClient;
+import com.thinkaurelius.titan.core.TitanFactory;
 import com.tinkerpop.blueprints.TransactionalGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 @Configuration
 public class CoreConfig {
@@ -189,19 +189,19 @@ public class CoreConfig {
 	}
 	@Bean(name = "macGraphRepository")
 	@Primary
-	public GraphRepository macGraphRepository() {
+	public GraphRepository macGraphRepository() throws MalformedURLException{
 		return new GraphRepository(macGraph());
 	}
 	@Bean(name = "macGraph", destroyMethod = "shutdown")
-	public TransactionalGraph macGraph() {
+	public TransactionalGraph macGraph() throws MalformedURLException{
 		if (isUnitTest()) {
 
 			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
-
-			conf.setProperty("storage.directory", Files.createTempDir().getAbsolutePath());
+			conf.setProperty("storage.backend","berkeleyje");
+			conf.setProperty("storage.directory",Files.createTempDir().getAbsolutePath());
 			conf.setProperty("cache.db-cache", true);
-			OrientGraph g = new OrientGraph("plocal:"+Files.createTempDir().getAbsolutePath());
-		
+			
+			TransactionalGraph g = TitanFactory.open(conf);
 			return g;
 
 		} else {
@@ -212,12 +212,15 @@ public class CoreConfig {
 						"data location must be local filesystem");
 			}
 			LocalFile file = (LocalFile) obj;
-			File dir = new java.io.File(file.getName().getPath(), "orientdb");
+			File dir = new java.io.File(file.getName().getPath(), "macgyver-titan-bdb");
 			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
-
+			conf.setProperty("storage.backend","berkeleyje");
+			
+		
+			conf.setProperty("cache.db-cache", true);
 			conf.setProperty("storage.directory", dir.getAbsolutePath());
 
-			OrientGraph g = new OrientGraph("plocal:"+dir.getAbsolutePath());
+			TransactionalGraph g = TitanFactory.open(conf);
 			return g;
 
 		}
