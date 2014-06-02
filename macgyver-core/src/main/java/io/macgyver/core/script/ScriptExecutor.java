@@ -2,8 +2,13 @@ package io.macgyver.core.script;
 
 import io.macgyver.core.Kernel;
 import io.macgyver.core.VfsManager;
+import io.macgyver.core.resource.Resource;
+import io.macgyver.core.resource.ResourceLoader;
+import io.macgyver.core.resource.provider.filesystem.FileSystemResourceLoader;
 import io.macgyver.core.service.ServiceRegistry;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -17,7 +22,6 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import org.apache.commons.vfs2.FileObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -27,20 +31,34 @@ import org.springframework.context.ApplicationContextAware;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Closer;
+import com.google.common.io.Files;
 import com.tinkerpop.blueprints.TransactionalGraph;
 
 public class ScriptExecutor implements ApplicationContextAware {
 
 	Logger logger = LoggerFactory.getLogger(ScriptExecutor.class);
 	Bindings bindings = new SimpleBindings();
-	
-	
+
 	ScriptException evalException;
 	Object evalResult;
 	ScriptContext scriptContext;
 
 	StringWriter outWriter;
 	StringWriter errWriter;
+	ResourceLoader scriptResourceLoader;
+
+	public ResourceLoader getScriptResourceLoader() {
+		if (scriptResourceLoader == null) {
+			VfsManager mgr = Kernel.getInstance().getApplicationContext()
+					.getBean(VfsManager.class);
+
+			
+			
+			scriptResourceLoader = new FileSystemResourceLoader(mgr.getScriptsLocation());
+		}
+		return scriptResourceLoader;
+		
+	}
 
 	public ScriptExecutor() {
 
@@ -71,46 +89,38 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 	}
 
-	public Object eval(String script, String language) throws ScriptException {
-		evalException = null;
-		evalResult = null;
-		try {
-			ScriptEngineManager factory = new ScriptEngineManager();
-			ScriptEngine engine = factory.getEngineByName(language);
-
-			scriptContext = engine.getContext();
-			outWriter = new StringWriter();
-			errWriter = new StringWriter();
-			scriptContext.setWriter(outWriter);
-			scriptContext.setErrorWriter(errWriter);
-
-			Bindings bindings = new SimpleBindings();
-			collectBindings(bindings, Optional.fromNullable(engine.getFactory()
-					.getLanguageName()));
-
-			engine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
-
-			Object response = engine.eval(script);
-
-			return response;
-		} catch (ScriptException e) {
-			this.evalException = e;
-			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).rollback();
-			throw e;
-		} finally {
-			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).commit();
-		}
-
-	}
-
-	public Object run(String arg) throws IOException{
+	/*
+	 * public Object eval(String script, String language) throws ScriptException
+	 * { evalException = null; evalResult = null; try { ScriptEngineManager
+	 * factory = new ScriptEngineManager(); ScriptEngine engine =
+	 * factory.getEngineByName(language);
+	 * 
+	 * scriptContext = engine.getContext(); outWriter = new StringWriter();
+	 * errWriter = new StringWriter(); scriptContext.setWriter(outWriter);
+	 * scriptContext.setErrorWriter(errWriter);
+	 * 
+	 * Bindings bindings = new SimpleBindings(); collectBindings(bindings,
+	 * Optional.fromNullable(engine.getFactory() .getLanguageName()));
+	 * 
+	 * engine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+	 * 
+	 * Object response = engine.eval(script);
+	 * 
+	 * return response; } catch (ScriptException e) { this.evalException = e;
+	 * throw e; } finally {
+	 * Kernel.getInstance().getApplicationContext().getBean(
+	 * TransactionalGraph.class).rollback(); }
+	 * 
+	 * }
+	 */
+	public Object run(String arg) throws IOException {
 		return run(arg, null, true);
 	}
 
-	public boolean isSupportedScript(FileObject f) {
+	public boolean isSupportedScript(File f) {
 		try {
 			ScriptEngineManager m = new ScriptEngineManager();
-			String extension = getExtension(f);
+			String extension = Files.getFileExtension(f.getName());
 			ScriptEngine engine = m.getEngineByExtension(extension);
 
 			return engine != null;
@@ -122,23 +132,29 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 	public Object run(String arg, Map<String, Object> vars,
 			boolean failIfNotFound) throws IOException {
-		
-		FileObject fo = Kernel.getInstance().getApplicationContext().getBean(VfsManager.class).getScriptsLocation();
-		
-		FileObject script = fo.resolveFile(arg);
-		
-		
-		return run(script, vars, failIfNotFound);
+
+		// FileObject fo =
+		// Kernel.getInstance().getApplicationContext().getBean(VfsManager.class).getScriptsLocation();
+
+		try {
+			Resource r = getScriptResourceLoader().getResource(arg);
+
+			return run(r, vars, failIfNotFound);
+		} catch (FileNotFoundException e) {
+			return null;
+		}
 	}
 
-	String getExtension(FileObject fo) {
-		Preconditions.checkNotNull(fo);
-		int idx = fo.toString().lastIndexOf(".");
-		return fo.toString().substring(idx + 1);
+	String getExtension(Resource r) throws IOException {
+		Preconditions.checkNotNull(r);
+		int idx = r.getVirtualName().lastIndexOf(".");
+		return r.getVirtualName().substring(idx + 1);
 	}
 
-	public Object run(FileObject f, Map<String, Object> vars,
+
+	public Object run(Resource f, Map<String, Object> vars,
 			boolean failIfNotFound) {
+
 		Closer closer = Closer.create();
 		Object rval = null;
 		try {
@@ -159,8 +175,8 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 			ApplicationContext ctx = Kernel.getInstance()
 					.getApplicationContext();
-
-			Reader fr = new InputStreamReader(f.getContent().getInputStream());
+			
+			Reader fr = new InputStreamReader(f.openInputStream());
 			closer.register(fr);
 
 			if (vars != null) {
@@ -175,13 +191,16 @@ public class ScriptExecutor implements ApplicationContextAware {
 			fr.close();
 
 		} catch (IOException e) {
-			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).commit();
+			Kernel.getInstance().getApplicationContext()
+					.getBean(TransactionalGraph.class).commit();
 			throw new ScriptExecutionException(e);
 		} catch (ScriptException e) {
-			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).commit();
+			Kernel.getInstance().getApplicationContext()
+					.getBean(TransactionalGraph.class).commit();
 			throw new ScriptExecutionException(e);
 		} catch (RuntimeException e) {
-			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).rollback();
+			Kernel.getInstance().getApplicationContext()
+					.getBean(TransactionalGraph.class).rollback();
 			throw new ScriptExecutionException(e);
 		} finally {
 			try {
@@ -189,10 +208,13 @@ public class ScriptExecutor implements ApplicationContextAware {
 			} catch (IOException e) {
 				logger.warn("problem closing reader", e);
 			}
-			Kernel.getInstance().getApplicationContext().getBean(TransactionalGraph.class).commit();
+			Kernel.getInstance().getApplicationContext()
+					.getBean(TransactionalGraph.class).commit();
 
 		}
 		return rval;
+
+		
 	}
 
 	public Bindings getBindings() {

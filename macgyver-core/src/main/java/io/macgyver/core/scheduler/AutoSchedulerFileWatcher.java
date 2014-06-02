@@ -45,7 +45,7 @@ public class AutoSchedulerFileWatcher implements Runnable {
 		try {
 			watcher = FileSystems.getDefault().newWatchService();
 			
-			Path p = VfsManager.asLocalFile(vfsManager.getScriptsLocation()).toPath();  // transitional
+			Path p = vfsManager.getScriptsLocation().toPath();  // transitional
 			
 			
 			WatchKey key = p.register(watcher, ENTRY_CREATE, ENTRY_DELETE,

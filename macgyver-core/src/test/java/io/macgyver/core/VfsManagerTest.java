@@ -6,7 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.apache.commons.vfs2.FileObject;
+import javax.tools.FileObject;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,29 +19,7 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 	@Autowired
 	VfsManager vfsManager;
 
-	@Test
-	public void testConfigVfs() throws IOException {
-
-		File configDir = new File("./src/test/resources/ext/config");
-		configDir.mkdirs();
-		
-		File tempFile = new File(configDir, ".junit_"
-				+ UUID.randomUUID().toString() + ".tmp");
-		Files.touch(tempFile);
-		try {
-
-			FileObject fo = vfsManager.getConfigLocation();
-
-			Assert.assertTrue(tempFile.exists());
-
-			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
-		
-			Assert.assertTrue(vfsTest2.exists());
-		} finally {
-			tempFile.delete();
-		}
-
-	}
+	
 	
 
 	
@@ -54,11 +33,11 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 		Files.touch(tempFile);
 		try {
 			
-			FileObject fo = vfsManager.getWebLocation();
+			File fo = vfsManager.getWebLocation();
 
 			Assert.assertTrue(tempFile.exists());
 
-			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
+			File vfsTest2 = vfsManager.resolveWeb(tempFile.getName());
 			Assert.assertTrue(vfsTest2.exists());
 		} finally {
 			tempFile.delete();
@@ -76,28 +55,17 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 		Files.touch(tempFile);
 		try {
 
-			FileObject fo = vfsManager.getScriptsLocation();
+			File fo = vfsManager.getScriptsLocation();
 
 			Assert.assertTrue(tempFile.exists());
 
-			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
-			Assert.assertTrue(vfsTest2.exists());
+			Assert.assertTrue(new File(fo,tempFile.getName()).exists());
 		} finally {
 			tempFile.delete();
 		}
 
 	}
-	@Test
-	public void testDataVfs() throws IOException {
-
-
-			FileObject fo = vfsManager.getDataLocation();
-
-			
-			
-			Assert.assertTrue("location should exist: "+fo,fo.exists());
 	
-	}
 	
 
 }

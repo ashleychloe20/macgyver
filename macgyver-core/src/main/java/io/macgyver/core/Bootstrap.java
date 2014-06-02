@@ -6,12 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.FileSystemException;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.VFS;
+import javax.tools.FileObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,41 +77,31 @@ public class Bootstrap {
 
 	AtomicBoolean initialized = new AtomicBoolean(false);
 
-	protected FileObject findLocation(String name) throws org.apache.commons.vfs2.FileSystemException, MalformedURLException {
+	protected File findLocation(String name) throws  MalformedURLException {
 		
-		String syspropKey = "macgyver."+name.toLowerCase()+".url";
+
+		
+		String syspropKey = "macgyver."+name.toLowerCase()+".dir";
 		String val = System.getProperty(syspropKey);
 		if (!Strings.isNullOrEmpty(val)) {
 			logger.info("resolved location ("+name+") via sysprop: "+syspropKey+"="+val);
-			return VFS.getManager().resolveFile(val);
-		}
-		
-		syspropKey = "macgyver."+name.toLowerCase()+".dir";
-		val = System.getProperty(syspropKey);
-		if (!Strings.isNullOrEmpty(val)) {
-			logger.info("resolved location ("+name+") via sysprop: "+syspropKey+"="+val);
-			return VFS.getManager().resolveFile(new File(val).toURI().toURL().toString());
+			return new File(val);
 		}
 		
 		
-		String envKey = "MACGYVER_EXT_"+name.toUpperCase().trim()+"_URL";
+	
+		
+		String envKey = "MACGYVER_EXT_"+name.toUpperCase().trim()+"_DIR";
 		val = System.getenv(envKey);
 		if (!Strings.isNullOrEmpty(val)) {
 			logger.info("resolved location ("+name+") via env var: "+envKey+"="+val);
-			return VFS.getManager().resolveFile(val);
-		}
-		
-		envKey = "MACGYVER_EXT_"+name.toUpperCase().trim()+"_DIR";
-		val = System.getenv(envKey);
-		if (!Strings.isNullOrEmpty(val)) {
-			logger.info("resolved location ("+name+") via env var: "+envKey+"="+val);
-			return VFS.getManager().resolveFile(new File(val).toURI().toURL().toString());
+			return new File(val);
 		}
 	
 		
 		val = new File(determineExtensionDir(),name).getAbsolutePath();
 		logger.info("resolved location ("+name+") via macgyver.ext.home: "+val);
-		return VFS.getManager().resolveFile(val);
+		return new File(val);
 	}
 	public synchronized void init() {
 		if (initialized.get()) {
@@ -122,10 +111,10 @@ public class Bootstrap {
 
 		File extDir = determineExtensionDir();
 		try {
-			FileObject configLocation = findLocation("config");
-			FileObject scriptsLocation = findLocation("scripts");
-			FileObject dataLocation = findLocation("data");
-			FileObject webLocation = findLocation("web");
+			File configLocation = findLocation("config");
+			File scriptsLocation = findLocation("scripts");
+			File dataLocation = findLocation("data");
+			File webLocation = findLocation("web");
 		
 
 			logger.info("macgyver config  : {}",configLocation);

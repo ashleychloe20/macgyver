@@ -3,10 +3,9 @@ package io.macgyver.core;
 import io.macgyver.core.auth.InternalAuthenticationProvider;
 import io.macgyver.core.script.ScriptExecutor;
 
+import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -51,7 +50,7 @@ public class Startup implements InitializingBean {
 	}
 
 	public void runInitScripts() throws IOException {
-		FileObject initScriptsFileObject = vfsManager.getScriptsLocation().resolveFile("init");
+		File initScriptsFileObject = vfsManager.resolveScript("init");
 		
 		
 		if (!initScriptsFileObject.exists() ) {
@@ -59,24 +58,25 @@ public class Startup implements InitializingBean {
 			return;
 		}
 		
-		FileObject [] childObjects = initScriptsFileObject.getChildren();
 		
-		for (int i=0; childObjects!=null && i<childObjects.length; i++) {
-			runInitScript(childObjects[i]);
+		
+		for (File child: initScriptsFileObject.listFiles()) {
+			runInitScript(child);
 		}
 	
 	}
 
-	public void runInitScript(FileObject f) throws IOException {
+	public void runInitScript(File f) throws IOException {
 		
 		
-		if (f.getType().equals(FileType.FOLDER)) {
+		if (f.isDirectory()) {
 			return;
 		}
 		ScriptExecutor se = new ScriptExecutor();
 		if (se.isSupportedScript(f)) {
 			try {
-				se.run(f, null, false);
+				// TODO FIXME
+		//		se.run(f, null, false);
 			}
 			catch (RuntimeException e) {
 				kernel.registerStartupError(e);

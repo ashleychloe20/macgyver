@@ -5,8 +5,7 @@ import io.macgyver.core.script.ScriptExecutor;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.VFS;
+
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -26,15 +25,13 @@ public class ScriptJob implements Job {
 		try {
 			String path = context.getJobDetail().getJobDataMap()
 					.getString(ScriptJob.SCRIPT_PATH_KEY);
-			File f = new File(path);
 
-			FileObject target = VFS.getManager().resolveFile(
-					f.getAbsoluteFile().toURI().toURL().toString());
-			logger.info("executing: " + target);
+			logger.info("executing: " + path);
 
 			ScriptExecutor executor = new ScriptExecutor();
-			executor.run(target, null, true);
-		} catch (IOException  e) {
+
+			executor.run(path, null, true);
+		} catch (IOException e) {
 			throw new JobExecutionException(e);
 		}
 	}

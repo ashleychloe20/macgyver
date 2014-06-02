@@ -1,42 +1,47 @@
 package io.macgyver.core;
 
 import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.provider.local.LocalFile;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 
 public class VfsManager {
 
-	private FileObject configLocation;
-	private FileObject scriptsLocation;
-	private FileObject dataLocation;
-	private FileObject webLocation;
 
-	public VfsManager(FileObject configLocation, FileObject scriptsLocation,
-			FileObject dataLocation, FileObject webLocation) {
+	private File configLocation;
+	private File scriptsLocation;
+	private File dataLocation;
+	private File webLocation;
+
+	public VfsManager(File configLocation, File scriptsLocation,
+			File dataLocation, File webLocation) {
 		this.configLocation = configLocation;
 		this.scriptsLocation = scriptsLocation;
 		this.dataLocation = dataLocation;
 		this.webLocation = webLocation;
 	}
 
-	public FileObject getConfigLocation() {
+	public File resolveConfig(String n) {
+		return new File(getConfigLocation(),n);
+	}
+	public File getConfigLocation() {
 		return configLocation;
 	}
 
-	public FileObject getScriptsLocation() {
+	public File resolveScript(String n) {
+		return new File(getScriptsLocation(),n);
+	}
+	public File getScriptsLocation() {
 		return scriptsLocation;
 	}
 
-	public FileObject getDataLocation() {
+	public File getDataLocation() {
 		return dataLocation;
 	}
 
-	public FileObject getWebLocation() {
+	public File resolveWeb(String n) {
+		return new File(getWebLocation(),n);
+	}
+	public File getWebLocation() {
 		return webLocation;
 	}
 
@@ -46,14 +51,5 @@ public class VfsManager {
 				.add("configLocation", configLocation).toString();
 	}
 
-	public static File asLocalFile(FileObject f) {
-		try {
-			Preconditions.checkArgument(f instanceof LocalFile,
-					"not an instance of LocalFile: " + f);
-
-			return new File(f.getURL().getFile());
-		} catch (IOException e) {
-			throw new IllegalArgumentException("could not obtain local file: "+f);
-		}
-	}
+	
 }

@@ -9,6 +9,7 @@ import io.macgyver.core.VfsManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -16,7 +17,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.vfs2.FileObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,9 +210,8 @@ public class ServiceRegistry {
 			IOException {
 		Properties p = new Properties();
 
-		FileObject configGroovy = applicationContext
-				.getBean(VfsManager.class).getConfigLocation()
-				.resolveFile("services.groovy");
+		File configGroovy = applicationContext
+				.getBean(VfsManager.class).resolveConfig("services.groovy");
 
 		logger.info("loading services from: {}",configGroovy);
 		ConfigSlurper slurper = new ConfigSlurper();
@@ -221,7 +220,7 @@ public class ServiceRegistry {
 		}
 
 		if (configGroovy.exists()) {
-			ConfigObject obj = slurper.parse(configGroovy.getURL());
+			ConfigObject obj = slurper.parse(configGroovy.toURI().toURL());
 
 			p = obj.toProperties();
 

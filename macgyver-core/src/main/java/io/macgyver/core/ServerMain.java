@@ -1,8 +1,8 @@
 package io.macgyver.core;
 
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.provider.local.LocalFile;
+import java.io.File;
+import java.net.MalformedURLException;
+
 import org.slf4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -28,21 +28,18 @@ public class ServerMain {
 
 	public static String computeTemplateRoots() {
 		try {
-			FileObject webFileObject = Bootstrap.getInstance()
-					.getVfsManager().getWebLocation();
+			File webDir = Bootstrap.getInstance().getVfsManager()
+					.getWebLocation();
 			String templateRoots = "classpath:/web/templates";
-			if (!(webFileObject instanceof LocalFile)) {
-				throw new IllegalStateException(
-						"macgyver.ext web dir must resolve to local dir");
-			} else {
-				LocalFile lf = (LocalFile) webFileObject;
-				templateRoots = lf.getURL().toString() + "," + templateRoots;
-			}
+
+			templateRoots = webDir.toURI().toURL().toString() + ","
+					+ templateRoots;
+
 			return templateRoots;
-		} catch (FileSystemException e) {
-			throw new MacGyverConfigurationException(
-					"could not set up GSP template paths", e);
+		} catch (MalformedURLException e) {
+			throw new ConfigurationException(e);
 		}
+
 	}
 
 	public static void main(String[] args) throws Exception {

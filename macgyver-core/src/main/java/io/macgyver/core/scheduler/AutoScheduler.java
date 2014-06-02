@@ -21,8 +21,6 @@ import java.util.UUID;
 import javax.json.Json;
 import javax.json.JsonObject;
 
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.VFS;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
@@ -135,7 +133,7 @@ public class AutoScheduler implements InitializingBean {
 				Optional<JsonObject> schedule = extractCronExpression(file
 						.toFile());
 				
-				FileObject fobj = VFS.getManager().resolveFile(file.toFile().toURI().toURL().toString());
+				File fobj = file.toFile();
 				if (schedule.isPresent() && se.isSupportedScript(fobj)) {
 					JsonObject descriptor = schedule.get();
 				
@@ -166,7 +164,7 @@ public class AutoScheduler implements InitializingBean {
 			}
 		};
 
-		File scriptsDir = VfsManager.asLocalFile(vfsManager.getScriptsLocation().resolveFile("scheduler"));  // Transitional
+		File scriptsDir = vfsManager.resolveScript("scheduler");  // Transitional
 
 		logger.debug("scanning: {}",scriptsDir);
 		

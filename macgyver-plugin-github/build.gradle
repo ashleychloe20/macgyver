@@ -15,7 +15,7 @@ configurations {
 
 dependencies {
 
-    compile 'org.kohsuke:github-api:1.47'
+    compile 'org.kohsuke:github-api:1.53'
     testCompile project(':macgyver-test')
 	 compile project(':macgyver-core')
 

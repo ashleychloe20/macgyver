@@ -25,11 +25,6 @@ import java.net.MalformedURLException;
 import java.util.Properties;
 
 import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileSystemManager;
-import org.apache.commons.vfs2.VFS;
-import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,14 +167,10 @@ public class CoreConfig {
 		return new InternalUserManager();
 	}
 
-	@Bean(name = "macFileSystemManager")
-	public FileSystemManager macFileSystemManager() throws FileSystemException {
-		return VFS.getManager();
-	}
+
 
 	@Bean(name = "macVfsManager")
-	public VfsManager macVfsManager() throws FileSystemException,
-			MalformedURLException {
+	public VfsManager macVfsManager() {
 
 		VfsManager mgr = Bootstrap.getInstance().getVfsManager();
 
@@ -205,14 +196,11 @@ public class CoreConfig {
 			return g;
 
 		} else {
-			FileObject obj = Bootstrap.getInstance().getVfsManager()
+			File dataDir = Bootstrap.getInstance().getVfsManager()
 					.getDataLocation();
-			if (!(obj instanceof LocalFile)) {
-				throw new IllegalStateException(
-						"data location must be local filesystem");
-			}
-			LocalFile file = (LocalFile) obj;
-			File dir = new java.io.File(file.getName().getPath(), "macgyver-titan-bdb");
+			
+	
+			File dir = new java.io.File(dataDir, "macgyver-titan-bdb");
 			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
 			conf.setProperty("storage.backend","berkeleyje");
 			
