@@ -2,6 +2,8 @@ package io.macgyver.core.scheduler;
 
 import io.macgyver.core.Kernel;
 import io.macgyver.core.VfsManager;
+import io.macgyver.core.resource.Resource;
+import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.script.ScriptExecutor;
 
 import java.io.File;
@@ -15,6 +17,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,7 +44,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.MapMaker;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
 
 public class AutoScheduler implements InitializingBean {
@@ -54,8 +60,10 @@ public class AutoScheduler implements InitializingBean {
 	Kernel kernel;
 
 	@Autowired
-	VfsManager vfsManager;
-	
+	ExtensionResourceProvider extensionLoader;
+
+	Map<String, Resource> scriptResourceMap = Maps.newConcurrentMap();
+
 	public static String AUTO_SCHEDULER_GROUP = "AUTO_SCHEDULER";
 
 	public static class CrontabLineProcessor implements
@@ -96,7 +104,7 @@ public class AutoScheduler implements InitializingBean {
 		@Override
 		public void execute(JobExecutionContext context)
 				throws JobExecutionException {
-	
+
 			try {
 				Kernel.getInstance().getApplicationContext()
 						.getBean(AutoScheduler.class).scan();
@@ -113,70 +121,40 @@ public class AutoScheduler implements InitializingBean {
 		String scanId = UUID.randomUUID().toString();
 
 		final List<ScheduledScript> list = Lists.newArrayList();
-		final FileVisitor fv = new SimpleFileVisitor<Path>() {
-
-			
-
-			@Override
-			public FileVisitResult preVisitDirectory(final Path dir,
-					BasicFileAttributes attrs) throws IOException {
-				// TODO Auto-generated method stub
-				return FileVisitResult.CONTINUE;
-			}
-
-			@Override
-			public FileVisitResult visitFile(Path file,
-					BasicFileAttributes attrs) throws IOException {
-				logger.debug("scanning: {}",file);
-				ScriptExecutor se = new ScriptExecutor();
-				// TODO Auto-generated method stub
-				Optional<JsonObject> schedule = extractCronExpression(file
-						.toFile());
-				
-				File fobj = file.toFile();
-				if (schedule.isPresent() && se.isSupportedScript(fobj)) {
-					JsonObject descriptor = schedule.get();
-				
-					if (descriptor.containsKey("cron")) {
-						String cronExpression = schedule.get()
-								.getString("cron");
-
-						ScheduledScript ss = new ScheduledScript(file.toFile(),
-								cronExpression);
-
-						list.add(ss);
+		ScriptExecutor se = new ScriptExecutor();
+		for (Resource r : extensionLoader.findFileResources()) {
+			if (r.getPath().startsWith("scripts/scheduler/")) {
+				logger.info("scanning {} {}", r, r.getHash());
+				Optional<JsonObject> schedule = extractCronExpression(r);
+				if (schedule.isPresent()) {
+					if (se.isSupportedScript(r)) {
+						JsonObject descriptor = schedule.get();
+						if (descriptor.containsKey("cron")) {
+							String cronExpression = schedule.get().getString(
+									"cron");
+							ScheduledScript ss = new ScheduledScript(r,
+									cronExpression);
+							list.add(ss);
+						}
+					} else {
+						logger.warn("script type not supported: {}", r);
 					}
-
+				} else {
+					logger.info("script does not have scheduler directive: {}",
+							r);
 				}
-				return FileVisitResult.CONTINUE;
 			}
-
-			@Override
-			public FileVisitResult visitFileFailed(Path file, IOException exc)
-					throws IOException {
-				return FileVisitResult.CONTINUE;
-			}
-
-			@Override
-			public FileVisitResult postVisitDirectory(Path dir, IOException exc)
-					throws IOException {
-				return FileVisitResult.CONTINUE;
-			}
-		};
-
-		File scriptsDir = vfsManager.resolveScript("scheduler");  // Transitional
-
-		logger.debug("scanning: {}",scriptsDir);
-		
-		Files.walkFileTree(scriptsDir.toPath(), fv);
+		}
 
 		for (ScheduledScript ss : list) {
 			try {
+
 				scheduleScript(ss, validJobKeySet);
 			} catch (Exception e) {
 				logger.error("problem scheduling {} - {}", ss, e.toString());
 			}
 		}
+
 		prune(validJobKeySet);
 
 	}
@@ -184,7 +162,7 @@ public class AutoScheduler implements InitializingBean {
 	@SuppressWarnings("unchecked")
 	public void scheduleScript(ScheduledScript s, Set<JobKey> validSet)
 			throws SchedulerException, IOException, ParseException {
-
+		scriptResourceMap.put(s.getJobKey().toString(), s.resource);
 		JobDetail jd = scheduler.getJobDetail(s.getJobKey());
 		if (jd != null) {
 
@@ -203,7 +181,7 @@ public class AutoScheduler implements InitializingBean {
 						scheduler.deleteJob(s.getJobKey());
 						jd = null;
 					} else {
-						// already registered
+						logger.info("job already registered: {}", s);
 					}
 				}
 			}
@@ -215,10 +193,11 @@ public class AutoScheduler implements InitializingBean {
 					.ofType(ScriptJob.class)
 					.withIdentity(s.getJobKey())
 					.usingJobData(ScriptJob.SCRIPT_PATH_KEY,
-							s.scriptFile.getCanonicalPath()).build();
+							s.getJobKey().toString()).build();
+
 			CronTriggerImpl cti = new CronTriggerImpl();
 			cti.setCronExpression(s.cronExpression);
-			cti.setName(UUID.randomUUID().toString());
+			cti.setName(s.resource.getHash());
 			scheduler.scheduleJob(jd, cti);
 		}
 
@@ -242,11 +221,12 @@ public class AutoScheduler implements InitializingBean {
 
 	public static final String SCHEDULE_TOKEN = "#@Schedule";
 
-	public static Optional<JsonObject> extractCronExpression(File f)
+	public static Optional<JsonObject> extractCronExpression(Resource r)
 			throws IOException {
 
-		return com.google.common.io.Files.readLines(f, Charsets.UTF_8,
-				new CrontabLineProcessor());
+		try (StringReader sr = new StringReader(r.getContentAsString())) {
+			return CharStreams.readLines(sr, new CrontabLineProcessor());
+		}
 
 	}
 
@@ -259,11 +239,13 @@ public class AutoScheduler implements InitializingBean {
 				if (!validKeys.contains(key)) {
 					logger.info("deleting job: {}", key);
 					scheduler.deleteJob(key);
+					scriptResourceMap.remove(key.toString());
 				}
 			}
 		} catch (SchedulerException e) {
 			logger.warn("", e);
 		}
+
 	}
 
 }

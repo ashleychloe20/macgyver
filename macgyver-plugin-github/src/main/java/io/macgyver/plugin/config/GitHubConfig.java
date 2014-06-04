@@ -1,6 +1,6 @@
 package io.macgyver.plugin.config;
 
-import io.macgyver.github.GitHubServiceFactory;
+import io.macgyver.plugin.github.GitHubServiceFactory;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

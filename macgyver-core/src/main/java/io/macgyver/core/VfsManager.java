@@ -27,17 +27,14 @@ public class VfsManager {
 		return configLocation;
 	}
 
-	public File resolveScript(String n) {
-		return new File(getScriptsLocation(),n);
-	}
-	public File getScriptsLocation() {
-		return scriptsLocation;
-	}
+
 
 	public File getDataLocation() {
 		return dataLocation;
 	}
-
+	public File resolveData(String n) {
+		return new File(getDataLocation(),n);
+	}
 	public File resolveWeb(String n) {
 		return new File(getWebLocation(),n);
 	}

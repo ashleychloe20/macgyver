@@ -1,4 +1,4 @@
-package io.macgyver.github;
+package io.macgyver.plugin.github;
 
 import io.macgyver.core.service.BasicServiceFactory;
 import io.macgyver.core.service.ServiceDefinition;

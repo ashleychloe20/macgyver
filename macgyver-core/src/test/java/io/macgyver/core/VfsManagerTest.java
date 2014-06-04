@@ -1,5 +1,7 @@
 package io.macgyver.core;
 
+import io.macgyver.core.resource.Resource;
+import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.io.File;
@@ -20,7 +22,8 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 	VfsManager vfsManager;
 
 	
-	
+	@Autowired
+	ExtensionResourceProvider resourceLoader;
 
 	
 	@Test
@@ -55,11 +58,13 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 		Files.touch(tempFile);
 		try {
 
-			File fo = vfsManager.getScriptsLocation();
-
+			Resource r = resourceLoader.getResource("scripts/"+tempFile.getName());
+			
+			Assert.assertNotNull(r);
+			
 			Assert.assertTrue(tempFile.exists());
 
-			Assert.assertTrue(new File(fo,tempFile.getName()).exists());
+	
 		} finally {
 			tempFile.delete();
 		}

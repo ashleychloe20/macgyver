@@ -1,6 +1,8 @@
 package io.macgyver.core;
 
 import io.macgyver.core.auth.InternalAuthenticationProvider;
+import io.macgyver.core.resource.Resource;
+import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.script.ScriptExecutor;
 
 import java.io.File;
@@ -30,7 +32,7 @@ public class Startup implements InitializingBean {
 	InternalAuthenticationProvider internalAuthenticationProvider;
 
 	@Autowired
-	VfsManager vfsManager;
+	ExtensionResourceProvider resourceLoader;
 	
 	@Subscribe
 	public void onStart(ContextRefreshedEvent event) throws IOException {
@@ -50,40 +52,32 @@ public class Startup implements InitializingBean {
 	}
 
 	public void runInitScripts() throws IOException {
-		File initScriptsFileObject = vfsManager.resolveScript("init");
 		
+		for (Resource r: resourceLoader.findFileResources()) {
+			if (r.getPath().startsWith("scripts/init/")) {
+				runInitScript(r);
+			}
 		
-		if (!initScriptsFileObject.exists() ) {
-			logger.info("init scripts dir does not exist: {}", initScriptsFileObject);
-			return;
 		}
 		
-		
-		
-		for (File child: initScriptsFileObject.listFiles()) {
-			runInitScript(child);
-		}
-	
+
 	}
 
-	public void runInitScript(File f) throws IOException {
+	public void runInitScript(Resource resource) throws IOException {
 		
 		
-		if (f.isDirectory()) {
-			return;
-		}
+	
 		ScriptExecutor se = new ScriptExecutor();
-		if (se.isSupportedScript(f)) {
+		if (se.isSupportedScript(resource)) {
 			try {
-				// TODO FIXME
-		//		se.run(f, null, false);
+				se.run(resource, null, false);
 			}
 			catch (RuntimeException e) {
 				kernel.registerStartupError(e);
 				throw e;
 			}
 		} else {
-			logger.info("ignoring file in init script dir: {}", f);
+			logger.info("ignoring file in init script dir: {}", resource);
 		}
 	}
 

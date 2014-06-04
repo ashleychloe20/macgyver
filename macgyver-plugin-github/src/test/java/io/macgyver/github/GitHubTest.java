@@ -1,6 +1,7 @@
 package io.macgyver.github;
 
 import io.macgyver.core.service.ServiceRegistry;
+import io.macgyver.plugin.github.GitHubServiceFactory;
 import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.io.IOException;
@@ -32,35 +33,6 @@ public class GitHubTest extends MacGyverIntegrationTest {
 		Assert.assertNotNull(githubServiceFactory);
 	}
 	
-	@Test
-	public void testY() throws IOException {
-	
-		GitHub gh = GitHub.connectToEnterprise(getPrivateProperty("github.api.url"), getPrivateProperty("github.api.oauthToken"));
-		
-		
-		Assert.assertNotNull(gh);
-		
-		GHOrganization org = gh.getOrganization("OPS");
-		
-	/*
-		
-		for (GHRepository repo: org.listRepositories()) {
-			System.out.println(repo);
-		}
-		*/
-		
-	
-		GHRepository x2 = gh.getRepository("OPS/macgyver-toolbox");
-		
-		System.out.println(x2);
-	
-		for (GHContent c: x2.getDirectoryContent("scripts/scheduler","refs/heads/master")) {
-			System.out.println(c.getPath());
-			System.out.println(c.isDirectory());
-			System.out.println(c.getSha());
 
-		}
-		
-	}
 
 }

@@ -1,4 +1,4 @@
-package io.macgyver.git;
+package io.macgyver.plugin.git;
 
 import io.macgyver.test.MacGyverIntegrationTest;
 

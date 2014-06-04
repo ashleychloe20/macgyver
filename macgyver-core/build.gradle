@@ -51,6 +51,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security:${SPRING_BOOT_VERSION}")
     compile "org.springframework.security:spring-security-ldap:${SPRING_SECURITY_VERSION}"
 
+	compile 'net.lingala.zip4j:zip4j:1.3.2'
 
     compile("org.codehaus.groovy:groovy-all:2.3.1")
     compile("org.grails:grails-gsp-spring-boot:1.0.0.RC1")  {

@@ -42,20 +42,7 @@ public class AutoSchedulerFileWatcher implements Runnable {
 	@PostConstruct
 	public void init() {
 
-		try {
-			watcher = FileSystems.getDefault().newWatchService();
-			
-			Path p = vfsManager.getScriptsLocation().toPath();  // transitional
-			
-			
-			WatchKey key = p.register(watcher, ENTRY_CREATE, ENTRY_DELETE,
-					ENTRY_MODIFY);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		Thread t = new Thread(this, "AutoSchedulerWatcher");
-		t.start();
+	
 	}
 
 	@Override

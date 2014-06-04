@@ -15,7 +15,9 @@ import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 import io.macgyver.core.graph.CoreIndexInitializer;
 import io.macgyver.core.graph.GraphRepository;
+import io.macgyver.core.resource.provider.filesystem.FileSystemResourceProvider;
 import io.macgyver.core.script.BindingSupplierManager;
+import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.service.ServiceRegistry;
 
 import java.io.File;
@@ -29,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration.GitInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -196,11 +199,10 @@ public class CoreConfig {
 			return g;
 
 		} else {
-			File dataDir = Bootstrap.getInstance().getVfsManager()
-					.getDataLocation();
+			File dir = Bootstrap.getInstance().getVfsManager().resolveData("macgyver-titan-bdb");
 			
-	
-			File dir = new java.io.File(dataDir, "macgyver-titan-bdb");
+			
+		
 			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
 			conf.setProperty("storage.backend","berkeleyje");
 			
@@ -218,5 +220,17 @@ public class CoreConfig {
 	@Bean
 	public CoreIndexInitializer macCoreIndexInitializer() {
 		return new CoreIndexInitializer();
+	}
+	
+	@Bean
+	public ExtensionResourceProvider macExtensionResourceLoader() {
+		ExtensionResourceProvider loader = new ExtensionResourceProvider();
+		
+		FileSystemResourceProvider fsLoader = new FileSystemResourceProvider(Bootstrap.getInstance().getExtensionDir());
+		loader.addResourceLoader(fsLoader);
+		
+		
+		
+		return loader;
 	}
 }

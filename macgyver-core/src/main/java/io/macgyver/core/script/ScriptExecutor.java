@@ -3,8 +3,8 @@ package io.macgyver.core.script;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.VfsManager;
 import io.macgyver.core.resource.Resource;
-import io.macgyver.core.resource.ResourceLoader;
-import io.macgyver.core.resource.provider.filesystem.FileSystemResourceLoader;
+import io.macgyver.core.resource.ResourceProvider;
+import io.macgyver.core.resource.provider.filesystem.FileSystemResourceProvider;
 import io.macgyver.core.service.ServiceRegistry;
 
 import java.io.File;
@@ -45,19 +45,10 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 	StringWriter outWriter;
 	StringWriter errWriter;
-	ResourceLoader scriptResourceLoader;
 
-	public ResourceLoader getScriptResourceLoader() {
-		if (scriptResourceLoader == null) {
-			VfsManager mgr = Kernel.getInstance().getApplicationContext()
-					.getBean(VfsManager.class);
-
-			
-			
-			scriptResourceLoader = new FileSystemResourceLoader(mgr.getScriptsLocation());
-		}
-		return scriptResourceLoader;
+	public ExtensionResourceProvider getExtensionResourceLoader() {
 		
+		return Kernel.getInstance().getApplicationContext().getBean(ExtensionResourceProvider.class);
 	}
 
 	public ScriptExecutor() {
@@ -117,10 +108,10 @@ public class ScriptExecutor implements ApplicationContextAware {
 		return run(arg, null, true);
 	}
 
-	public boolean isSupportedScript(File f) {
+	public boolean isSupportedScript(Resource f) {
 		try {
 			ScriptEngineManager m = new ScriptEngineManager();
-			String extension = Files.getFileExtension(f.getName());
+			String extension = Files.getFileExtension(f.getPath());
 			ScriptEngine engine = m.getEngineByExtension(extension);
 
 			return engine != null;
@@ -133,22 +124,24 @@ public class ScriptExecutor implements ApplicationContextAware {
 	public Object run(String arg, Map<String, Object> vars,
 			boolean failIfNotFound) throws IOException {
 
-		// FileObject fo =
-		// Kernel.getInstance().getApplicationContext().getBean(VfsManager.class).getScriptsLocation();
-
+	
 		try {
-			Resource r = getScriptResourceLoader().getResource(arg);
-
+			Resource r = getExtensionResourceLoader().getResource("scripts/"+arg);
+			logger.info("found scriptResource: "+r);
 			return run(r, vars, failIfNotFound);
 		} catch (FileNotFoundException e) {
+			logger.warn("resource not found: "+arg);
+			if (failIfNotFound) {
+				throw e;
+			}
 			return null;
 		}
 	}
 
 	String getExtension(Resource r) throws IOException {
 		Preconditions.checkNotNull(r);
-		int idx = r.getVirtualName().lastIndexOf(".");
-		return r.getVirtualName().substring(idx + 1);
+		int idx = r.getPath().lastIndexOf(".");
+		return r.getPath().substring(idx + 1);
 	}
 
 

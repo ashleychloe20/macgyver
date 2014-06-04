@@ -25,7 +25,7 @@ public class ScriptHookManager {
 
 		Preconditions.checkNotNull(name);
 
-		String vname = "scripts/hooks/" + name + ".groovy";
+		String vname = "hooks/" + name + ".groovy";
 
 		logger.info("running hook script: {}", vname);
 		logger.info("hook script vars: {}", data);

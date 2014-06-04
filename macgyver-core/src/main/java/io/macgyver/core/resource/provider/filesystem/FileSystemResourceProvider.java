@@ -1,22 +1,25 @@
 package io.macgyver.core.resource.provider.filesystem;
 
 import io.macgyver.core.resource.Resource;
-import io.macgyver.core.resource.ResourceLoader;
+import io.macgyver.core.resource.ResourceProvider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.TreeTraverser;
 import com.google.common.io.Files;
 
-public class FileSystemResourceLoader extends ResourceLoader {
-
+public class FileSystemResourceProvider extends ResourceProvider {
+	Logger logger = LoggerFactory.getLogger(FileSystemResourceProvider.class);
 	File rootDir;
 
-	public FileSystemResourceLoader(File rootDir) {
+	public FileSystemResourceProvider(File rootDir) {
 		this.rootDir = rootDir;
 	}
 
@@ -37,6 +40,7 @@ public class FileSystemResourceLoader extends ResourceLoader {
 				while (virtualPath.startsWith("/")) {
 					virtualPath = virtualPath.substring(1);
 				}
+				virtualPath = removePrefix(virtualPath);
 				FileSystemResource fsr = new FileSystemResource(this,
 						virtualPath, f.getCanonicalFile());
 				tmp.add(fsr);
@@ -48,7 +52,9 @@ public class FileSystemResourceLoader extends ResourceLoader {
 
 	@Override
 	public Resource getResource(String path) throws IOException {
-		File f = new File(rootDir,path);
+		String translatedPath = addPrefix(path);
+		File f = new File(rootDir, translatedPath);
+		logger.info("looking for " + f);
 		if (!f.exists()) {
 			throw new FileNotFoundException(f.getAbsolutePath());
 		}
