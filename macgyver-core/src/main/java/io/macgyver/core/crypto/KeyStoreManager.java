@@ -96,7 +96,9 @@ public class KeyStoreManager {
 		try {
 			File keyStoreLocation = getKeyStoreLocation();
 			if (!keyStoreLocation.exists()) {
-				
+				if (!keyStoreLocation.getParentFile().exists()) {
+					keyStoreLocation.getParentFile().mkdirs();
+				}
 				KeyStore ks = KeyStore.getInstance("JCEKS");
 				ks.load(null, getKeyStorePassword());
 
@@ -104,6 +106,7 @@ public class KeyStoreManager {
 				ks.setKeyEntry(keyAlias, createAESSecretKey(),
 						getPasswordForKey(keyAlias), null);
 
+				
 				OutputStream out = new FileOutputStream(keyStoreLocation);
 				closer.register(out);
 			
