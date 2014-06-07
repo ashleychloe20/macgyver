@@ -40,7 +40,7 @@ public class GitResourceProviderTest {
 		provider.close();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = IOException.class)
 	public void testInvalidRef() throws IOException {
 
 		provider.setGitRef("abcdef12345");

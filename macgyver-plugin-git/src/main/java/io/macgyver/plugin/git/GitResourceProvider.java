@@ -1,9 +1,11 @@
 package io.macgyver.plugin.git;
 
+import io.macgyver.core.resource.Resource;
+import io.macgyver.core.resource.ResourceProvider;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -11,10 +13,7 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.ObjectStream;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
@@ -24,20 +23,11 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
-
-import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.io.CharStreams;
 import com.google.common.io.Files;
-
-import io.macgyver.core.Kernel;
-import io.macgyver.core.resource.Resource;
-import io.macgyver.core.resource.ResourceProvider;
-import io.macgyver.core.service.ServiceRegistry;
 
 public class GitResourceProvider extends ResourceProvider {
 
