@@ -9,6 +9,7 @@ public class CoreIndexInitializer extends TitanGraphInitailizer {
 		
 		ensureUniqueVertexIndex("vertexId", String.class);
 		ensureVertexIndex("vertexType", String.class);
+		ensureUniqueVertexIndex("macUsername", String.class);
 	}
 	
 
