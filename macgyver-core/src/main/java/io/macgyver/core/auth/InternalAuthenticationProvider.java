@@ -87,7 +87,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 			logger.info("admin user already exists");
 		}
 		else {
-			List<String> roleList = Lists.newArrayList("ROLE_MACGYVER_SHELL","ROLE_MACGYVER_UI", "ROLE_MACGYVER_ADMIN");
+			List<String> roleList = Lists.newArrayList("ROLE_MACGYVER_SHELL","ROLE_MACGYVER_UI", "ROLE_MACGYVER_ADMIN","ROLE_MACGYVER_USER");
 			
 			userManager.createUser("admin", roleList);
 			userManager.setPassword("admin", "admin");

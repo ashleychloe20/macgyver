@@ -28,3 +28,4 @@ macgyver-core-revision.properties
 macgyver-cmdb/src/test/resources/ext/data
 **/src/test/resources/ext/data/*
 macgyver-core/data/
+macgyver-titan-bdb/

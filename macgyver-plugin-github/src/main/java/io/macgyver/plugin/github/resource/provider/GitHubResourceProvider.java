@@ -118,4 +118,10 @@ public class GitHubResourceProvider extends ResourceProvider {
 		}
 		return a+"/"+b;
 	}
+
+	@Override
+	public void refresh() {
+		// do nothing
+		
+	}
 }

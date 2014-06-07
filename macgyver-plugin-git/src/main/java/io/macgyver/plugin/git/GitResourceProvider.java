@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.FetchCommand;
@@ -44,16 +45,19 @@ public class GitResourceProvider extends ResourceProvider {
 
 	Optional<GitRepository> gitRepository = Optional.absent();
 
+	long lastRefreshTime=0;
+	
+	long fetchIntervalMillis = TimeUnit.SECONDS.toMillis(300);
+	
 	Git git;
 	Repository repo;
 
 	String ref = "refs/heads/master";
 
-	Optional<String> serviceName = Optional.absent();
-
 	protected GitResourceProvider() {
-		
+
 	}
+
 	public GitResourceProvider(String url, String username, String password) {
 		GitRepository gitRepository = new GitRepository();
 		gitRepository.setUrl(url);
@@ -63,26 +67,20 @@ public class GitResourceProvider extends ResourceProvider {
 	}
 
 	public GitResourceProvider(String url) {
-		this(url,null,null);
-	}
-	
-	public static GitResourceProvider forGitRepositoryService(String name) {
-		GitResourceProvider p = new GitResourceProvider();
-		p.serviceName = Optional.of(name);
-		return p;
-	}
-	public GitRepository getGitRepository() {
-		if (serviceName.isPresent()) {
-			ServiceRegistry reg = Kernel.getInstance().getApplicationContext().getBean(ServiceRegistry.class);
-			return (GitRepository) reg.get(serviceName.get());
-		}
-		else {
-			return gitRepository.get();
-		}
-		
+		this(url, null, null);
 	}
 
-	public String getRef() {
+	public GitResourceProvider(GitRepository r) {
+		gitRepository = Optional.of(r);
+	}
+
+	public GitRepository getGitRepository() {
+
+		return gitRepository.get();
+
+	}
+
+	public String getGitRef() {
 		return ref;
 	}
 
@@ -92,11 +90,8 @@ public class GitResourceProvider extends ResourceProvider {
 		return repo.resolve(ref);
 	}
 
-	public void selectRef(String ref) throws IOException {
-		ObjectId id = resolveRef(ref);
-		if (id == null) {
-			throw new IllegalArgumentException("could not resolve ref: " + ref);
-		}
+	public void setGitRef(String ref)  {
+		this.ref = ref;
 
 	}
 
@@ -130,8 +125,11 @@ public class GitResourceProvider extends ResourceProvider {
 	}
 
 	public synchronized void fetch() throws IOException {
+		long t0 = System.currentTimeMillis();
 		GitRepository gitRepository = getGitRepository();
+		
 		try {
+			
 			ensureLocalClone();
 			FetchCommand fc = git.fetch();
 
@@ -145,16 +143,20 @@ public class GitResourceProvider extends ResourceProvider {
 		} catch (GitAPIException e) {
 			throw new IOException(e);
 		}
+		finally {
+			long t1 = System.currentTimeMillis();
+			logger.info("fetch took {} ms",t1-t0);
+		}
 
 	}
 
 	@Override
 	public Iterable<Resource> findFileResources() throws IOException {
-		ensureLocalClone();
-		ObjectId headCommit = repo.resolve(getRef());
+		refreshIfNecessary();
+		ObjectId headCommit = repo.resolve(getGitRef());
 
 		if (headCommit == null) {
-			throw new IOException("ref not found: " + getRef());
+			throw new IOException("ref not found: " + getGitRef());
 		}
 		TreeWalk tw = null;
 		RevWalk rw = new RevWalk(repo);
@@ -173,7 +175,7 @@ public class GitResourceProvider extends ResourceProvider {
 						tw.getObjectId(0), tw.getPathString());
 
 				list.add(gri);
-
+	
 			}
 			return list;
 		} finally {
@@ -190,18 +192,18 @@ public class GitResourceProvider extends ResourceProvider {
 	@Override
 	public Resource getResource(String path) throws IOException {
 
-		ensureLocalClone();
+		refreshIfNecessary();
 		TreeWalk tw = null;
 		RevWalk rw = null;
 		try {
-			ObjectId headCommit = repo.resolve(getRef());
+			ObjectId headCommit = repo.resolve(getGitRef());
 			rw = new RevWalk(repo);
 
 			tw = TreeWalk.forPath(repo, path, rw.parseCommit(headCommit)
 					.getTree());
 			if (tw == null) {
 				throw new FileNotFoundException(path + " not found in ref "
-						+ getRef() + " (" + headCommit.getName() + ")");
+						+ getGitRef() + " (" + headCommit.getName() + ")");
 			}
 			ObjectId id = tw.getObjectId(0);
 			GitResourceImpl gri = new GitResourceImpl(this, id, path);
@@ -223,5 +225,33 @@ public class GitResourceProvider extends ResourceProvider {
 		if (git != null) {
 			git.close();
 		}
+	}
+	
+	public synchronized void refreshIfNecessary() throws IOException {
+		ensureLocalClone();
+		
+		long timeSinceRefresh = System.currentTimeMillis() - lastRefreshTime;
+		
+		if (timeSinceRefresh > getFetchIntervalMillis()) {
+			logger.debug("fetching updates from git repo");
+			lastRefreshTime = System.currentTimeMillis();
+			fetch();
+		}
+		
+		
+	}
+	
+	public long getFetchIntervalMillis() {
+		return fetchIntervalMillis;
+	}
+
+	@Override
+	public synchronized void refresh() throws IOException {
+		ensureLocalClone();
+		fetch();
+	}
+	
+	public void setFetchIntervalSecs(int secs) {
+		fetchIntervalMillis = TimeUnit.SECONDS.toMillis(secs);
 	}
 }

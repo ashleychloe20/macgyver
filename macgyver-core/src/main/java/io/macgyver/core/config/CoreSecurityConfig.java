@@ -16,12 +16,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.annotation.Jsr250Voter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
+import org.springframework.security.web.access.expression.WebExpressionVoter;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -29,6 +33,7 @@ import com.google.common.collect.Maps;
 @Configuration
 @EnableWebMvcSecurity
 // @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true, proxyTargetClass = true,prePostEnabled=true)
 public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
@@ -39,7 +44,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-
+		
 		/*
 		 * Map<String, Object> map = Maps.newHashMap(); map.put("webSecurity",
 		 * web); hookScriptManager.invokeHook("configureWebSecurity", map);
@@ -53,8 +58,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 		httpSecurity.authorizeRequests()
 
 		.antMatchers("/login","/error**", "/public/**", "/resources/**", "/webjars/**")
-				.permitAll().and()
-				.authorizeRequests().antMatchers("/**").hasAnyRole("MACGYVER_USER","MACGYVER_ADMIN").and().
+				.permitAll().and().
 
 				formLogin().loginPage("/login").failureUrl("/login")
 				.defaultSuccessUrl("/").and().logout().permitAll();
@@ -87,8 +91,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 	public static class ApiWebSecurityConfigurationAdapter extends
 			WebSecurityConfigurerAdapter {
 		protected void configure(HttpSecurity http) throws Exception {
-			http.csrf().disable().antMatcher("/api/**").authorizeRequests()
-					.anyRequest().authenticated().and().httpBasic();
+			http.csrf().disable().antMatcher("/api/**").httpBasic();
 		}
 	}
 
@@ -98,7 +101,8 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 		List<AccessDecisionVoter> x = Lists.newCopyOnWriteArrayList();
 		x.add(new LogOnlyAccessDecisionVoter());
 		x.add(new RoleVoter());
-		
+		x.add(new WebExpressionVoter());
+		x.add(new Jsr250Voter());
 		return x;
 	}
 

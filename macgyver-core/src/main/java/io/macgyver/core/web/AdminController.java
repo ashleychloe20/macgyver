@@ -1,7 +1,9 @@
 package io.macgyver.core.web;
 
 import io.macgyver.core.crypto.Crypto;
+import io.macgyver.core.script.ExtensionResourceProvider;
 
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,45 +29,47 @@ import com.google.common.collect.Maps;
 @Component("macAdminController")
 @Controller
 @RequestMapping("/admin")
+@PreAuthorize("hasRole('ROLE_MACGYVER_ADMIN')")
 public class AdminController {
-	
+
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired
 	Crypto crypto;
-	
+
 	@Autowired
 	ApplicationContext applicationContext;
+
+	@Autowired
+	ExtensionResourceProvider extensionProvider;
 	
-	@RequestMapping(value="/encryptString",method=RequestMethod.GET)
+	@RequestMapping(value = "/encryptString", method = RequestMethod.GET)
 	@ResponseBody
 	public ModelAndView encryptString() {
 		ModelAndView m = new ModelAndView("admin/encryptString");
 		return m;
 	}
-	
-	@RequestMapping(value="/script",method={RequestMethod.GET})
+
+	@RequestMapping(value = "/script", method = { RequestMethod.GET })
 	public ModelAndView script(
-			@RequestParam(value = "editor",required=false) String script,
+			@RequestParam(value = "editor", required = false) String script,
 			@ModelAttribute ModelAndView m) throws GeneralSecurityException {
-		
-	
+
 		m.setViewName("admin/script");
-	
+
 		return m;
-	}	
-	
-	@RequestMapping(value="/scriptEval",method={RequestMethod.POST})
+	}
+
+	@RequestMapping(value = "/scriptEval", method = { RequestMethod.POST })
 	@ResponseBody
 	public String scriptEval(
-			@RequestParam(value = "editor",required=false) String script,
+			@RequestParam(value = "editor", required = false) String script,
 			@ModelAttribute ModelAndView m) throws GeneralSecurityException {
-		
-		logger.info("script: {}",script);
-	
-	
+
+		logger.info("script: {}", script);
+
 		return "test";
-	}		
-	
+	}
+
 	@RequestMapping(value = "/encryptString", method = RequestMethod.POST)
 	public ModelAndView encryptString(
 			@RequestParam(value = "input") String input,
@@ -73,16 +79,16 @@ public class AdminController {
 		m.addObject("cipherText", crypto.encryptString(input, key));
 		return m;
 	}
+
 	/*
-	public ModelAndView home() {
-		ModelAndView m = new ModelAndView("home.rythm");
-		return m;
-		
-	}
-	*/
+	 * public ModelAndView home() { ModelAndView m = new
+	 * ModelAndView("home.rythm"); return m;
+	 * 
+	 * }
+	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/beans")
-	public ModelAndView viewBeans( ModelAndView m) {
+	public ModelAndView viewBeans(ModelAndView m) {
 		List list = com.google.common.collect.Lists.newArrayList();
 		String[] names = applicationContext.getBeanDefinitionNames();
 		Arrays.sort(names);
@@ -106,5 +112,15 @@ public class AdminController {
 
 		return m;
 	}
-	
+
+	@RequestMapping(value = "/refreshResourceProvider")
+	public ModelAndView refreshResourceProvider( ModelAndView m) throws IOException {
+
+		logger.info("refresh!!!");
+		extensionProvider.refresh();
+		
+		m.setViewName("admin/refreshResourceProvider");
+		return m;
+	}
+
 }

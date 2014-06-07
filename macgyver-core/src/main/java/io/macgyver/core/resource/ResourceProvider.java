@@ -36,4 +36,6 @@ public abstract class ResourceProvider {
 	public String getPrefix() {
 		return prefix;
 	}
+	
+	public abstract void refresh() throws IOException;
 }

@@ -62,4 +62,9 @@ public class FileSystemResourceProvider extends ResourceProvider {
 		return fsr;
 	}
 
+	@Override
+	public void refresh() {
+		// no-op
+	}
+
 }

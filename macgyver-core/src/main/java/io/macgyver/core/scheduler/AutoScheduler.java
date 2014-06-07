@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.stream.JsonParsingException;
 
 import org.quartz.CronTrigger;
 import org.quartz.Job;
@@ -41,8 +42,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
@@ -52,7 +57,7 @@ import com.google.common.io.LineProcessor;
 
 public class AutoScheduler implements InitializingBean {
 
-	Logger logger = LoggerFactory.getLogger(AutoScheduler.class);
+	static Logger logger = LoggerFactory.getLogger(AutoScheduler.class);
 	@Autowired
 	Scheduler scheduler;
 
@@ -67,7 +72,7 @@ public class AutoScheduler implements InitializingBean {
 	public static String AUTO_SCHEDULER_GROUP = "AUTO_SCHEDULER";
 
 	public static class CrontabLineProcessor implements
-			LineProcessor<Optional<JsonObject>> {
+			LineProcessor<Optional<ObjectNode>> {
 		int i = 0;
 		String result;
 
@@ -87,14 +92,18 @@ public class AutoScheduler implements InitializingBean {
 		}
 
 		@Override
-		public Optional<JsonObject> getResult() {
+		public Optional<ObjectNode> getResult() {
 			if (result == null || result.trim().length() == 0) {
 				return Optional.absent();
 			}
-
-			JsonObject obj = Json.createReader(new StringReader(result))
-					.readObject();
-			return Optional.fromNullable(obj);
+			try {
+				ObjectNode n = (ObjectNode) new ObjectMapper().readTree(result);
+				
+				return Optional.fromNullable(n);
+			} catch (IOException e) {
+				logger.warn("problem parsing: {}", result);
+				return Optional.absent();
+			}
 		}
 
 	}
@@ -123,24 +132,34 @@ public class AutoScheduler implements InitializingBean {
 		final List<ScheduledScript> list = Lists.newArrayList();
 		ScriptExecutor se = new ScriptExecutor();
 		for (Resource r : extensionLoader.findFileResources()) {
+
 			if (r.getPath().startsWith("scripts/scheduler/")) {
-				logger.info("scanning {} {}", r, r.getHash());
-				Optional<JsonObject> schedule = extractCronExpression(r);
+				logger.debug("scanning {} {}", r, r.getHash());
+				Optional<ObjectNode> schedule = extractCronExpression(r);
 				if (schedule.isPresent()) {
-					if (se.isSupportedScript(r)) {
-						JsonObject descriptor = schedule.get();
-						if (descriptor.containsKey("cron")) {
-							String cronExpression = schedule.get().getString(
-									"cron");
-							ScheduledScript ss = new ScheduledScript(r,
-									cronExpression);
-							list.add(ss);
+					String enabledStringVal = schedule.get().path("enabled").asText();
+					if (Strings.isNullOrEmpty(enabledStringVal)) {
+						enabledStringVal  = "true"; // default to true
+					}
+					boolean b = Boolean.parseBoolean(enabledStringVal);
+					
+					if (b) {
+						if (se.isSupportedScript(r)) {
+							ObjectNode descriptor = schedule.get();
+							if (descriptor.has("cron")) {
+								String cronExpression = schedule.get().path("cron").asText();
+								ScheduledScript ss = new ScheduledScript(r,
+										cronExpression);
+								list.add(ss);
+							}
+						} else {
+							logger.warn("script type not supported: {}", r);
 						}
 					} else {
-						logger.warn("script type not supported: {}", r);
+						logger.debug("script is disabled: {}", r);
 					}
 				} else {
-					logger.info("script does not have scheduler directive: {}",
+					logger.warn("script does not have scheduler directive: {}",
 							r);
 				}
 			}
@@ -181,7 +200,7 @@ public class AutoScheduler implements InitializingBean {
 						scheduler.deleteJob(s.getJobKey());
 						jd = null;
 					} else {
-						logger.info("job already registered: {}", s);
+						logger.debug("job already registered: {}", s);
 					}
 				}
 			}
@@ -221,12 +240,20 @@ public class AutoScheduler implements InitializingBean {
 
 	public static final String SCHEDULE_TOKEN = "#@Schedule";
 
-	public static Optional<JsonObject> extractCronExpression(Resource r)
-			throws IOException {
+	public static Optional<ObjectNode> extractCronExpression(Resource r) {
 
 		try (StringReader sr = new StringReader(r.getContentAsString())) {
 			return CharStreams.readLines(sr, new CrontabLineProcessor());
+		} catch (IOException | RuntimeException e) {
+			try {
+				logger.warn("unable to extract cron expression: ",
+						r.getContentAsString());
+			} catch (Exception IGNORE) {
+				logger.warn("unable to extract cron expression");
+			}
 		}
+
+		return Optional.absent();
 
 	}
 

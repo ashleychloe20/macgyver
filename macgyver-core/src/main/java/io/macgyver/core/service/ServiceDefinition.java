@@ -11,7 +11,9 @@ public class ServiceDefinition {
 
 	Properties properties = new Properties();
 
-	boolean lazyInit = true;
+	public static final Boolean DEFAULT_LAZY_INIT=new Boolean(true);
+	
+	boolean lazyInit = DEFAULT_LAZY_INIT;
 
 	@SuppressWarnings("rawtypes")
 	ServiceFactory serviceFactory;
@@ -28,6 +30,11 @@ public class ServiceDefinition {
 		this.serviceFactory = sf;
 		this.properties.putAll(props);
 		this.primaryName = primaryName;
+		
+		if (props!=null) {
+			boolean lazy = Boolean.parseBoolean(props.getProperty("lazyInit", DEFAULT_LAZY_INIT.toString()));
+			setLazyInit(lazy);
+		}
 	}
 
 	public boolean isCollaborator() {

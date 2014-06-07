@@ -23,10 +23,24 @@ public class CompositeResourceProvider extends ResourceProvider {
 
 	}
 
+	public void replaceResourceProvider(ResourceProvider rp) {
+		logger.info("removing all providers of {}",rp.getClass());
+		List<ResourceProvider> temp = Lists.newArrayList();
+		for (ResourceProvider p: resourceLoaders) {
+			if (rp.getClass().isAssignableFrom(p.getClass())) {
+			
+				temp.add(p);
+			}
+		}
+		resourceLoaders.removeAll(temp);
+		
+		addResourceLoader(rp);
+	}
 	public void addResourceLoader(ResourceProvider loader) {
 		Preconditions.checkNotNull(loader);
 		if (resourceLoaders.contains(loader)) {
 			logger.warn("resource loader already registered: {}", loader);
+			return;
 		}
 		resourceLoaders.add(loader);
 	}
@@ -60,6 +74,14 @@ public class CompositeResourceProvider extends ResourceProvider {
 		}
 		throw new FileNotFoundException("resource not found: "+path);
 
+	}
+
+	@Override
+	public void refresh() throws IOException {
+		for (ResourceProvider p: resourceLoaders) {
+			p.refresh();
+		}
+		
 	}
 
 }

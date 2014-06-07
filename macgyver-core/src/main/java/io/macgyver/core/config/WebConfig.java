@@ -28,11 +28,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @Configuration
 @ComponentScan(basePackageClasses = { HomeController.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
+@EnableGlobalMethodSecurity(securedEnabled = true, proxyTargetClass = true,prePostEnabled=true)
 public class WebConfig implements EnvironmentAware {
 
 	
@@ -101,4 +103,6 @@ public class WebConfig implements EnvironmentAware {
 		b.setFilter(macGraphFilter());
 		return b;
 	}
+	
+	
 }

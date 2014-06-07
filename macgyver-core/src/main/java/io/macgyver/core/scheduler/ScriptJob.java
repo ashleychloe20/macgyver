@@ -31,7 +31,7 @@ public class ScriptJob implements Job {
 
 			Resource r = autoScheduler.scriptResourceMap.get(key);
 			if (r != null) {
-				logger.info("executing: " + r);
+				logger.debug("executing: {}", r);
 
 				ScriptExecutor executor = new ScriptExecutor();
 

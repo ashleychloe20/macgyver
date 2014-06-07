@@ -43,7 +43,7 @@ public class GitResourceProviderTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testInvalidRef() throws IOException {
 
-		provider.selectRef("abcdef12345");
+		provider.setGitRef("abcdef12345");
 		provider.findFileResources();
 
 	}
@@ -51,7 +51,7 @@ public class GitResourceProviderTest {
 	@Test
 	public void testPathNotFound() throws IOException {
 
-		provider.selectRef("refs/heads/master");
+		provider.setGitRef("refs/heads/master");
 		try {
 			provider.getResource("does/not/exist");
 			Assert.fail();
@@ -68,7 +68,7 @@ public class GitResourceProviderTest {
 		GitResourceProvider p = new GitResourceProvider(
 				"https://github.com/if6was9/macgyver-resource-test.git");
 
-		p.selectRef("7e0ad83ff14d");
+		p.setGitRef("7e0ad83ff14d");
 
 		Assert.assertNotNull(p.getResource("scripts/another.groovy"));
 		Assert.assertNotNull(p.getResource("scripts/hello.groovy"));
