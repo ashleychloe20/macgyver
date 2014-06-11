@@ -35,8 +35,8 @@ public class TransactionalGraphFilter implements Filter {
 			chain.doFilter(request, response);
 		}
 		finally {
-			logger.debug("commit {}",graph);
-			graph.commit();
+			logger.debug("rollback {}",graph);
+			graph.rollback();
 		}
 
 	}

@@ -80,7 +80,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 
 	}
 
-	public void seedData() {
+	public void seedData1() {
 		
 		Optional<InternalUser> admin = userManager.getInternalUser("admin");
 		if (admin.isPresent()) {

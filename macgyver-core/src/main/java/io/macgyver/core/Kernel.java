@@ -1,5 +1,7 @@
 package io.macgyver.core;
 
+import io.macgyver.core.eventbus.MacGyverEvent;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
@@ -39,7 +41,6 @@ public class Kernel implements ApplicationContextAware {
 		return startupError == null;
 	}
 
-
 	public synchronized static Kernel getInstance() {
 		Kernel k = kernelRef.get();
 		if (k == null) {
@@ -60,8 +61,6 @@ public class Kernel implements ApplicationContextAware {
 		return applicationContext;
 	}
 
-
-
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
@@ -69,7 +68,7 @@ public class Kernel implements ApplicationContextAware {
 				&& this.applicationContext != applicationContext) {
 			new RuntimeException().printStackTrace();
 			throw new IllegalStateException("application context already set: "
-					+ this.applicationContext+" ;new: "+applicationContext);
+					+ this.applicationContext + " ;new: " + applicationContext);
 		}
 		this.applicationContext = applicationContext;
 		kernelRef.set(this);
@@ -97,15 +96,24 @@ public class Kernel implements ApplicationContextAware {
 		if (profile == null) {
 			profile = Optional.absent();
 		}
-		
-		logger.info("macgyver profile: {}",profile.or("none"));
+
+		logger.info("macgyver profile: {}", profile.or("none"));
 		return profile;
 
 	}
 
-	
-	
-	public static class KernelStartedEvent {
+	public static class ServerStartedEvent extends MacGyverEvent {
+		public ServerStartedEvent(Kernel source) {
+			super(source);
+		}
+	}
+
+	public static class KernelStartedEvent extends MacGyverEvent {
+
+		public KernelStartedEvent(Kernel source) {
+			super(source);
+
+		}
 
 	}
 }

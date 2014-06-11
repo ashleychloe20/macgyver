@@ -40,16 +40,13 @@ compile 'aspectj:aspectjweaver:1.5.4'
  applicationDefaultJvmArgs = ["-Xmx1g","-Xms128m","-XX:MaxPermSize=128m"]
 run {  
    
-    if ( project.hasProperty("macgyver.project.dir")) {
-        systemProperty "macgyver.project.dir", project['macgyver.project.dir']
-    }
 	if (project.hasProperty('profile')) {
 		systemProperty 'profile', project['profile']
 	}
     if ( project.hasProperty("appArgs") ) {  
         args Eval.me(appArgs)  
     }  
-	args "--debug"
+	//args "--debug"
 	systemProperty "logback.configurationFile", "./conf/logback.groovy"
 }
 

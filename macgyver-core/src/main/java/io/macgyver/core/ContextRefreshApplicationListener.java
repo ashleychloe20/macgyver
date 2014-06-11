@@ -33,9 +33,11 @@ public class ContextRefreshApplicationListener implements
 			}
 			throw new RuntimeException(e.get());
 		}
-		log.info("event post complete");
+		
 
-		eventBus.post(new Kernel.KernelStartedEvent());
+		eventBus.post(new Kernel.KernelStartedEvent(Kernel.getInstance()));
+		
+		log.info("event post complete");
 	}
 
 }

@@ -1,8 +1,8 @@
 package io.macgyver.plugin.cmdb;
 
-import com.thinkaurelius.titan.core.TitanGraph;
-
 import io.macgyver.core.graph.TitanGraphInitailizer;
+
+import com.thinkaurelius.titan.core.TitanGraph;
 
 public class CmdbGraphInitializer extends TitanGraphInitailizer {
 
@@ -11,15 +11,20 @@ public class CmdbGraphInitializer extends TitanGraphInitailizer {
 	}
 
 	@Override
-	public void doInitTitanGraph(TitanGraph g) {
+	public void doInitTitanGraphMetadata(TitanGraph g) {
 
-		g.commit();
-
+	
 		ensureVertexIndex("host", String.class);
 		ensureVertexIndex("artifactId", String.class);
 		ensureVertexIndex("groupId", String.class);
 
-		g.commit();
+	
+	}
+
+	@Override
+	public void doInitTitanGraphData(TitanGraph g) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

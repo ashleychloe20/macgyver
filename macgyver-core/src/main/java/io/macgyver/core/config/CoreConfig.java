@@ -14,6 +14,7 @@ import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 import io.macgyver.core.graph.CoreIndexInitializer;
+import io.macgyver.core.graph.GraphManager;
 import io.macgyver.core.graph.GraphRepository;
 import io.macgyver.core.resource.provider.filesystem.FileSystemResourceProvider;
 import io.macgyver.core.script.BindingSupplierManager;
@@ -220,6 +221,11 @@ public class CoreConfig {
 	@Bean
 	public CoreIndexInitializer macCoreIndexInitializer() {
 		return new CoreIndexInitializer();
+	}
+	
+	@Bean
+	public GraphManager macGraphManager() {
+		return new GraphManager();
 	}
 	
 	@Bean

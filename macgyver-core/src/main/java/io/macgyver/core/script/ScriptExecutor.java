@@ -185,11 +185,11 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 		} catch (IOException e) {
 			Kernel.getInstance().getApplicationContext()
-					.getBean(TransactionalGraph.class).commit();
+					.getBean(TransactionalGraph.class).rollback();
 			throw new ScriptExecutionException(e);
 		} catch (ScriptException e) {
 			Kernel.getInstance().getApplicationContext()
-					.getBean(TransactionalGraph.class).commit();
+					.getBean(TransactionalGraph.class).rollback();
 			throw new ScriptExecutionException(e);
 		} catch (RuntimeException e) {
 			Kernel.getInstance().getApplicationContext()
@@ -202,7 +202,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 				logger.warn("problem closing reader", e);
 			}
 			Kernel.getInstance().getApplicationContext()
-					.getBean(TransactionalGraph.class).commit();
+					.getBean(TransactionalGraph.class).rollback();
 
 		}
 		return rval;

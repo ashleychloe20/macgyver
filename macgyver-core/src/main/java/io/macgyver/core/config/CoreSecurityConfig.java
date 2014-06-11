@@ -3,6 +3,7 @@ package io.macgyver.core.config;
 import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.auth.GrantedAuthoritiesTranslatorChain;
 import io.macgyver.core.auth.GrantedAuthoritiesTranslatorScriptHook;
+import io.macgyver.core.auth.InternalAuthenticationGraphInitializer;
 import io.macgyver.core.auth.InternalAuthenticationProvider;
 import io.macgyver.core.auth.LogOnlyAccessDecisionVoter;
 import io.macgyver.core.auth.MacGyverAccessDecisionManager;
@@ -141,5 +142,10 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 		InternalAuthenticationProvider p = new InternalAuthenticationProvider();
 		p.setAuthoritiesMapper(macGrantedAuthoritiesTranslatorChain());
 		return p;
+	}
+	
+	@Bean
+	public InternalAuthenticationGraphInitializer macInternalAuthenticationGraphInitializer() {
+		return new InternalAuthenticationGraphInitializer();
 	}
 }

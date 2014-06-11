@@ -25,7 +25,7 @@ public class InternalUserManager {
 	TransactionalGraph graph;
 
 	public Optional<InternalUser> getInternalUser(final String id) {
-		try {
+	
 			Iterator<Vertex> t = graph.query().has("vertexType", "user")
 					.has("macUsername", id).vertices().iterator();
 			if (t.hasNext()) {
@@ -44,9 +44,7 @@ public class InternalUserManager {
 				return Optional.of(u);
 			}
 
-		} finally {
-			graph.commit();
-		}
+		
 		return Optional.absent();
 	}
 
@@ -63,63 +61,51 @@ public class InternalUserManager {
 		} catch (IllegalArgumentException e) {
 			// invalid or msising hash
 			return false;
-		} finally {
-			graph.commit();
 		}
 	}
 
 	public void setPassword(String username, String password) {
 
 		String hash = SCryptUtil.scrypt(password, 4096, 8, 1);
-		try {
-			Vertex v = graph.getVertices("macUsername", username).iterator()
-					.next();
 
-			v.setProperty("scryptHash", hash);
-		} finally {
-			graph.commit();
-		}
+		Vertex v = graph.getVertices("macUsername", username).iterator().next();
+
+		v.setProperty("scryptHash", hash);
+
 	}
 
 	public void setRoles(String username, List<String> roles) {
-		try {
-			Vertex v = graph.getVertices("macUsername", username).iterator()
-					.next();
-			v.setProperty("roles", roles.toArray(new String[0]));
-		} finally {
-			graph.commit();
-		}
+
+		Vertex v = graph.getVertices("macUsername", username).iterator().next();
+		v.setProperty("roles", roles.toArray(new String[0]));
+
 	}
 
 	public InternalUser createUser(String username, List<String> roles) {
-		try {
-			
-			if (getInternalUser(username).isPresent()) {
-				throw new IllegalArgumentException("user already exists: "+username);
-			}
-			username = username.trim().toLowerCase();
-			Vertex v = graph.addVertex(null);
-			v.setProperty("macUsername", username);
-			v.setProperty("roles", roles.toArray(new String[0]));
-			v.setProperty("vertexType", "user");
-			InternalUser u = new InternalUser();
-			u.username = username;
-			u.roles = Lists.newArrayList(roles);
 
-			return u;
-		} finally {
-		
-			graph.commit();
-			
+		if (getInternalUser(username).isPresent()) {
+			throw new IllegalArgumentException("user already exists: "
+					+ username);
 		}
+		username = username.trim().toLowerCase();
+		Vertex v = graph.addVertex(null);
+		v.setProperty("macUsername", username);
+		v.setProperty("roles", roles.toArray(new String[0]));
+		v.setProperty("vertexType", "user");
+		InternalUser u = new InternalUser();
+		u.username = username;
+		u.roles = Lists.newArrayList(roles);
+
+		return u;
+
 	}
 
 	@PostConstruct
 	public void initializeGraphDatabase() {
 		try {
-		//	OrientGraph og = (OrientGraph) graph;
-			//og.createKeyIndex("macUsername", Vertex.class, new Parameter(
-				//	"type", "UNIQUE"));
+			// OrientGraph og = (OrientGraph) graph;
+			// og.createKeyIndex("macUsername", Vertex.class, new Parameter(
+			// "type", "UNIQUE"));
 		} catch (Exception e) {
 			logger.info(e.toString());
 		}

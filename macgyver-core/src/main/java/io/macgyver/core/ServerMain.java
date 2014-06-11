@@ -1,5 +1,7 @@
 package io.macgyver.core;
 
+import io.macgyver.core.eventbus.MacGyverEventBus;
+
 import java.io.File;
 import java.net.MalformedURLException;
 
@@ -58,8 +60,10 @@ public class ServerMain {
 
 		Environment env = ctx.getEnvironment();
 
-		logger.info("Spring environment: {}", env);
-
+		logger.info("spring environment: {}", env);
+		Kernel.getInstance().getApplicationContext()
+				.getBean(MacGyverEventBus.class)
+				.post(new Kernel.ServerStartedEvent(Kernel.getInstance()));
 	}
 
 }

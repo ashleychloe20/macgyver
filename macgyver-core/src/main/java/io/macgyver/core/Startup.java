@@ -41,7 +41,7 @@ public class Startup implements InitializingBean {
 		}
 		logger.info("STARTED: {}", event);
 		runInitScripts();
-		seedMapDB();
+		
 	}
 
 	@Override
@@ -81,9 +81,5 @@ public class Startup implements InitializingBean {
 		}
 	}
 
-	protected void seedMapDB() {
-
-		internalAuthenticationProvider.seedData();
-
-	}
+	
 }
