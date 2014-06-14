@@ -77,6 +77,9 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 			return instance;
 		} else {
 			T newInstance = doCreateInstance(def);
+			if (newInstance==null) {
+				throw new MacGyverException("service factory did not create an instance");
+			}
 			registry.instances.put(name, newInstance);
 
 			createCollaboratorInstances(registry, def, newInstance);
