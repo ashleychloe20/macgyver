@@ -86,7 +86,9 @@ public class A10ClientTest extends MacGyverIntegrationTest {
 	@Test
 	public void testSLB() {
 
-		ObjectNode obj = client.getAllSLB();
-
+		ObjectNode slb = client.getAllSLB();
+		logger.info("slb: {}",slb);
 	}
+	
+	
 }

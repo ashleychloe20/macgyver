@@ -4,6 +4,7 @@ import io.macgyver.core.jaxrs.GsonMessageBodyHandler;
 import io.macgyver.core.jaxrs.SslTrust;
 import io.macgyver.elb.ElbException;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -50,8 +53,9 @@ public class A10Client {
 		this.username = username;
 		this.password = password;
 
-		setTokenCacheDuration(DEFAULT_TOKEN_CACHE_DURATION, DEFAULT_TOKEN_CACHE_DURATION_TIME_UNIT);
-		
+		setTokenCacheDuration(DEFAULT_TOKEN_CACHE_DURATION,
+				DEFAULT_TOKEN_CACHE_DURATION_TIME_UNIT);
+
 	}
 
 	public void setUsername(String username) {
@@ -69,15 +73,16 @@ public class A10Client {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
 	public void setTokenCacheDuration(int duration, TimeUnit timeUnit) {
-		Preconditions.checkArgument(duration>=0, "duration must be >=0");
+		Preconditions.checkArgument(duration >= 0, "duration must be >=0");
 		Preconditions.checkNotNull(timeUnit, "TimeUnit must be set");
-	
+
 		this.tokenCache = CacheBuilder.newBuilder()
 				.expireAfterWrite(duration, timeUnit).build();
-		
+
 	}
-	
+
 	public void setCertificateVerificationEnabled(boolean b) {
 		validateCertificates = b;
 		if (validateCertificates && (!b)) {
@@ -139,41 +144,62 @@ public class A10Client {
 
 	}
 
-	public ObjectNode exec(String method) {
-		return exec(method, null);
+	public ObjectNode invoke(String method) {
+		return invoke(method, null);
 	}
 
-	public ObjectNode exec(String method, Map<String, String> params) {
+	public ObjectNode invoke(String method, Map<String, String> params) {
 		if (params == null) {
 			params = Maps.newConcurrentMap();
 		}
-		Map<String,String> copy = Maps.newHashMap(params);
+		Map<String, String> copy = Maps.newHashMap(params);
 		copy.put("method", method);
 
-		return exec(copy);
+		return invoke(copy);
 	}
 
-	protected ObjectNode exec(Map<String, String> x) {
-		WebTarget wt = newWebTarget();
+	protected ObjectNode invoke(Map<String, String> x) {
+		try {
+			WebTarget wt = newWebTarget();
 
-		String method = x.get("method");
-		Preconditions.checkArgument(!Strings.isNullOrEmpty(method),
-				"method argument must be passed");
-		Form f = new Form().param("session_id", getAuthToken())
-				.param("format", "json").param("method", method);
+			String method = x.get("method");
+			Preconditions.checkArgument(!Strings.isNullOrEmpty(method),
+					"method argument must be passed");
+			Form f = new Form().param("session_id", getAuthToken())
+					.param("format", "json").param("method", method);
 
-		Response resp = wt.request().post(
-				Entity.entity(f, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+			Response resp = wt.request()
+					.post(Entity.entity(f,
+							MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-		ObjectNode obj = resp
-				.readEntity(ObjectNode.class);
-		logger.debug("response: \n{}", prettyGson.toJson(obj));
-		return obj;
+			String contentType = resp.getHeaderString("Content-Type");
+			
+			String rawResponse = resp.readEntity(String.class);
+			
+			ObjectNode response = (ObjectNode) new ObjectMapper().readTree(rawResponse);
+			ObjectMapper mapper = new ObjectMapper();
+			String body = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response);
+			logger.info("response: \n{}", body);
+
+			return  response;
+		} catch (IOException e) {
+			throw new ElbException(e);
+		}
+
 	}
 
+	public ObjectNode getDeviceInfo() {
+		return invoke("system.device_info.get");
+	}
+	public ObjectNode getSystemInfo() {
+		return invoke("system.information.get");
+	}
+	public ObjectNode getSystemPerformance() {
+		return invoke("system.performance.get");
+	}
 	public ObjectNode getAllSLB() {
 
-		ObjectNode obj = exec("slb.service_group.getAll");
+		ObjectNode obj = invoke("slb.service_group.getAll");
 
 		return obj;
 
@@ -181,8 +207,8 @@ public class A10Client {
 
 	protected Client newClient() {
 
-		ClientBuilder builder = new ResteasyClientBuilder().establishConnectionTimeout(5, TimeUnit.SECONDS).register(
-				new GsonMessageBodyHandler());
+		ClientBuilder builder = new ResteasyClientBuilder()
+				.establishConnectionTimeout(10, TimeUnit.SECONDS);
 
 		if (!validateCertificates) {
 			builder = builder.hostnameVerifier(
