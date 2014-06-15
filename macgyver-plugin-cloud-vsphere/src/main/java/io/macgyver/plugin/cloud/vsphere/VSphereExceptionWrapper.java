@@ -1,4 +1,4 @@
-package io.macgyver.cloud.vsphere;
+package io.macgyver.plugin.cloud.vsphere;
 
 import io.macgyver.core.MacGyverException;
 

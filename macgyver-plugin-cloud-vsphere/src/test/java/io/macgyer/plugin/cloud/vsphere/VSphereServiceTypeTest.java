@@ -1,4 +1,4 @@
-package io.macgyer.cloud.vsphere;
+package io.macgyer.plugin.cloud.vsphere;
 
 import org.junit.Test;
 

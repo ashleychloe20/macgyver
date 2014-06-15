@@ -1,4 +1,4 @@
-package io.macgyver.elb.a10;
+package io.macgyver.plugin.elb.a10;
 
 import io.macgyver.core.service.ServiceDefinition;
 import io.macgyver.core.service.ServiceFactory;

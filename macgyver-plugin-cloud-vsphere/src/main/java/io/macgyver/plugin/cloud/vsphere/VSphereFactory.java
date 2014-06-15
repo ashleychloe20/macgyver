@@ -1,4 +1,4 @@
-package io.macgyver.cloud.vsphere;
+package io.macgyver.plugin.cloud.vsphere;
 
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.service.BasicServiceFactory;
@@ -24,8 +24,8 @@ public class VSphereFactory extends BasicServiceFactory<ServiceInstance> {
 		logger.info("connecting to vcenter at: {}", def.getProperties().getProperty("url"));
 		ServiceInstance si = new ServiceInstance(new URL(
 				def.getProperties().getProperty("url")), def.getProperties().getProperty("username"),
-				def.getProperties().getProperty("password"), Boolean.parseBoolean(def.getProperties().getProperty("ignoreCert",
-						"true")));
+				def.getProperties().getProperty("password"), Boolean.parseBoolean(def.getProperties().getProperty("certifiacateValidationEnabled",
+						"false")));
 
 		return si;
 		}

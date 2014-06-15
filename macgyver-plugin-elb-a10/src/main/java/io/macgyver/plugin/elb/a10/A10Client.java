@@ -1,8 +1,7 @@
-package io.macgyver.elb.a10;
+package io.macgyver.plugin.elb.a10;
 
-import io.macgyver.core.jaxrs.GsonMessageBodyHandler;
 import io.macgyver.core.jaxrs.SslTrust;
-import io.macgyver.elb.ElbException;
+import io.macgyver.plugin.elb.ElbException;
 
 import java.io.IOException;
 import java.util.Map;
@@ -20,7 +19,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
@@ -138,7 +136,8 @@ public class A10Client {
 		}
 
 		if (token == null) {
-			throw new ElbException("could not obtain auth token");
+			throw new ElbException(
+					"could not obtain auth token");
 		}
 		return token;
 
@@ -173,15 +172,17 @@ public class A10Client {
 							MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
 			String contentType = resp.getHeaderString("Content-Type");
-			
+
 			String rawResponse = resp.readEntity(String.class);
-			
-			ObjectNode response = (ObjectNode) new ObjectMapper().readTree(rawResponse);
+
+			ObjectNode response = (ObjectNode) new ObjectMapper()
+					.readTree(rawResponse);
 			ObjectMapper mapper = new ObjectMapper();
-			String body = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response);
+			String body = mapper.writerWithDefaultPrettyPrinter()
+					.writeValueAsString(response);
 			logger.info("response: \n{}", body);
 
-			return  response;
+			return response;
 		} catch (IOException e) {
 			throw new ElbException(e);
 		}
@@ -191,12 +192,15 @@ public class A10Client {
 	public ObjectNode getDeviceInfo() {
 		return invoke("system.device_info.get");
 	}
+
 	public ObjectNode getSystemInfo() {
 		return invoke("system.information.get");
 	}
+
 	public ObjectNode getSystemPerformance() {
 		return invoke("system.performance.get");
 	}
+
 	public ObjectNode getAllSLB() {
 
 		ObjectNode obj = invoke("slb.service_group.getAll");

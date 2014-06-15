@@ -1,4 +1,4 @@
-package io.macgyver.elb.a10;
+package io.macgyver.plugin.elb.a10;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 
+import io.macgyver.plugin.elb.a10.A10Client;
+import io.macgyver.plugin.elb.a10.A10RemoteException;
 import io.macgyver.test.MacGyverIntegrationTest;
 
 public class A10ClientTest extends MacGyverIntegrationTest {

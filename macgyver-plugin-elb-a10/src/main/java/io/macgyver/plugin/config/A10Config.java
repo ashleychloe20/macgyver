@@ -1,6 +1,6 @@
 package io.macgyver.plugin.config;
 
-import io.macgyver.elb.a10.A10ClientServiceFactory;
+import io.macgyver.plugin.elb.a10.A10ClientServiceFactory;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

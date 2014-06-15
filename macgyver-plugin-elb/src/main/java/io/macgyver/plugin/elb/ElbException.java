@@ -1,4 +1,4 @@
-package io.macgyver.elb;
+package io.macgyver.plugin.elb;
 
 import io.macgyver.core.MacGyverException;
 
