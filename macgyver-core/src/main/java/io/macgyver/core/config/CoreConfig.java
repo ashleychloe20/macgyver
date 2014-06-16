@@ -115,7 +115,7 @@ public class CoreConfig {
 	}
 
 	@Bean
-	public ServiceRegistry macServiceInstanceRegistry() {
+	public ServiceRegistry macServiceRegistry() {
 		return new ServiceRegistry();
 	}
 

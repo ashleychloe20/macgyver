@@ -104,6 +104,9 @@ public class GraphRepository {
 		return findObjectNodes(x);
 	}
 
+	public Iterable<ObjectNode> findObjectNodes(GraphQuery q) {
+		return findObjectNodes(q,null);
+	}
 	public Iterable<ObjectNode> findObjectNodes(GraphQuery q, Comparator c) {
 		Iterable<Vertex> vt = findVertices(q, c);
 
@@ -173,14 +176,11 @@ public class GraphRepository {
 
 	ObjectNode toObjectNode(Vertex v) {
 		ObjectNode n = mapper.createObjectNode();
-		Object id = v.getId();
-
-		ObjectNode p = mapper.createObjectNode();
-		n.put("properties", p);
+		
 		for (String key : v.getPropertyKeys()) {
 			Object val = v.getProperty(key);
 			if (val instanceof String) {
-				p.put(key, (String) val);
+				n.put(key, (String) val);
 			}
 		}
 		return n;
@@ -217,7 +217,7 @@ public class GraphRepository {
 			if (!t.isPresent()) {
 				return Optional.absent();
 			}
-			JsonNode properties = t.get().path("properties");
+			JsonNode properties = t.get();
 			return (Optional<T>) Optional.of(mapper.treeToValue(properties,
 					clazz));
 		} catch (Exception e) {
@@ -234,7 +234,7 @@ public class GraphRepository {
 			if (!t.isPresent()) {
 				return Optional.absent();
 			}
-			JsonNode properties = t.get().path("properties");
+			JsonNode properties = t.get();
 			return (Optional<T>) Optional.of(mapper.treeToValue(properties,
 					clazz));
 		} catch (Exception e) {

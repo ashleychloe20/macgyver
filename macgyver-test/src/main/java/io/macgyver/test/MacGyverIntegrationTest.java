@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
 @ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = { TestConfig.class })
@@ -24,19 +25,43 @@ import com.google.common.io.Files;
 public abstract class MacGyverIntegrationTest extends
 		AbstractJUnit4SpringContextTests {
 
+	
 	private static Properties privateProperties = new Properties();
 	@Autowired
 	protected ApplicationContext applicationContext;
 
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	 protected static Logger logger = LoggerFactory.getLogger(MacGyverIntegrationTest.class);
 
 	@BeforeClass
 	public static void setup() throws IOException {
-		
-		System.setProperty("macgyver.data.url", Files.createTempDir().getAbsolutePath());
-		System.setProperty("macgyver.ext.home", new java.io.File(
-				"./src/test/resources/ext").getAbsolutePath());
 
+
+		
+		
+		String macGyverHome = System.getProperty("macgyver.home");
+		if (Strings.isNullOrEmpty(macGyverHome)) {
+			File dir = new File(".");
+			File f = new File(dir, "config/services.groovy");
+			if (f.exists()) {
+				macGyverHome = dir.getAbsolutePath();
+			}
+		}
+		if (Strings.isNullOrEmpty(macGyverHome)) {
+			File dir = new File("./src/test/resources/ext");
+			macGyverHome = dir.getAbsolutePath();
+		}
+		System.setProperty("macgyver.home", macGyverHome);
+		logger.info("macgyver.home: "+macGyverHome);
+		
+		String macGyverDataDir = System.getProperty("macgyver.data.dir");
+		if (Strings.isNullOrEmpty(macGyverDataDir)) {
+			System.setProperty("macgyver.data.dir", Files.createTempDir()
+					.getAbsolutePath());
+			
+		}
+		logger.info("set macgyver.data.dir: "+macGyverDataDir);
+		
+		
 		File f = new File(System.getProperty("user.home"),
 				".macgyver/private-test.properties");
 		if (f.exists()) {
@@ -47,11 +72,13 @@ public abstract class MacGyverIntegrationTest extends
 				//
 			}
 		}
-		
+
 	}
 
 	/**
-	 * Allows integration tests to be written using properties that are held outside the project.
+	 * Allows integration tests to be written using properties that are held
+	 * outside the project.
+	 * 
 	 * @param key
 	 */
 	public String getPrivateProperty(String key) {

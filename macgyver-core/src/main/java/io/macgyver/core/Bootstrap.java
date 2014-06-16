@@ -56,11 +56,11 @@ public class Bootstrap {
 	}
 	private File determineExtensionDir() {
 		try {
-			String location = System.getProperty("macgyver.ext.home");
+			String location = System.getProperty("macgyver.home");
 			if (!Strings.isNullOrEmpty(location)) {
 				return new File(location).getCanonicalFile();
 			}
-			location = System.getenv("MACGYVER_EXT_HOME");
+			location = System.getenv("MACGYVER_HOME");
 			if (!Strings.isNullOrEmpty(location)) {
 				return new File(location).getCanonicalFile();
 			}
@@ -71,7 +71,7 @@ public class Bootstrap {
 			}
 
 	
-			throw new ConfigurationException("macgyver.ext.dir not set");
+			throw new ConfigurationException("macgyver.home not set");
 		} catch (IOException e) {
 			throw new ConfigurationException(e);
 		}
@@ -103,7 +103,7 @@ public class Bootstrap {
 	
 		
 		val = new File(determineExtensionDir(),name).getAbsolutePath();
-		logger.info("resolved location ("+name+") via macgyver.ext.home: "+val);
+		logger.info("resolved location ("+name+") via macgyver.home: "+val);
 		return new File(val);
 	}
 	public synchronized void init() {

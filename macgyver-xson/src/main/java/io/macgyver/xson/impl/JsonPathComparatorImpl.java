@@ -10,6 +10,8 @@ import com.google.common.collect.Lists;
 
 public class JsonPathComparatorImpl implements Comparator<Object> {
 
+	boolean caseSensitive=false;
+	
 	List<SortArg>  sortArgList = Lists.newArrayList();
 	
 	public static class SortArg {
@@ -20,7 +22,12 @@ public class JsonPathComparatorImpl implements Comparator<Object> {
 		
 		
 	}
-	
+	public void setCaseSensitive(boolean b) {
+		this.caseSensitive =b;
+	}
+	public boolean isCaseSensitive() {
+		return this.caseSensitive;
+	}
 	public void addSortOrder(String path, Xson.SortOrder order) {
 		SortArg arg = new SortArg();
 		arg.jsonPath = path;
@@ -63,9 +70,15 @@ public class JsonPathComparatorImpl implements Comparator<Object> {
 			return new Double(n1.doubleValue()).compareTo(new Double(n2.doubleValue()));		
 		}
 		
+		String s1 = v1.toString();
+		String s2 = v2.toString();
 		
+		if (!caseSensitive) {
+			s1 = s1.toLowerCase();
+			s2 = s2.toLowerCase();
+		}
 
-		return v1.toString().compareTo(v2.toString());
+		return s1.compareTo(s2);
 	
 	}
 
