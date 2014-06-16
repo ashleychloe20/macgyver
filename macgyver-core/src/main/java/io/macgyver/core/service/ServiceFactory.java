@@ -21,6 +21,8 @@ import com.google.common.collect.Maps;
 
 public abstract class ServiceFactory<T> implements ApplicationContextAware {
 
+	public static final String CERTIFICATE_VERIFICATION_ENABLED="certificateVerificationEnabled";
+	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	String serviceType;

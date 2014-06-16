@@ -22,7 +22,7 @@ public class A10ClientServiceFactory extends ServiceFactory<A10Client> {
 
 		try {
 			if (!Boolean.parseBoolean(def.getProperties().getProperty(
-					"certificateVerificationEnabled", "true"))) {
+					CERTIFICATE_VERIFICATION_ENABLED, "false"))) {
 				c.setCertificateVerificationEnabled(false);
 			}
 		} catch (Exception e) {
