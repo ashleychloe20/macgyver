@@ -24,10 +24,12 @@ public class VSphereFactory extends BasicServiceFactory<ServiceInstance> {
 	protected ServiceInstance doCreateInstance(ServiceDefinition def) {
 		try {
 		logger.info("connecting to vcenter at: {}", def.getProperties().getProperty("url"));
+		boolean ignoreCerts = ! Boolean.parseBoolean(def.getProperties().getProperty(CERTIFICATE_VERIFICATION_ENABLED,
+				CERTIFICATE_VERIFICATION_DEFAULT)); // invert boolean value meaning
 		ServiceInstance si = new ServiceInstance(new URL(
+				
 				def.getProperties().getProperty("url")), def.getProperties().getProperty("username"),
-				def.getProperties().getProperty("password"), Boolean.parseBoolean(def.getProperties().getProperty(CERTIFICATE_VERIFICATION_ENABLED,
-						CERTIFICATE_VERIFICATION_DEFAULT)));
+				def.getProperties().getProperty("password"), ignoreCerts);
 
 		return si;
 		}
