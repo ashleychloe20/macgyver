@@ -45,7 +45,9 @@ public class FileSystemResourceProvider extends ResourceProvider {
 				virtualPath = removePrefix(virtualPath);
 				FileSystemResource fsr = new FileSystemResource(this,
 						virtualPath, f.getCanonicalFile());
-				tmp.add(fsr);
+				if (matcher.matches(fsr)) {
+					tmp.add(fsr);
+				}
 			}
 		}
 

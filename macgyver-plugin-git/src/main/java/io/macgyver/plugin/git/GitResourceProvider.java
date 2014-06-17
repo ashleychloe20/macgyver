@@ -36,10 +36,10 @@ public class GitResourceProvider extends ResourceProvider {
 
 	Optional<GitRepository> gitRepository = Optional.absent();
 
-	long lastRefreshTime=0;
-	
+	long lastRefreshTime = 0;
+
 	long fetchIntervalMillis = TimeUnit.SECONDS.toMillis(300);
-	
+
 	Git git;
 	Repository repo;
 
@@ -81,7 +81,7 @@ public class GitResourceProvider extends ResourceProvider {
 		return repo.resolve(ref);
 	}
 
-	public void setGitRef(String ref)  {
+	public void setGitRef(String ref) {
 		this.ref = ref;
 
 	}
@@ -118,9 +118,9 @@ public class GitResourceProvider extends ResourceProvider {
 	public synchronized void fetch() throws IOException {
 		long t0 = System.currentTimeMillis();
 		GitRepository gitRepository = getGitRepository();
-		
+
 		try {
-			
+
 			ensureLocalClone();
 			FetchCommand fc = git.fetch();
 
@@ -133,16 +133,16 @@ public class GitResourceProvider extends ResourceProvider {
 			fc.call();
 		} catch (GitAPIException e) {
 			throw new IOException(e);
-		}
-		finally {
+		} finally {
 			long t1 = System.currentTimeMillis();
-			logger.info("fetch took {} ms",t1-t0);
+			logger.info("fetch took {} ms", t1 - t0);
 		}
 
 	}
 
 	@Override
-	public Iterable<Resource> findResources(ResourceMatcher matcher) throws IOException {
+	public Iterable<Resource> findResources(ResourceMatcher matcher)
+			throws IOException {
 		refreshIfNecessary();
 		ObjectId headCommit = repo.resolve(getGitRef());
 
@@ -164,9 +164,10 @@ public class GitResourceProvider extends ResourceProvider {
 
 				GitResourceImpl gri = new GitResourceImpl(this,
 						tw.getObjectId(0), tw.getPathString());
+				if (matcher.matches(gri)) {
+					list.add(gri);
+				}
 
-				list.add(gri);
-	
 			}
 			return list;
 		} finally {
@@ -217,21 +218,20 @@ public class GitResourceProvider extends ResourceProvider {
 			git.close();
 		}
 	}
-	
+
 	public synchronized void refreshIfNecessary() throws IOException {
 		ensureLocalClone();
-		
+
 		long timeSinceRefresh = System.currentTimeMillis() - lastRefreshTime;
-		
+
 		if (timeSinceRefresh > getFetchIntervalMillis()) {
 			logger.debug("fetching updates from git repo");
 			lastRefreshTime = System.currentTimeMillis();
 			fetch();
 		}
-		
-		
+
 	}
-	
+
 	public long getFetchIntervalMillis() {
 		return fetchIntervalMillis;
 	}
@@ -241,7 +241,7 @@ public class GitResourceProvider extends ResourceProvider {
 		ensureLocalClone();
 		fetch();
 	}
-	
+
 	public void setFetchIntervalSecs(int secs) {
 		fetchIntervalMillis = TimeUnit.SECONDS.toMillis(secs);
 	}
