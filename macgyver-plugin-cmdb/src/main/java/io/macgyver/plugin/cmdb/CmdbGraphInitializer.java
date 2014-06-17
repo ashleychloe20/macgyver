@@ -1,17 +1,17 @@
 package io.macgyver.plugin.cmdb;
 
-import io.macgyver.core.graph.TitanGraphInitailizer;
+import io.macgyver.core.graph.GraphInitializer;
 
-import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 
-public class CmdbGraphInitializer extends TitanGraphInitailizer {
+public class CmdbGraphInitializer extends GraphInitializer {
 
 	public CmdbGraphInitializer() {
 
 	}
 
 	@Override
-	public void doInitTitanGraphMetadata(TitanGraph g) {
+	public void doInitGraphMetadata(TransactionalGraph g) {
 
 	
 		ensureVertexIndex("host", String.class);
@@ -22,7 +22,7 @@ public class CmdbGraphInitializer extends TitanGraphInitailizer {
 	}
 
 	@Override
-	public void doInitTitanGraphData(TitanGraph g) {
+	public void doInitGraphData(TransactionalGraph g) {
 		// TODO Auto-generated method stub
 		
 	}

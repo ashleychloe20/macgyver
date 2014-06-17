@@ -71,8 +71,12 @@ dependencies {
     compile "org.webjars:jquery:2.1.1"
     compile "org.webjars:ace:1.1.3"
     
-    compile "com.thinkaurelius.titan:titan-berkeleyje:${TITAN_VERSION}"
-
+    compile 'org.neo4j:neo4j:2.1.1'
+    compile ('com.tinkerpop.blueprints:blueprints-neo4j2-graph:2.5.0') {
+    	exclude (group: "org.neo4j" )
+    }
+	
+	
     testCompile("org.springframework.boot:spring-boot-starter-test:${SPRING_BOOT_VERSION}")
     testCompile "org.springframework:spring-test:${SPRING_VERSION}"
     testCompile group: "junit", name: "junit", version: "${JUNIT_VERSION}"

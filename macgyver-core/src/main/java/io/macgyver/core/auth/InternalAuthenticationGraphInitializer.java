@@ -1,6 +1,6 @@
 package io.macgyver.core.auth;
 
-import io.macgyver.core.graph.TitanGraphInitailizer;
+import io.macgyver.core.graph.GraphInitializer;
 
 import java.util.List;
 
@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 
-public class InternalAuthenticationGraphInitializer extends TitanGraphInitailizer {
+public class InternalAuthenticationGraphInitializer extends GraphInitializer {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired
@@ -23,13 +23,13 @@ public class InternalAuthenticationGraphInitializer extends TitanGraphInitailize
 	}
 
 	@Override
-	public void doInitTitanGraphMetadata(TitanGraph g) {
+	public void doInitGraphMetadata(TransactionalGraph g) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void doInitTitanGraphData(TitanGraph g) {
+	public void doInitGraphData(TransactionalGraph g) {
 	
 			
 			Optional<InternalUser> admin = userManager.getInternalUser("admin");
@@ -42,6 +42,7 @@ public class InternalAuthenticationGraphInitializer extends TitanGraphInitailize
 				
 				userManager.createUser("admin", roleList);
 				userManager.setPassword("admin", "admin");
+				
 			}
 			
 

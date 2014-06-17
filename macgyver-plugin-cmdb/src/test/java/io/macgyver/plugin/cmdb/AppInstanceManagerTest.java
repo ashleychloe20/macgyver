@@ -38,23 +38,19 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		
 		secureRandom = SecureRandom.getInstance("sha1prng");
 	}
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testUnique() {
 		String host = "unknown_" + System.currentTimeMillis();
 		String appId = "myapp";
 		String groupId = "mygroup";
 
-		manager.getOrCreateAppInstanceVertex(host, groupId, appId);
-		try {
-			Vertex v = graph.addVertex("class:AppInstance");
-			v.setProperty("host", host);
-			v.setProperty("artifactId", appId);
-			v.setProperty("groupId", groupId);
-			v.setProperty("vertexId",
-					AppInstance.calculateVertexId(host, groupId, appId, null));
-		} finally {
-			graph.commit();
-		}
+		Vertex v1 = manager.getOrCreateAppInstanceVertex(host, groupId, appId);
+
+		Vertex v2 = manager.getOrCreateAppInstanceVertex(host, groupId, appId);
+		
+		Assert.assertEquals(v1.getId(),v2.getId());
+		
+		graph.commit();
 	}
 
 	@Test

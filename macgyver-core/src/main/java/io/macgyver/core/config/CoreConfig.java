@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
-import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration.GitInfo;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,8 +40,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.google.common.io.Files;
 import com.ning.http.client.AsyncHttpClient;
-import com.thinkaurelius.titan.core.TitanFactory;
+import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.TransactionalGraph;
+import com.tinkerpop.blueprints.impls.neo4j2.Neo4j2Graph;
 
 @Configuration
 public class CoreConfig {
@@ -191,27 +191,18 @@ public class CoreConfig {
 	public TransactionalGraph macGraph() throws MalformedURLException{
 		if (isUnitTest()) {
 
-			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
-			conf.setProperty("storage.backend","berkeleyje");
-			conf.setProperty("storage.directory",Files.createTempDir().getAbsolutePath());
-			conf.setProperty("cache.db-cache", true);
-			
-			TransactionalGraph g = TitanFactory.open(conf);
-			return g;
+		
+			TransactionalGraph graph = new Neo4j2Graph(Files.createTempDir().getAbsolutePath());
+		
+			return graph;
 
 		} else {
-			File dir = Bootstrap.getInstance().getVfsManager().resolveData("macgyver-titan-bdb");
+			File dir = Bootstrap.getInstance().getVfsManager().resolveData("macgyver-neo4j");
 			
 			
 		
-			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
-			conf.setProperty("storage.backend","berkeleyje");
-			
-		
-			conf.setProperty("cache.db-cache", true);
-			conf.setProperty("storage.directory", dir.getAbsolutePath());
 
-			TransactionalGraph g = TitanFactory.open(conf);
+			TransactionalGraph g = new Neo4j2Graph(dir.getAbsolutePath());
 			return g;
 
 		}

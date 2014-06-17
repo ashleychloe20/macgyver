@@ -1,11 +1,12 @@
 package io.macgyver.core.graph;
 
-import com.thinkaurelius.titan.core.TitanGraph;
+import com.tinkerpop.blueprints.TransactionalGraph;
 
-public class CoreIndexInitializer extends TitanGraphInitailizer {
+
+public class CoreIndexInitializer extends GraphInitializer {
 
 	@Override
-	public void doInitTitanGraphMetadata(TitanGraph g) {
+	public void doInitGraphMetadata(TransactionalGraph g) {
 		
 		ensureUniqueVertexIndex("vertexId", String.class);
 		ensureVertexIndex("vertexType", String.class);
@@ -15,7 +16,7 @@ public class CoreIndexInitializer extends TitanGraphInitailizer {
 	}
 
 	@Override
-	public void doInitTitanGraphData(TitanGraph g) {
+	public void doInitGraphData(TransactionalGraph g) {
 		// do nothing
 		
 	}
