@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import org.parboiled.common.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,7 @@ public class FileSystemResourceProvider extends ResourceProvider {
 	
 	@Override
 	public Iterable<Resource> findResources(ResourceMatcher matcher) throws IOException {
-
+		Preconditions.checkNotNull(matcher);
 		List<Resource> tmp = Lists.newArrayList();
 		TreeTraverser<File> tt = Files.fileTreeTraverser();
 		String rootPath = rootDir.getCanonicalPath();

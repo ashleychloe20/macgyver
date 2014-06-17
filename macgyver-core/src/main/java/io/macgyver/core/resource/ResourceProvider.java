@@ -12,9 +12,14 @@ public abstract class ResourceProvider {
 	
 	public abstract Iterable<Resource> findResources(ResourceMatcher rm) throws IOException;
 	public final Iterable<Resource> findResources() throws IOException {
-		return findResources(null);
+		return findResources(ResourceMatchers.matchAll());
 	}
-	public Optional<Resource> findResourceByHash(String path) throws IOException {
+	public Optional<Resource> findResourceByHash(String hash) throws IOException {
+		for (Resource r: findResources()) {
+			if (r.getHash().equals(hash)) {
+				return Optional.fromNullable(r);
+			}
+		}
 		return Optional.absent();
 	}
 	public Optional<Resource> findResourceByPath(String path) throws IOException {

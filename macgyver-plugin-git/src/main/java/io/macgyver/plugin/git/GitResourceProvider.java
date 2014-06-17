@@ -143,6 +143,7 @@ public class GitResourceProvider extends ResourceProvider {
 	@Override
 	public Iterable<Resource> findResources(ResourceMatcher matcher)
 			throws IOException {
+		Preconditions.checkNotNull(matcher);
 		refreshIfNecessary();
 		ObjectId headCommit = repo.resolve(getGitRef());
 
