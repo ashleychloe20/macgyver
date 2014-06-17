@@ -58,7 +58,7 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 		Files.touch(tempFile);
 		try {
 
-			Resource r = resourceLoader.getResource("scripts/"+tempFile.getName());
+			Resource r = resourceLoader.getResourceByPath("scripts/"+tempFile.getName());
 			
 			Assert.assertNotNull(r);
 			

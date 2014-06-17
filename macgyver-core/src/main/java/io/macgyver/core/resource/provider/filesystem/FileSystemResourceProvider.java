@@ -1,6 +1,7 @@
 package io.macgyver.core.resource.provider.filesystem;
 
 import io.macgyver.core.resource.Resource;
+import io.macgyver.core.resource.ResourceMatcher;
 import io.macgyver.core.resource.ResourceProvider;
 
 import java.io.File;
@@ -23,8 +24,9 @@ public class FileSystemResourceProvider extends ResourceProvider {
 		this.rootDir = rootDir;
 	}
 
+	
 	@Override
-	public Iterable<Resource> findFileResources() throws IOException {
+	public Iterable<Resource> findResources(ResourceMatcher matcher) throws IOException {
 
 		List<Resource> tmp = Lists.newArrayList();
 		TreeTraverser<File> tt = Files.fileTreeTraverser();
@@ -51,7 +53,7 @@ public class FileSystemResourceProvider extends ResourceProvider {
 	}
 
 	@Override
-	public Resource getResource(String path) throws IOException {
+	public Resource getResourceByPath(String path) throws IOException {
 		String translatedPath = addPrefix(path);
 		File f = new File(rootDir, translatedPath);
 		logger.info("looking for " + f);

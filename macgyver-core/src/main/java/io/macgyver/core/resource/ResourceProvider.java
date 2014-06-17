@@ -2,15 +2,32 @@ package io.macgyver.core.resource;
 
 import java.io.IOException;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
 public abstract class ResourceProvider {
 
 	String prefix=null;
 	
-	public abstract Iterable<Resource> findFileResources() throws IOException;
-
-	public abstract Resource getResource(String path) throws IOException;
+	
+	public abstract Iterable<Resource> findResources(ResourceMatcher rm) throws IOException;
+	public final Iterable<Resource> findResources() throws IOException {
+		return findResources(null);
+	}
+	public Optional<Resource> findResourceByHash(String path) throws IOException {
+		return Optional.absent();
+	}
+	public Optional<Resource> findResourceByPath(String path) throws IOException {
+		try {
+			return Optional.fromNullable(getResourceByPath(path));
+		}
+		catch (IOException e) {
+			
+		}
+		return Optional.absent();
+	}
+	
+	public abstract Resource getResourceByPath(String path) throws IOException;
 	
 	
 	public String removePrefix(String input) {

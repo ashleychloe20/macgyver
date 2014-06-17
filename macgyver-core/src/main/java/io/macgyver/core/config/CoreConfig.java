@@ -27,7 +27,6 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.util.Properties;
 
-import org.apache.commons.configuration.BaseConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,6 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.google.common.io.Files;
 import com.ning.http.client.AsyncHttpClient;
-import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.TransactionalGraph;
 import com.tinkerpop.blueprints.impls.neo4j2.Neo4j2Graph;
 
@@ -220,7 +218,7 @@ public class CoreConfig {
 	}
 	
 	@Bean
-	public ExtensionResourceProvider macExtensionResourceLoader() {
+	public ExtensionResourceProvider macExtensionResourceProvider() {
 		ExtensionResourceProvider loader = new ExtensionResourceProvider();
 		
 		FileSystemResourceProvider fsLoader = new FileSystemResourceProvider(Bootstrap.getInstance().getExtensionDir());
@@ -230,4 +228,6 @@ public class CoreConfig {
 		
 		return loader;
 	}
+	
+
 }

@@ -35,6 +35,7 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
@@ -98,7 +99,7 @@ public class AutoScheduler implements InitializingBean {
 			}
 			try {
 				ObjectNode n = (ObjectNode) new ObjectMapper().readTree(result);
-				
+
 				return Optional.fromNullable(n);
 			} catch (IOException e) {
 				logger.warn("problem parsing: {}", result);
@@ -131,23 +132,25 @@ public class AutoScheduler implements InitializingBean {
 
 		final List<ScheduledScript> list = Lists.newArrayList();
 		ScriptExecutor se = new ScriptExecutor();
-		for (Resource r : extensionLoader.findFileResources()) {
+		for (Resource r : extensionLoader.findResources()) {
 
 			if (r.getPath().startsWith("scripts/scheduler/")) {
 				logger.debug("scanning {} {}", r, r.getHash());
 				Optional<ObjectNode> schedule = extractCronExpression(r);
 				if (schedule.isPresent()) {
-					String enabledStringVal = schedule.get().path("enabled").asText();
+					String enabledStringVal = schedule.get().path("enabled")
+							.asText();
 					if (Strings.isNullOrEmpty(enabledStringVal)) {
-						enabledStringVal  = "true"; // default to true
+						enabledStringVal = "true"; // default to true
 					}
 					boolean b = Boolean.parseBoolean(enabledStringVal);
-					
+
 					if (b) {
 						if (se.isSupportedScript(r)) {
 							ObjectNode descriptor = schedule.get();
 							if (descriptor.has("cron")) {
-								String cronExpression = schedule.get().path("cron").asText();
+								String cronExpression = schedule.get()
+										.path("cron").asText();
 								ScheduledScript ss = new ScheduledScript(r,
 										cronExpression);
 								list.add(ss);
@@ -176,6 +179,30 @@ public class AutoScheduler implements InitializingBean {
 
 		prune(validJobKeySet);
 
+	}
+
+	public JobKey scheduleImmediate(Resource r) throws SchedulerException {
+		try {
+			JobKey jobKey = JobKey.jobKey("immediate-"
+					+ UUID.randomUUID().toString(), "immediate-queue");
+			JobDetail job = JobBuilder.newJob(ScriptJob.class)
+					.withIdentity(jobKey)
+					.usingJobData(ScriptJob.SCRIPT_HASH_KEY, r.getHash())
+					.build();
+
+			Trigger trigger = TriggerBuilder.newTrigger().forJob(job)
+					.startNow().build();
+			scheduler.scheduleJob(job,trigger);
+			
+		
+			
+			return jobKey;
+			
+		} catch (Exception e) {
+			throw new SchedulerException(e);
+		}
+
+		// scheduler.addJob(jobDetail, replace);
 	}
 
 	@SuppressWarnings("unchecked")

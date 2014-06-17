@@ -1,14 +1,23 @@
 package io.macgyver.core.web;
 
 import io.macgyver.core.crypto.Crypto;
+import io.macgyver.core.resource.Resource;
+import io.macgyver.core.resource.ResourceProvider;
+import io.macgyver.core.resource.provider.filesystem.FileSystemResourceProvider;
+import io.macgyver.core.scheduler.AutoScheduler;
 import io.macgyver.core.script.ExtensionResourceProvider;
 
 import java.io.IOException;
+import java.nio.file.spi.FileSystemProvider;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.neo4j.helpers.collection.Iterables;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +33,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Component("macAdminController")
@@ -41,6 +54,9 @@ public class AdminController {
 
 	@Autowired
 	ExtensionResourceProvider extensionProvider;
+
+	@Autowired
+	AutoScheduler autoScheduler;
 	
 	@RequestMapping(value = "/encryptString", method = RequestMethod.GET)
 	@ResponseBody
@@ -114,12 +130,67 @@ public class AdminController {
 	}
 
 	@RequestMapping(value = "/refreshResourceProvider")
-	public ModelAndView refreshResourceProvider( ModelAndView m) throws IOException {
+	public ModelAndView refreshResourceProvider(ModelAndView m)
+			throws IOException {
 
 		logger.info("refresh!!!");
 		extensionProvider.refresh();
-		
+
 		m.setViewName("admin/refreshResourceProvider");
+		return m;
+	}
+
+	Optional<Resource> findResourceByHash(String hash) throws IOException {
+		for (Resource r : extensionProvider.findResources()) {
+			String resourceHash = r.getHash();
+			if (resourceHash.equals(hash)) {
+				return Optional.of(r);
+			}
+		}
+		return Optional.absent();
+	}
+
+	@RequestMapping(value = "/scripts/exec")
+	public ModelAndView execScript(ModelAndView m, HttpServletRequest request)
+			throws IOException, SchedulerException {
+
+		String hash = request.getParameter("scriptHash");
+		
+
+		Optional<Resource> r = findResourceByHash(hash);
+
+		if (r.isPresent()) {
+			autoScheduler.scheduleImmediate(r.get());
+		}
+
+		m.setViewName("/admin/scripts/viewResult");
+		return m;
+	}
+
+	@RequestMapping(value = "/scripts")
+	public ModelAndView listResources(ModelAndView m) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		List<ObjectNode> list = Lists.newArrayList();
+
+		for (Resource r : extensionProvider.findResources()) {
+			ResourceProvider rp = r.getResourceProvider();
+
+			if (r.getPath().startsWith("scripts/")) {
+				ObjectNode n = mapper.createObjectNode();
+				n.put("path", r.getPath());
+				if (rp.getClass().equals(FileSystemResourceProvider.class)) {
+					n.put("providerType", "filesystem");
+				} else if (rp.getClass().getName().contains("Git")) {
+					n.put("providerType", "git");
+				}
+				n.put("hash", r.getHash());
+				list.add(n);
+			}
+
+		}
+
+		m.setViewName("/admin/scripts/viewScripts");
+		m.addObject("scripts", list);
 		return m;
 	}
 

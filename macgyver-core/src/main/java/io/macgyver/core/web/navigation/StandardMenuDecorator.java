@@ -18,6 +18,11 @@ public class StandardMenuDecorator implements MenuDecorator {
 		beans.setDisplayName("Beans");
 		beans.setUriPath("/admin/beans");
 		
+		
+		MenuItem resources = admin.getChildById("scripts",true);
+		resources.setDisplayName("Scripts");
+		resources.setUriPath("/admin/scripts");
+		
 		MenuItem refresh = admin.getChildById("refreshResourceProvider", true);
 		refresh.setDisplayName("Refresh Resources");
 		refresh.setUriPath("/admin/refreshResourceProvider");

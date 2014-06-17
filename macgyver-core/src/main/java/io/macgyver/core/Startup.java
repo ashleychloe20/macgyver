@@ -53,7 +53,7 @@ public class Startup implements InitializingBean {
 
 	public void runInitScripts() throws IOException {
 		
-		for (Resource r: resourceLoader.findFileResources()) {
+		for (Resource r: resourceLoader.findResources()) {
 			if (r.getPath().startsWith("scripts/init/")) {
 				runInitScript(r);
 			}

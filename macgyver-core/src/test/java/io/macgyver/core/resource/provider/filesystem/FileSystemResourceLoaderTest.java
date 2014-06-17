@@ -17,7 +17,7 @@ public class FileSystemResourceLoaderTest {
 		
 		boolean foundF1=false;
 		boolean foundD1F1=false;
-		for (Resource r: rl.findFileResources()) {
+		for (Resource r: rl.findResources()) {
 	
 			if (r.getPath().equals("f1.txt")) {
 				foundF1=true;

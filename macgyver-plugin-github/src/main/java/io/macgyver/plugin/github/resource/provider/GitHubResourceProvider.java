@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import io.macgyver.core.resource.Resource;
+import io.macgyver.core.resource.ResourceMatcher;
 import io.macgyver.core.resource.ResourceProvider;
 
 import org.eclipse.egit.github.core.Repository;
@@ -48,7 +49,7 @@ public class GitHubResourceProvider extends ResourceProvider {
 
 	
 	@Override
-	public Iterable<Resource> findFileResources() throws IOException {
+	public Iterable<Resource> findResources(ResourceMatcher matcher) throws IOException {
 		GitHub gh = getGitHub();
 		List<Resource> list = Lists.newArrayList();
 		
@@ -83,9 +84,8 @@ public class GitHubResourceProvider extends ResourceProvider {
 		}	
 	}
 	@Override
-	public Resource getResource(String path) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+	public Resource getResourceByPath(String path) throws IOException {
+		throw new UnsupportedOperationException();
 	}
 
 	public String getRepoName() {

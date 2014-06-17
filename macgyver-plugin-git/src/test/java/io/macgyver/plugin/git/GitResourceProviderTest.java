@@ -44,7 +44,7 @@ public class GitResourceProviderTest {
 	public void testInvalidRef() throws IOException {
 
 		provider.setGitRef("abcdef12345");
-		provider.findFileResources();
+		provider.findResources();
 
 	}
 
@@ -53,7 +53,7 @@ public class GitResourceProviderTest {
 
 		provider.setGitRef("refs/heads/master");
 		try {
-			provider.getResource("does/not/exist");
+			provider.getResourceByPath("does/not/exist");
 			Assert.fail();
 		} catch (IOException e) {
 
@@ -70,9 +70,9 @@ public class GitResourceProviderTest {
 
 		p.setGitRef("7e0ad83ff14d");
 
-		Assert.assertNotNull(p.getResource("scripts/another.groovy"));
-		Assert.assertNotNull(p.getResource("scripts/hello.groovy"));
-		Assert.assertTrue(p.getResource("scripts/test/test.txt")
+		Assert.assertNotNull(p.getResourceByPath("scripts/another.groovy"));
+		Assert.assertNotNull(p.getResourceByPath("scripts/hello.groovy"));
+		Assert.assertTrue(p.getResourceByPath("scripts/test/test.txt")
 				.getContentAsString().startsWith("abc123"));
 
 	}

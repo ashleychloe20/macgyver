@@ -126,7 +126,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 	
 		try {
-			Resource r = getExtensionResourceLoader().getResource("scripts/"+arg);
+			Resource r = getExtensionResourceLoader().getResourceByPath("scripts/"+arg);
 			logger.info("found scriptResource: "+r);
 			return run(r, vars, failIfNotFound);
 		} catch (FileNotFoundException e) {

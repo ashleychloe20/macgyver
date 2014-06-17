@@ -1,6 +1,7 @@
 package io.macgyver.plugin.git;
 
 import io.macgyver.core.resource.Resource;
+import io.macgyver.core.resource.ResourceMatcher;
 import io.macgyver.core.resource.ResourceProvider;
 
 import java.io.File;
@@ -141,7 +142,7 @@ public class GitResourceProvider extends ResourceProvider {
 	}
 
 	@Override
-	public Iterable<Resource> findFileResources() throws IOException {
+	public Iterable<Resource> findResources(ResourceMatcher matcher) throws IOException {
 		refreshIfNecessary();
 		ObjectId headCommit = repo.resolve(getGitRef());
 
@@ -180,7 +181,7 @@ public class GitResourceProvider extends ResourceProvider {
 	}
 
 	@Override
-	public Resource getResource(String path) throws IOException {
+	public Resource getResourceByPath(String path) throws IOException {
 
 		refreshIfNecessary();
 		TreeWalk tw = null;
