@@ -33,9 +33,12 @@ public class MenuManager {
 				d.decorate(menu);
 			}
 			catch (RuntimeException e) {
-				logger.warn("",e);
+				logger.warn("problem invoking MenuDecorator: "+d,e);
 			}
 		}
+		
+		// Now invoke any post-decorators that were registered during initial decoration
+		menu.invokePostDecorators();
 	
 		return menu;
 	
