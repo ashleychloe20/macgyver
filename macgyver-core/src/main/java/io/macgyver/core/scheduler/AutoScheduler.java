@@ -162,7 +162,7 @@ public class AutoScheduler implements InitializingBean {
 						logger.debug("script is disabled: {}", r);
 					}
 				} else {
-					logger.warn("script does not have scheduler directive: {}",
+					logger.debug("script does not have scheduler directive: {}",
 							r);
 				}
 			}

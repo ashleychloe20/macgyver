@@ -3,7 +3,7 @@
 <%@ page import="io.macgyver.core.web.navigation.*" %>
 <%
 	MenuManager menuManager = Kernel.getInstance().getApplicationContext().getBean(MenuManager.class);
-	MenuItem rootMenu = menuManager.getRootMenuForCurrentUser();
+	Menu menu = menuManager.getRootMenuForCurrentUser();
 
 %>
 
@@ -65,15 +65,15 @@
               <li><a href="#">Link</a></li>
 					-->
 					
-			<g:each in="${rootMenu.getChildMenuItems()}" var="c">
+			<g:each in="${menu.getRootObjectNode().get("items")}" var="c">
              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">${c.getDisplayName()} <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">${c.path("display").asText()} <b class="caret"></b></a>
 				
                 <ul class="dropdown-menu">
-                	<g:each in="${c.getChildMenuItems()}" var="child">
+                	<g:each in="${c.get("items")}" var="child">
 				
 					
-                  		  <li><a href="${child.getUriPath()}">${child.getDisplayName()}</a></li>
+                  		  <li><a href="${child.path("url").asText()}">${child.path("display").asText()}</a></li>
 					
                   	</g:each>
 		

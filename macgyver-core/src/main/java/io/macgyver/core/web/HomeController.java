@@ -16,9 +16,14 @@ public class HomeController {
 	@ResponseBody
 	public ModelAndView home() {
 		ModelAndView m = new ModelAndView("home");
+		
 		return m;
 		
 	}
 	
-	
+	@RequestMapping("/test/throwException")
+	@ResponseBody
+	public ModelAndView throwException() {
+		throw new RuntimeException("test exception");
+	}
 }

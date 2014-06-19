@@ -4,13 +4,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 
 public class MenuManager {
 
+	Logger logger = LoggerFactory.getLogger(MenuManager.class);
 	@Inject
 	ApplicationContext applicationContext;
 	
@@ -22,12 +26,18 @@ public class MenuManager {
 		return decoratorList;
 	}
 	
-	public MenuItem getRootMenuForCurrentUser() {
-		MenuItem root = new JsonMenuItem(new JsonObject());
+	public Menu getRootMenuForCurrentUser() {
+		Menu menu = new Menu();
 		for (MenuDecorator d: getMenuDecorators()) {
-			d.decorate(root);
+			try {
+				d.decorate(menu);
+			}
+			catch (RuntimeException e) {
+				logger.warn("",e);
+			}
 		}
-		return root;
+	
+		return menu;
 	
 
 	}
