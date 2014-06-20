@@ -111,7 +111,27 @@ subprojects {
 	    }
 	}
 
+    tasks.eclipse.doLast { 
+        /** Seems that blueprints-neo4j is bringing in a broken transitive dependency that bothers Eclipse.
+         ** This patches the problem by removing the broken classpath entry. **/
+        def nodesToRemove = []
+        def file = new File(".classpath")
+        def root = new XmlParser().parse(file)
     
+        // find the broken elements
+        root.findAll{it.@path =~ /neo4j.*\.pom/ }.each {
+            nodesToRemove.add(it)
+        }
+    
+        // remove the broken elements
+        nodesToRemove.each {
+            it.parent().remove(it)
+        }
+        // write the file back outq
+        file.withWriter {
+            new XmlNodePrinter(new PrintWriter(it)).print(root)
+        }
+    }
     
 }
 

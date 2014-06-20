@@ -26,9 +26,7 @@ import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+
 
 public class A10Client {
 
@@ -44,7 +42,6 @@ public class A10Client {
 
 	public boolean validateCertificates = true;
 
-	Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
 
 	public A10Client(String url, String username, String password) {
 		this.url = url;
@@ -88,20 +85,17 @@ public class A10Client {
 		}
 	}
 
-	void throwExceptionIfNecessary(JsonObject response) {
+	void throwExceptionIfNecessary(ObjectNode response) {
 
-		if (response.has("response")) {
-			JsonObject responseNode = response.get("response")
-					.getAsJsonObject();
-			if (responseNode.has("err")) {
-				JsonObject err = responseNode.get("err").getAsJsonObject();
-				String code = err.get("code").getAsString();
-				String msg = err.get("msg").getAsString();
-				logger.warn("error response: \n{}", new GsonBuilder()
-						.setPrettyPrinting().create().toJson(response));
+		if (response.has("response") && response.get("response").has("err")) {
+			
+				String code = response.path("response").path("err").path("code").asText();
+				String msg = response.path("response").path("err").path("msg").asText();
+				
+				logger.warn("error response: {}", response);
 				A10RemoteException x = new A10RemoteException(code, msg);
 				throw x;
-			}
+			
 		}
 
 	}
@@ -115,13 +109,13 @@ public class A10Client {
 		Response resp = wt.request().post(
 				Entity.entity(f, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-		com.google.gson.JsonObject obj = resp
-				.readEntity(com.google.gson.JsonObject.class);
+		ObjectNode obj = resp
+				.readEntity(ObjectNode.class);
 
 		throwExceptionIfNecessary(obj);
 
-		String sid = obj.get("session_id").getAsString();
-		if (sid == null) {
+		String sid = obj.path("session_id").asText();
+		if (Strings.isNullOrEmpty(sid)) {
 			throw new ElbException("authentication failed");
 		}
 		tokenCache.put(A10_AUTH_TOKEN_KEY, sid);
