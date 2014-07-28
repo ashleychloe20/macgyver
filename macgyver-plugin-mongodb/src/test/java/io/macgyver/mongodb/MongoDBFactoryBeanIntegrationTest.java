@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -24,6 +25,7 @@ public class MongoDBFactoryBeanIntegrationTest extends MacGyverIntegrationTest {
 	
 	
 	@Test
+	@Ignore
 	public void testIt() {
 		Mongo m =  applicationContext.getBean("mongotest",Mongo.class);
 		

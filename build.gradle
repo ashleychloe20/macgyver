@@ -1,7 +1,7 @@
 
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.12'
+    gradleVersion = '2.0'
 }
 /*allprojects {
     group 'io.macgyver'
@@ -17,7 +17,6 @@ buildscript {
     }
     dependencies {
 
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath 'org.ajoberstar:gradle-git:0.8.0'
     }
 }
@@ -26,13 +25,10 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'eclipse'
-    apply plugin: 'spring-boot'
 	
     
     group 'io.macgyver'
     version = "${MACGYVER_VERSION}"
-    
-    mainClassName = 'io.macgyver.core.ServerMain'
     
     
     
