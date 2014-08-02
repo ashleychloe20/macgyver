@@ -9,27 +9,41 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
+import io.macgyver.neo4j.rest.Neo4jException;
 import io.macgyver.neo4j.rest.Vertex;
 import io.macgyver.neo4j.rest.Result;
 
 public class ResultSetImpl implements Result{
 
 	ObjectNode resultData;
+	ArrayNode dataNode;
+	ArrayNode columnsNode;
 	int rowIndex=-1;
 	int rowCount;
 	
 	public ResultSetImpl(ObjectNode resultData) {
 		Preconditions.checkNotNull(resultData);
 		this.resultData = resultData;
+		
+		JsonNode an = (JsonNode) resultData.path("data");
+		if (!an.isArray()) {
+			throw new Neo4jException("data node missing from response");
+		}
+		dataNode = (ArrayNode) an;
+		
+		an = (JsonNode) resultData.path("columns");
+		if (!an.isArray()) {
+			throw new Neo4jException("data node missing from response");
+		}
+		columnsNode = (ArrayNode) an;
+		
 		rowCount = getDataArrayNode().size();
 	}
 	ArrayNode getColumnArrayNode() {
-		ArrayNode an = (ArrayNode) resultData.path("columns");
-		return an;
+		return columnsNode;
 	}
 	ArrayNode getDataArrayNode() {
-		ArrayNode an = (ArrayNode) resultData.path("data");
-		return an;
+		return dataNode;
 	}
 	@Override
 	public boolean hasNext() {
@@ -95,6 +109,9 @@ public class ResultSetImpl implements Result{
 		return new Neo4jNodeImpl(getObjectNode(getColumn(columnName)));
 	}
 	public String convertToString(JsonNode n) {
+		if (n.isNull()) {
+			return null;
+		}
 		if (n.isObject()) {
 			return n.toString();
 		}
