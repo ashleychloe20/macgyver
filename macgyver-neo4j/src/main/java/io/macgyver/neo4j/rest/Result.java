@@ -13,6 +13,8 @@ public interface Result {
 	
 	String getString(int column);
 	String getString(String column);
+	List getList(String column);
+	List getList(int column);
 	ObjectNode getObjectNode(String column);
 	ObjectNode getObjectNode(int column);
 	Vertex getVertex(String column);

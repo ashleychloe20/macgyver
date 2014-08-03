@@ -13,15 +13,12 @@ import io.macgyver.core.auth.InternalUserManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
-import io.macgyver.core.graph.CoreIndexInitializer;
-import io.macgyver.core.graph.GraphManager;
-import io.macgyver.core.graph.GraphRepository;
 import io.macgyver.core.resource.provider.filesystem.FileSystemResourceProvider;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.service.ServiceRegistry;
+import io.macgyver.neo4j.rest.Neo4jRestClient;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -34,13 +31,9 @@ import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostP
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import com.google.common.io.Files;
 import com.ning.http.client.AsyncHttpClient;
-import com.tinkerpop.blueprints.TransactionalGraph;
-import com.tinkerpop.blueprints.impls.neo4j2.Neo4j2Graph;
 
 @Configuration
 public class CoreConfig {
@@ -180,42 +173,15 @@ public class CoreConfig {
 		return mgr;
 
 	}
-	@Bean(name = "macGraphRepository")
-	@Primary
-	public GraphRepository macGraphRepository() throws MalformedURLException{
-		return new GraphRepository(macGraph());
-	}
-	@Bean(name = "macGraph", destroyMethod = "shutdown")
-	public TransactionalGraph macGraph() throws MalformedURLException{
-		if (isUnitTest()) {
 
-		
-			TransactionalGraph graph = new Neo4j2Graph(Files.createTempDir().getAbsolutePath());
-		
-			return graph;
-
-		} else {
-			File dir = Bootstrap.getInstance().getVfsManager().resolveData("macgyver-neo4j");
-			
-			
-		
-
-			TransactionalGraph g = new Neo4j2Graph(dir.getAbsolutePath());
-			return g;
-
-		}
+	@Bean(name = "macGraphClient")
+	public Neo4jRestClient macGraphClient() throws MalformedURLException{
+		return new Neo4jRestClient();
 
 	}
 	
-	@Bean
-	public CoreIndexInitializer macCoreIndexInitializer() {
-		return new CoreIndexInitializer();
-	}
+
 	
-	@Bean
-	public GraphManager macGraphManager() {
-		return new GraphManager();
-	}
 	
 	@Bean
 	public ExtensionResourceProvider macExtensionResourceProvider() {

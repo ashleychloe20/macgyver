@@ -18,6 +18,7 @@ dependencies {
     compile "org.jboss.resteasy:jaxrs-api:${RESTEASY_VERSION}"
     compile "org.jboss.resteasy:resteasy-jackson2-provider:${RESTEASY_VERSION}"
     compile "org.jboss.resteasy:resteasy-client:${RESTEASY_VERSION}"
+    compile "com.google.guava:guava:${GUAVA_VERSION}"
     testCompile project(':macgyver-test')
      
 }

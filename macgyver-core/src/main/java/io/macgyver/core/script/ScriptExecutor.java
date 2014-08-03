@@ -32,7 +32,6 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Closer;
 import com.google.common.io.Files;
-import com.tinkerpop.blueprints.TransactionalGraph;
 
 public class ScriptExecutor implements ApplicationContextAware {
 
@@ -47,8 +46,9 @@ public class ScriptExecutor implements ApplicationContextAware {
 	StringWriter errWriter;
 
 	public ExtensionResourceProvider getExtensionResourceLoader() {
-		
-		return Kernel.getInstance().getApplicationContext().getBean(ExtensionResourceProvider.class);
+
+		return Kernel.getInstance().getApplicationContext()
+				.getBean(ExtensionResourceProvider.class);
 	}
 
 	public ScriptExecutor() {
@@ -124,13 +124,13 @@ public class ScriptExecutor implements ApplicationContextAware {
 	public Object run(String arg, Map<String, Object> vars,
 			boolean failIfNotFound) throws IOException {
 
-	
 		try {
-			Resource r = getExtensionResourceLoader().getResourceByPath("scripts/"+arg);
-			logger.info("found scriptResource: "+r);
+			Resource r = getExtensionResourceLoader().getResourceByPath(
+					"scripts/" + arg);
+			logger.info("found scriptResource: " + r);
 			return run(r, vars, failIfNotFound);
 		} catch (FileNotFoundException e) {
-			logger.warn("resource not found: "+arg);
+			logger.warn("resource not found: " + arg);
 			if (failIfNotFound) {
 				throw e;
 			}
@@ -143,7 +143,6 @@ public class ScriptExecutor implements ApplicationContextAware {
 		int idx = r.getPath().lastIndexOf(".");
 		return r.getPath().substring(idx + 1);
 	}
-
 
 	public Object run(Resource f, Map<String, Object> vars,
 			boolean failIfNotFound) {
@@ -168,7 +167,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 			ApplicationContext ctx = Kernel.getInstance()
 					.getApplicationContext();
-			
+
 			Reader fr = new InputStreamReader(f.openInputStream());
 			closer.register(fr);
 
@@ -183,17 +182,14 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 			fr.close();
 
-		} catch (IOException e) {
-			Kernel.getInstance().getApplicationContext()
-					.getBean(TransactionalGraph.class).rollback();
-			throw new ScriptExecutionException(e);
+		} catch (ScriptExecutionException e) {
+			throw e;
+
 		} catch (ScriptException e) {
-			Kernel.getInstance().getApplicationContext()
-					.getBean(TransactionalGraph.class).rollback();
+			throw new ScriptExecutionException(e);
+		} catch (IOException e) {
 			throw new ScriptExecutionException(e);
 		} catch (RuntimeException e) {
-			Kernel.getInstance().getApplicationContext()
-					.getBean(TransactionalGraph.class).rollback();
 			throw new ScriptExecutionException(e);
 		} finally {
 			try {
@@ -201,13 +197,10 @@ public class ScriptExecutor implements ApplicationContextAware {
 			} catch (IOException e) {
 				logger.warn("problem closing reader", e);
 			}
-			Kernel.getInstance().getApplicationContext()
-					.getBean(TransactionalGraph.class).rollback();
 
 		}
 		return rval;
 
-		
 	}
 
 	public Bindings getBindings() {

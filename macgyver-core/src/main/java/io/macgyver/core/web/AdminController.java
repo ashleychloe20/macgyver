@@ -8,7 +8,6 @@ import io.macgyver.core.scheduler.AutoScheduler;
 import io.macgyver.core.script.ExtensionResourceProvider;
 
 import java.io.IOException;
-import java.nio.file.spi.FileSystemProvider;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
@@ -16,13 +15,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.neo4j.helpers.collection.Iterables;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;

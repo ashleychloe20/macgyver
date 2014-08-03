@@ -1,15 +1,5 @@
 package io.macgyver.core.config;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
-import io.macgyver.core.graph.TransactionalGraphFilter;
 import io.macgyver.core.web.CoreApiController;
 import io.macgyver.core.web.HomeController;
 import io.macgyver.core.web.MacgyverWeb;
@@ -92,17 +82,8 @@ public class WebConfig implements EnvironmentAware {
 	public StandardMenuDecorator macStandardMenuDecorator() {
 		return new StandardMenuDecorator();
 	}
-	@Bean
-	public TransactionalGraphFilter macGraphFilter() {
-		return new TransactionalGraphFilter();
-	}
-	@Bean
-	public FilterRegistrationBean macGraphFilterRegistrationBean() {
-		FilterRegistrationBean b = new FilterRegistrationBean();
-		
-		b.setFilter(macGraphFilter());
-		return b;
-	}
+
+
 	
 	
 }

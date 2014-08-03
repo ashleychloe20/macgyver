@@ -23,6 +23,7 @@ dependencies {
     compile "org.slf4j:jcl-over-slf4j:${SLF4J_VERSION}"
 
     compile project(":macgyver-xson")
+    compile project(":macgyver-neo4j")
     compile "com.google.guava:guava:${GUAVA_VERSION}"
     compile 'com.google.code.gson:gson:2.2.4'
     compile "org.springframework:spring-context-support:${SPRING_VERSION}"
@@ -72,10 +73,7 @@ dependencies {
     compile "org.webjars:ace:1.1.3"
     
     
-    compile ('com.tinkerpop.blueprints:blueprints-neo4j2-graph:2.5.0') {
-    	exclude (group: "org.neo4j" )
-    }
-    compile 'org.neo4j:neo4j:2.1.2'
+
 	
     testCompile("org.springframework.boot:spring-boot-starter-test:${SPRING_BOOT_VERSION}")
     testCompile "org.springframework:spring-test:${SPRING_VERSION}"

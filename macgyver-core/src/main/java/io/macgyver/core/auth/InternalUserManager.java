@@ -1,5 +1,8 @@
 package io.macgyver.core.auth;
 
+import io.macgyver.neo4j.rest.Neo4jRestClient;
+import io.macgyver.neo4j.rest.Result;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -10,74 +13,81 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.lambdaworks.crypto.SCryptUtil;
-import com.tinkerpop.blueprints.TransactionalGraph;
-import com.tinkerpop.blueprints.Vertex;
 
 public class InternalUserManager {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	TransactionalGraph graph;
+	Neo4jRestClient neo4j;
 
 	public Optional<InternalUser> getInternalUser(final String id) {
+
+		String q = "match (u:User) where u.username={username} return u.username,u.roles";
+
+		Result r = neo4j.execCypher(q, "username", id.toLowerCase());
+		if (r.next()) {
+			InternalUser u = new InternalUser();
+			u.username = r.getString("u.username");
+			
+			u.roles = (List<String>) r.getList("u.roles");
+			
+			
 	
-			Iterator<Vertex> t = graph.query().has("vertexType", "user")
-					.has("macUsername", id).vertices().iterator();
-			if (t.hasNext()) {
-				Vertex v = t.next();
-				InternalUser u = new InternalUser();
-				u.username = v.getProperty("username");
-				Object rolesObj = v.getProperty("roles");
-				if (rolesObj == null) {
-					u.roles = Lists.newArrayList();
-				} else if (rolesObj instanceof String[]) {
-					u.roles = Lists.newArrayList((String[]) rolesObj);
-				} else if (rolesObj instanceof List) {
-					u.roles = (List) rolesObj;
-				}
+			return Optional.of(u);
+		}
 
-				return Optional.of(u);
-			}
-
-		
 		return Optional.absent();
 	}
 
 	public boolean authenticate(String username, String password) {
 		try {
-			Vertex v = graph.getVertices("macUsername", username).iterator()
-					.next();
+			String q = "match (u:User) where u.username={username} return u.scryptHash";
+			ObjectNode n = new ObjectMapper().createObjectNode();
+			n.put("username", username);
+			Result r = neo4j.execCypher(q, n);
+			if (r.next()) {
 
-			String hashValue = v.getProperty("scryptHash");
-			return SCryptUtil.check(password, Strings.nullToEmpty(hashValue));
-		} catch (NoSuchElementException e) {
-			// user not found
-			return false;
-		} catch (IllegalArgumentException e) {
-			// invalid or msising hash
+				String hashValue = Strings.emptyToNull(r
+						.getString("u.scryptHash"));
+				if (hashValue == null) {
+					return false;
+				}
+				return SCryptUtil.check(password,
+						Strings.nullToEmpty(hashValue));
+
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			logger.warn("auth error", e);
 			return false;
 		}
+
 	}
 
 	public void setPassword(String username, String password) {
 
 		String hash = SCryptUtil.scrypt(password, 4096, 8, 1);
 
-		Vertex v = graph.getVertices("macUsername", username).iterator().next();
+		String c = "match (u:User) where u.username={username} set u.scryptHash={hash}";
+	
 
-		v.setProperty("scryptHash", hash);
+		neo4j.execCypher(c, "username",username,"hash",hash);
 
 	}
 
 	public void setRoles(String username, List<String> roles) {
-
-		Vertex v = graph.getVertices("macUsername", username).iterator().next();
-		v.setProperty("roles", roles.toArray(new String[0]));
+		
+		String c = "match (u:User) where u.username={username} set u.roles={roles}";
+		neo4j.execCypher(c,"username",username,"roles",roles);
+	
 
 	}
 
@@ -88,13 +98,14 @@ public class InternalUserManager {
 					+ username);
 		}
 		username = username.trim().toLowerCase();
-		Vertex v = graph.addVertex(null);
-		v.setProperty("macUsername", username);
-		v.setProperty("roles", roles.toArray(new String[0]));
-		v.setProperty("vertexType", "user");
+
+		String cypher = "create (u:User {username:{username}})";
+		neo4j.execCypher(cypher, "username", username);
+
+		setRoles(username,roles);
 		InternalUser u = new InternalUser();
 		u.username = username;
-		u.roles = Lists.newArrayList(roles);
+		u.roles = Lists.newArrayList();
 
 		return u;
 
@@ -103,11 +114,26 @@ public class InternalUserManager {
 	@PostConstruct
 	public void initializeGraphDatabase() {
 		try {
-			// OrientGraph og = (OrientGraph) graph;
-			// og.createKeyIndex("macUsername", Vertex.class, new Parameter(
-			// "type", "UNIQUE"));
+			
+			String cipher = "CREATE CONSTRAINT ON (u:User) ASSERT u.username IS UNIQUE";		
+			neo4j.execCypher(cipher);
+			
 		} catch (Exception e) {
-			logger.info(e.toString());
+			logger.warn(e.toString());
+		}
+		
+		
+		Optional<InternalUser> admin = getInternalUser("admin");
+		if (admin.isPresent()) {
+			logger.debug("admin user already exists");
+		}
+		else {
+			logger.info("adding admin user");
+			List<String> roleList = Lists.newArrayList("ROLE_MACGYVER_SHELL","ROLE_MACGYVER_UI", "ROLE_MACGYVER_ADMIN","ROLE_MACGYVER_USER");
+			
+			createUser("admin", roleList);
+			setPassword("admin", "admin");
+			
 		}
 
 	}
