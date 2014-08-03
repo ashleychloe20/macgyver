@@ -19,7 +19,9 @@ dependencies {
     compile "org.jboss.resteasy:resteasy-jackson2-provider:${RESTEASY_VERSION}"
     compile "org.jboss.resteasy:resteasy-client:${RESTEASY_VERSION}"
     compile "com.google.guava:guava:${GUAVA_VERSION}"
-    testCompile project(':macgyver-test')
-     
+    compile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
+    compile "org.slf4j:jcl-over-slf4j:${SLF4J_VERSION}"
+	compile "junit:junit:${JUNIT_VERSION}"
+	
 }
 

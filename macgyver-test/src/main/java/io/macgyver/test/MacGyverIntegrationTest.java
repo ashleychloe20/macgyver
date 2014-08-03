@@ -1,11 +1,16 @@
 package io.macgyver.test;
 
+import io.macgyver.neo4j.rest.Neo4jRestClient;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Properties;
 
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -25,19 +30,44 @@ import com.google.common.io.Files;
 public abstract class MacGyverIntegrationTest extends
 		AbstractJUnit4SpringContextTests {
 
-	
 	private static Properties privateProperties = new Properties();
 	@Autowired
 	protected ApplicationContext applicationContext;
 
-	 protected static Logger logger = LoggerFactory.getLogger(MacGyverIntegrationTest.class);
+	static volatile Boolean neo4jAvailable = null;
+
+	protected static Logger logger = LoggerFactory
+			.getLogger(MacGyverIntegrationTest.class);
+
+	public static synchronized boolean isNeo4jAvailable() {
+
+		
+		if (neo4jAvailable == null) {
+			
+			try {
+				neo4jAvailable = new Neo4jRestClient().checkOnline(); // TODO configurable endpoint
+				
+			} catch (Exception e) {
+				logger.info("problem communicating with neo4j", e);
+				neo4jAvailable = false;
+			}
+			
+			if (!neo4jAvailable) {
+				logger.warn("neo4j not available -- integration tests will be skipped");
+			}
+			else {
+				logger.info("neo4j is available for integration tests");
+			}
+
+		}
+		return neo4jAvailable;
+	}
 
 	@BeforeClass
 	public static void setup() throws IOException {
 
+		Assume.assumeTrue(isNeo4jAvailable());
 
-		
-		
 		String macGyverHome = System.getProperty("macgyver.home");
 		if (Strings.isNullOrEmpty(macGyverHome)) {
 			File dir = new File(".");
@@ -51,17 +81,16 @@ public abstract class MacGyverIntegrationTest extends
 			macGyverHome = dir.getAbsolutePath();
 		}
 		System.setProperty("macgyver.home", macGyverHome);
-		logger.info("macgyver.home: "+macGyverHome);
-		
+		logger.info("macgyver.home: " + macGyverHome);
+
 		String macGyverDataDir = System.getProperty("macgyver.data.dir");
 		if (Strings.isNullOrEmpty(macGyverDataDir)) {
 			System.setProperty("macgyver.data.dir", Files.createTempDir()
 					.getAbsolutePath());
-			
+
 		}
-		logger.info("set macgyver.data.dir: "+macGyverDataDir);
-		
-		
+		logger.info("set macgyver.data.dir: " + macGyverDataDir);
+
 		File f = new File(System.getProperty("user.home"),
 				".macgyver/private-test.properties");
 		if (f.exists()) {
