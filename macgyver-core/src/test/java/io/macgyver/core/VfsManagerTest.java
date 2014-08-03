@@ -18,8 +18,6 @@ import com.google.common.io.Files;
 
 public class VfsManagerTest extends MacGyverIntegrationTest {
 
-	@Autowired
-	VfsManager vfsManager;
 
 	
 	@Autowired
@@ -36,11 +34,11 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 		Files.touch(tempFile);
 		try {
 			
-			File fo = vfsManager.getWebLocation();
+			File fo = Bootstrap.getInstance().getWebDir();
 
 			Assert.assertTrue(tempFile.exists());
 
-			File vfsTest2 = vfsManager.resolveWeb(tempFile.getName());
+			File vfsTest2 = new File(Bootstrap.getInstance().getWebDir(), tempFile.getName());
 			Assert.assertTrue(vfsTest2.exists());
 		} finally {
 			tempFile.delete();

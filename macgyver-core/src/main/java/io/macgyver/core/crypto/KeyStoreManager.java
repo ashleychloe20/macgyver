@@ -41,7 +41,7 @@ public class KeyStoreManager {
 
 		} else {
 			
-			return Bootstrap.getInstance().getVfsManager().resolveConfig("keystore.jceks");
+			return Bootstrap.getInstance().resolveConfig("keystore.jceks");
 			
 			
 		}

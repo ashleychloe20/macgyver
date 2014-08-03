@@ -66,31 +66,26 @@ public abstract class MacGyverIntegrationTest extends
 	@BeforeClass
 	public static void setup() throws IOException {
 
-		Assume.assumeTrue(isNeo4jAvailable());
+		
 
 		String macGyverHome = System.getProperty("macgyver.home");
-		if (Strings.isNullOrEmpty(macGyverHome)) {
+		/*if (Strings.isNullOrEmpty(macGyverHome)) {
 			File dir = new File(".");
 			File f = new File(dir, "config/services.groovy");
 			if (f.exists()) {
 				macGyverHome = dir.getAbsolutePath();
 			}
-		}
+		}*/
 		if (Strings.isNullOrEmpty(macGyverHome)) {
 			File dir = new File("./src/test/resources/ext");
 			macGyverHome = dir.getAbsolutePath();
+			System.setProperty("macgyver.home", macGyverHome);
 		}
-		System.setProperty("macgyver.home", macGyverHome);
+		
+	
 		logger.info("macgyver.home: " + macGyverHome);
 
-		String macGyverDataDir = System.getProperty("macgyver.data.dir");
-		if (Strings.isNullOrEmpty(macGyverDataDir)) {
-			System.setProperty("macgyver.data.dir", Files.createTempDir()
-					.getAbsolutePath());
-
-		}
-		logger.info("set macgyver.data.dir: " + macGyverDataDir);
-
+		
 		File f = new File(System.getProperty("user.home"),
 				".macgyver/private-test.properties");
 		if (f.exists()) {
@@ -102,6 +97,7 @@ public abstract class MacGyverIntegrationTest extends
 			}
 		}
 
+		Assume.assumeTrue(isNeo4jAvailable());
 	}
 
 	/**

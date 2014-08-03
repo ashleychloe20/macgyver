@@ -30,8 +30,8 @@ public class ServerMain {
 
 	public static String computeTemplateRoots() {
 		try {
-			File webDir = Bootstrap.getInstance().getVfsManager()
-					.getWebLocation();
+			File webDir = Bootstrap.getInstance()
+					.getWebDir();
 			String templateRoots = "classpath:/web/templates";
 
 			templateRoots = webDir.toURI().toURL().toString() + ","

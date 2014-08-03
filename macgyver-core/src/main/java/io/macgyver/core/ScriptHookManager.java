@@ -17,8 +17,7 @@ public class ScriptHookManager {
 	@Autowired
 	Kernel kernel;
 
-	@Autowired
-	VfsManager vfsManager;
+
 
 	public Object invokeHook(String name, Map<String, Object> data)
 			throws IOException {

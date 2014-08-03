@@ -30,7 +30,6 @@ public class Bootstrap {
 	Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
 	public static Bootstrap instance = new Bootstrap();
-	VfsManager vfsManager = null;
 
 	
 
@@ -46,13 +45,20 @@ public class Bootstrap {
 	}
 
 
-
-	public VfsManager getVfsManager() {
-		return vfsManager;
-	}
-
 	public File getExtensionDir() {
 		return determineExtensionDir();
+	}
+	public File getWebDir() {
+		return new File(determineExtensionDir(),"web");
+	}
+	public File getConfigDir() {
+		return new File(determineExtensionDir(),"config");
+	}
+	public File getDataDir() {
+		return new File(determineExtensionDir(),"data");
+	}
+	public File getScriptsDir() {
+		return new File(determineExtensionDir(),"scripts");
 	}
 	private File determineExtensionDir() {
 		try {
@@ -65,13 +71,11 @@ public class Bootstrap {
 				return new File(location).getCanonicalFile();
 			}
 			
-			File extLocation = new File("./config");
-			if (extLocation.exists()) {
-				return extLocation.getParentFile().getCanonicalFile();
-			}
-
+			
+			
+			return new File(".").getCanonicalFile();
 	
-			throw new ConfigurationException("macgyver.home not set");
+			
 		} catch (IOException e) {
 			throw new ConfigurationException(e);
 		}
@@ -80,6 +84,9 @@ public class Bootstrap {
 
 	AtomicBoolean initialized = new AtomicBoolean(false);
 
+	public File resolveConfig(String name) {
+		return new File(getConfigDir(),name);
+	}
 	protected File findLocation(String name) throws  MalformedURLException {
 		
 
@@ -113,26 +120,20 @@ public class Bootstrap {
 		printBanner();
 
 		File extDir = determineExtensionDir();
-		try {
-			File configLocation = findLocation("config");
-			File scriptsLocation = findLocation("scripts");
-			File dataLocation = findLocation("data");
-			File webLocation = findLocation("web");
+	
+			
 		
-
-			logger.info("macgyver config  : {}",configLocation);
-			logger.info("macgyver scripts : {}",scriptsLocation);
-			logger.info("macgyver   data  : {}",dataLocation);
-			logger.info("macgyver    web  : {}",webLocation);
-			vfsManager = new VfsManager(configLocation, scriptsLocation,
-					dataLocation, webLocation);
+			logger.info("macgyver home    : {}",determineExtensionDir());
+			logger.info("macgyver config  : {}",getConfigDir());
+			logger.info("macgyver scripts : {}",getScriptsDir());
+			logger.info("macgyver   data  : {}",getDataDir());
+			logger.info("macgyver    web  : {}",getWebDir());
+			
 	
 
 		
 
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		
 
 		initialized.set(true);
 

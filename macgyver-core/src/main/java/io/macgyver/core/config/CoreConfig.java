@@ -8,7 +8,6 @@ import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
 import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.Startup;
-import io.macgyver.core.VfsManager;
 import io.macgyver.core.auth.InternalUserManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
@@ -164,15 +163,7 @@ public class CoreConfig {
 
 
 
-	@Bean(name = "macVfsManager")
-	public VfsManager macVfsManager() {
-
-		VfsManager mgr = Bootstrap.getInstance().getVfsManager();
-
-		logger.info("macVfsManager: {}", mgr);
-		return mgr;
-
-	}
+	
 
 	@Bean(name = "macGraphClient")
 	public Neo4jRestClient macGraphClient() throws MalformedURLException{

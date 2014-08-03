@@ -1,13 +1,9 @@
 package io.macgyver.core.script;
 
 import io.macgyver.core.Kernel;
-import io.macgyver.core.VfsManager;
 import io.macgyver.core.resource.Resource;
-import io.macgyver.core.resource.ResourceProvider;
-import io.macgyver.core.resource.provider.filesystem.FileSystemResourceProvider;
 import io.macgyver.core.service.ServiceRegistry;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;

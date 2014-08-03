@@ -2,10 +2,10 @@ package io.macgyver.core.service;
 
 import groovy.util.ConfigObject;
 import groovy.util.ConfigSlurper;
+import io.macgyver.core.Bootstrap;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.ServiceNotFoundException;
-import io.macgyver.core.VfsManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
@@ -210,8 +210,7 @@ public class ServiceRegistry {
 			IOException {
 		Properties p = new Properties();
 
-		File configGroovy = applicationContext
-				.getBean(VfsManager.class).resolveConfig("services.groovy");
+		File configGroovy = Bootstrap.getInstance().resolveConfig("services.groovy");
 
 		logger.info("loading services from: {}",configGroovy);
 		ConfigSlurper slurper = new ConfigSlurper();
