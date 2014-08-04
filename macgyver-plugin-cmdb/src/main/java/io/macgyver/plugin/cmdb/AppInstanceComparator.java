@@ -30,7 +30,7 @@ public class AppInstanceComparator implements Comparator<AppInstance> {
 		if (cv != 0) {
 			return cv;
 		}
-		cv = Objects.toString(o1.getArtifactId()).compareToIgnoreCase(Objects.toString(o2.getArtifactId()));
+		cv = Objects.toString(o1.getAppId()).compareToIgnoreCase(Objects.toString(o2.getAppId()));
 		if (cv != 0) {
 			return cv;
 		}

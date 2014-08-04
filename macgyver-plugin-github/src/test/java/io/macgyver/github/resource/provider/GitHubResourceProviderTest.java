@@ -34,8 +34,8 @@ public class GitHubResourceProviderTest extends MacGyverIntegrationTest{
 		p.setRef("refs/heads/master");
 		
 		for (Resource r:  p.findResources()) {
-			System.out.println(r.getContentAsString());
-			System.out.println(r);
+			logger.debug("{}",r.getContentAsString());
+			logger.debug("{}",r);
 		}
 		
 	}

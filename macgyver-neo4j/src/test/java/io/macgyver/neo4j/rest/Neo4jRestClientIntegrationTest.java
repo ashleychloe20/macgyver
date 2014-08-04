@@ -21,15 +21,15 @@ public class Neo4jRestClientIntegrationTest extends AbstractIntegrationTest{
 
 		n = getClient().execCypherWithJsonResponse("match v where v.name='" + name
 				+ "' return v limit 3");
-		System.out.println(n);
+	
 
 		Result rs = getClient().execCypher("match v where v.name='" + name
 				+ "' return v.name, v.age , v limit 3");
 
 		while (rs.next()) {
-			System.out.println("XXX: " + rs.getString("v.age"));
+			logger.debug("v.age: {}" , rs.getString("v.age"));
 
-			System.out.println(rs.getVertex("v").getProperties());
+			logger.debug("vertex props: {}",rs.getVertex("v").getProperties());
 		}
 	}
 }

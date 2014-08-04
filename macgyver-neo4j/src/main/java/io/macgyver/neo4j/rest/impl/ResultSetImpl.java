@@ -131,7 +131,6 @@ public class ResultSetImpl implements Result {
 		} else {
 			output = n.asText();
 		}
-		System.out.println("CONVERTING: " + n + " ==> " + output);
 		return output;
 	}
 

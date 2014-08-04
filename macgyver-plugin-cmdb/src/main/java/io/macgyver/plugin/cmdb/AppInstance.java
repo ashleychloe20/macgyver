@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -19,10 +20,9 @@ public class AppInstance {
 	public static final String KEY_APP_ID = "artifactId";
 	public static final String KEY_GROUP_ID = "groupId";
 	public static final String KEY_HOST = "host";
-	public static final String KEY_VERTEX_TYPE = "vertexType";
-	public static final String DEFAULT_INSTANCE_INDEX = "";
+	public static final String DEFAULT_INSTANCE_INDEX = null;
 
-	String artifactId;
+	String appId;
 	String groupId;
 	String host;
 	String profile;
@@ -36,24 +36,27 @@ public class AppInstance {
 		super();
 	}
 
-	public AppInstance(String host, String groupId, String artifactId) {
-		this(host, groupId, artifactId, DEFAULT_INSTANCE_INDEX);
+	public AppInstance(ObjectNode n) {
+		this(n.path("host").asText(),n.path("groupId").asText(),n.path("appId").asText());
+	}
+	public AppInstance(String host, String groupId, String appId) {
+		this(host, groupId, appId, DEFAULT_INSTANCE_INDEX);
 	}
 
-	public AppInstance(String host, String groupId, String artifactId,
+	public AppInstance(String host, String groupId, String appId,
 			String index) {
 		this.setHost(host);
 		this.setGroupId(groupId);
-		this.setArtifactId(artifactId);
+		this.setAppId(appId);
 		this.instanceIndex = index;
 	}
 
-	public String getArtifactId() {
-		return artifactId;
+	public String getAppId() {
+		return appId;
 	}
 
-	public void setArtifactId(String artifactId) {
-		this.artifactId = artifactId;
+	public void setAppId(String artifactId) {
+		this.appId = artifactId;
 	}
 
 	public String getGroupId() {
@@ -112,24 +115,13 @@ public class AppInstance {
 		this.version = version;
 	}
 
-	public String computeVertexId() {
-		return calculateVertexId(getHost(), getGroupId(), getArtifactId(), null);
-	}
 
-	public static String calculateVertexId(String host, String group,
-			String app, String q) {
-
-		List<String> list = Lists.newArrayList("default", "AppInstance", host,
-				group, app, q);
-
-		return HashUtils.calculateCompositeId(list.toArray(new String[0]));
-
-	}
+	
 
 	public String toString() {
 		return Objects.toStringHelper(this).add("host", getHost())
 				.add(KEY_GROUP_ID, getGroupId())
-				.add(KEY_APP_ID, getArtifactId()).toString();
+				.add(KEY_APP_ID, getAppId()).toString();
 	}
 
 }

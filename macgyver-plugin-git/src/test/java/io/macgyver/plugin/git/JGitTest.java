@@ -33,7 +33,7 @@ public class JGitTest extends MacGyverIntegrationTest {
 		 * tempDir.mkdirs(); tempDir = tempDir.getAbsoluteFile();
 		 * 
 		 * 
-		 * System.out.println(tempDir); rb = rb.setWorkTree(tempDir);
+		 * // (tempDir); rb = rb.setWorkTree(tempDir);
 		 * 
 		 * Git.cloneRepository() .setURI("git@github.com:if6was9/macgyver.git")
 		 * .setDirectory(tempDir) .call();
@@ -50,7 +50,7 @@ public class JGitTest extends MacGyverIntegrationTest {
 		 * RevCommit rc =
 		 * rw.parseCommit(r.resolve(org.eclipse.jgit.lib.Constants.HEAD));
 		 * 
-		 * System.out.println(rc);
+		 * 
 		 * 
 		 * g.pull().call();
 		 */

@@ -56,6 +56,6 @@ public class Neo4jRestClientTest {
 		Neo4jRestClient c = new Neo4jRestClient();
 
 		ObjectNode n = c.createParameters("abc", "def", "xxx");
-		System.out.println(n);
+	
 	}
 }

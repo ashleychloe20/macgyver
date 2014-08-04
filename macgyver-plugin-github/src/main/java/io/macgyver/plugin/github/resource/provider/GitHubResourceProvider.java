@@ -61,7 +61,7 @@ public class GitHubResourceProvider extends ResourceProvider {
 		Repository repox;
 	
 		for (GHRef ref: repo.getRefs()) {
-			System.out.println(ref.getObject().getType());
+			logger.debug("ref type: {}",ref.getObject().getType());
 		}
 		
 		addAll(repo,list,getRef(),getRootPath());
