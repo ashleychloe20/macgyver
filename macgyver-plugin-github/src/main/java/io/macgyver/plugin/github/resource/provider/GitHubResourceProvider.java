@@ -19,6 +19,8 @@ import com.google.common.collect.Lists;
 
 public class GitHubResourceProvider extends ResourceProvider {
 
+	org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GitHubResourceProvider.class);
+	
 	String repoName;
 	String ref = "refs/heads/master";
 	String rootPath = "";
