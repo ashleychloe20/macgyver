@@ -1,6 +1,8 @@
 package io.macgyver.plugin.config;
 
 import io.macgyver.plugin.cmdb.AppInstanceManager;
+import io.macgyver.plugin.cmdb.CmdbApiController;
+import io.macgyver.plugin.cmdb.CmdbController;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,5 +17,12 @@ public class CmdbConfig {
 		return new AppInstanceManager();
 	}
 	
-
+	@Bean
+	public CmdbApiController macCmdbApiController() {
+		return new CmdbApiController();
+	}
+	@Bean
+	public CmdbController macCmdbController() {
+		return new CmdbController();
+	}
 }

@@ -106,6 +106,14 @@ public class ResultSetImpl implements Result {
 				+ " does not contain a json object");
 	}
 
+	public Iterable<ObjectNode> asObjectNodeIterable(String col) {
+		List<ObjectNode> list = Lists.newArrayList();
+		while (next()) {
+			ObjectNode n = getObjectNode(col);
+			list.add(n);
+		}
+		return list;
+	}
 	public ObjectNode getObjectNode(String columnName) {
 		return getObjectNode(getColumn(columnName));
 	}

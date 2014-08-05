@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -39,10 +40,10 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		String appId = "myapp";
 		String groupId = "mygroup";
 
-		AppInstance v1 = manager.getOrCreateAppInstanceVertex(host, groupId,
+		ObjectNode v1 = manager.getOrCreateAppInstance(host, groupId,
 				appId);
 
-		AppInstance v2 = manager.getOrCreateAppInstanceVertex(host, groupId,
+		ObjectNode v2 = manager.getOrCreateAppInstance(host, groupId,
 				appId);
 
 	}
@@ -54,14 +55,14 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 		String groupId = "junit_group";
 
 		assertNotNull(manager
-				.getOrCreateAppInstanceVertex(host, groupId, appId));
+				.getOrCreateAppInstance(host, groupId, appId));
 
 	}
 
 	@Test
 	public void x() throws Exception {
 
-		Assert.assertNotNull(manager.getOrCreateAppInstanceVertex("localhost",
+		Assert.assertNotNull(manager.getOrCreateAppInstance("localhost",
 				"junit_group", "junit_test"));
 
 	}
@@ -88,7 +89,7 @@ public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 
 						String x = "junit_group_"
 								+ (Math.abs(randomInt()) % keySpace);
-						AppInstance v = manager.getOrCreateAppInstanceVertex(x,
+						ObjectNode v = manager.getOrCreateAppInstance(x,
 								x, x);
 						/*
 						 * v.setProperty("someproperty_" + (new

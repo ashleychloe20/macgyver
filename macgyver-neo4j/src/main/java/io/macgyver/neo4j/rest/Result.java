@@ -19,4 +19,5 @@ public interface Result {
 	ObjectNode getObjectNode(int column);
 	Vertex getVertex(String column);
 	Vertex getVertex(int col);
+	Iterable<ObjectNode> asObjectNodeIterable(String column);
 }
