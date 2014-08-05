@@ -1,6 +1,7 @@
 package io.macgyver.plugin.cmdb;
 
 import io.macgyver.core.service.ServiceRegistry;
+import io.macgyver.core.util.ObjectNodeDecorator;
 import io.macgyver.core.web.navigation.Menu;
 import io.macgyver.core.web.navigation.MenuDecorator;
 import io.macgyver.neo4j.rest.Neo4jRestClient;
@@ -38,7 +39,8 @@ public class CmdbController implements MenuDecorator {
 	@Autowired
 	Neo4jRestClient neo4j;
 	
-
+	ObjectNodeDecorator appInstanceViewDecorator = new ObjectNodeDecorator();
+	
 	@RequestMapping(value = "/cmdb/computeInstances")
 	public ModelAndView viewComputeInstances(ModelAndView m) {
 
@@ -109,7 +111,9 @@ public class CmdbController implements MenuDecorator {
 
 			for (ObjectNode ai : results) {
 				try {
-				
+					if (appInstanceViewDecorator!=null) {
+						appInstanceViewDecorator.decorate(ai);
+					}
 
 				} catch (Exception e) {
 					logger.warn("problem enriching", e);
@@ -128,7 +132,7 @@ public class CmdbController implements MenuDecorator {
 	@Override
 	public void decorate(Menu root) {
 
-		root.setDisplayName("cmdb", "CMDB");
+		root.setDisplayName("cmdb", "Inventory");
 
 	//	root.addMenuItem("cmdb", "/cmdb/computeInstances", "Compute Instances");
 
@@ -137,6 +141,15 @@ public class CmdbController implements MenuDecorator {
 		// root.addMenuItem("cmdb","/cmdb/services","Services");
 
 	//	root.addMenuItem("cmdb", "/cmdb/elbInstances", "ELB Instances");
+	}
+
+	public ObjectNodeDecorator getAppInstanceViewDecorator() {
+		return appInstanceViewDecorator;
+	}
+
+	public void setAppInstanceViewDecorator(
+			ObjectNodeDecorator appInstanceViewDecorator) {
+		this.appInstanceViewDecorator = appInstanceViewDecorator;
 	}
 
 }
