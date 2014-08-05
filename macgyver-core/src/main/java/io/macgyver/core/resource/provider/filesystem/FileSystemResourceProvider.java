@@ -1,5 +1,6 @@
 package io.macgyver.core.resource.provider.filesystem;
 
+import io.macgyver.core.Bootstrap;
 import io.macgyver.core.resource.Resource;
 import io.macgyver.core.resource.ResourceMatcher;
 import io.macgyver.core.resource.ResourceProvider;
@@ -25,15 +26,32 @@ public class FileSystemResourceProvider extends ResourceProvider {
 		this.rootDir = rootDir;
 	}
 
-	
+	public boolean isApprovedPath(File f) {
+		try {
+			File approvedParent = Bootstrap.getInstance().getScriptsDir()
+					.getCanonicalFile();
+			while (f != null) {
+				f = f.getCanonicalFile();
+				if (f.equals(approvedParent)) {
+					return true;
+				}
+				f = f.getParentFile();
+			}
+		} catch (Exception e) {
+			logger.warn("", e);
+		}
+		return false;
+	}
+
 	@Override
-	public Iterable<Resource> findResources(ResourceMatcher matcher) throws IOException {
+	public Iterable<Resource> findResources(ResourceMatcher matcher)
+			throws IOException {
 		Preconditions.checkNotNull(matcher);
 		List<Resource> tmp = Lists.newArrayList();
 		TreeTraverser<File> tt = Files.fileTreeTraverser();
 		String rootPath = rootDir.getCanonicalPath();
 		for (File f : tt.breadthFirstTraversal(rootDir.getCanonicalFile())) {
-			if (f.isFile()) {
+			if (f.isFile() && isApprovedPath(f)) {
 				String canonicalPath = f.getCanonicalPath();
 
 				String virtualPath = canonicalPath;
