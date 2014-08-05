@@ -9,6 +9,7 @@ import io.macgyver.neo4j.rest.Result;
 import io.macgyver.xson.JsonPathComparator;
 import io.macgyver.xson.Xson;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -100,15 +101,15 @@ public class CmdbController implements MenuDecorator {
 	
 			List<ObjectNode> results = Lists.newArrayList();
 
-			JsonPathComparator pc = Xson.pathComparator("$.profile")
-					.sortBy("$.host").sortBy("$.artifactId").build();
+			JsonPathComparator pc = Xson.pathComparator("$.data.environment")
+					.sortBy("$.data.host").sortBy("$.data.appId").build();
 			
 			String cypher = "match (ai:AppInstance) return ai";
 			
 			Iterable<ObjectNode> t = neo4j.execCypher(cypher).asObjectNodeIterable("ai");
 
 			Iterables.addAll(results, t);
-
+			Collections.sort(results, pc);
 			for (ObjectNode ai : results) {
 				try {
 					if (appInstanceViewDecorator!=null) {
