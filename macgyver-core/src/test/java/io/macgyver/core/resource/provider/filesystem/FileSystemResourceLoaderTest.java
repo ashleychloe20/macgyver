@@ -13,7 +13,14 @@ public class FileSystemResourceLoaderTest {
 	@Test
 	public void testX() throws IOException {
 		
-		FileSystemResourceProvider rl = new FileSystemResourceProvider(new File("./src/test/resources/resource-test"));
+		FileSystemResourceProvider rl = new FileSystemResourceProvider(new File("./src/test/resources/resource-test")) {
+
+			@Override
+			public boolean isApprovedPath(File f) {
+				return true;
+			}
+			
+		};
 		
 		boolean foundF1=false;
 		boolean foundD1F1=false;
