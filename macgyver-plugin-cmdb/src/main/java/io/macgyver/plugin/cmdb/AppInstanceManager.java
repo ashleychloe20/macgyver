@@ -26,6 +26,8 @@ public class AppInstanceManager {
 	@Autowired
 	Neo4jRestClient neo4j;
 
+	CheckInProcessor processor = new BasicCheckInProcessor();
+
 	public ObjectNode getOrCreateAppInstance(String host, String groupId,
 			String appId) {
 
@@ -54,29 +56,10 @@ public class AppInstanceManager {
 		throw new MacGyverException("could not get or create new AppInstance");
 	}
 
-	protected void processLegacy(ObjectNode n) {
-		if (n.has("app")) {
-			JsonNode app = n.get("app");
-			if (app.isObject()) {
-				n.remove("app");
-				ObjectNode appObj = (ObjectNode) app;
 
-				Iterator<Entry<String, JsonNode>> t = appObj.fields();
-				while (t.hasNext()) {
-					Entry<String, JsonNode> xx = t.next();
-					n.put(xx.getKey(), xx.getValue().asText());
-				}
-
-			}
-		}
-		if (n.has("artifactId")) {
-			n.put("appId", n.path("artifactId").asText());
-			n.remove("artifactId");
-		}
-	}
 
 	public ObjectNode processCheckIn(ObjectNode data) {
-		processLegacy(data);
+	
 
 		String host = data.path("host").asText();
 		String group = data.path("groupId").asText();
@@ -109,30 +92,11 @@ public class AppInstanceManager {
 		}
 		return new ObjectMapper().createObjectNode();
 	}
-
-	public void enrich(ObjectNode n) {
-		String scmCommitUrl = "";
-		String artifactId = n.path("artifactId").asText();
-		if (Strings.isNullOrEmpty(artifactId)) {
-
-		} else {
-
-			/*
-			 * Optional<String> url = resolver.getViewRevisionUrl(artifactId, n
-			 * .path("scmRevision").asText()); if (url.isPresent()) {
-			 * n.put("scmViewRevisionUrl", url.get()); }
-			 */
-		}
-		n.put("scmCommitUrl", scmCommitUrl);
-
-		String scmBranch = n.path("scmBranch").asText().replace("origin/", "");
-		String scmRevision = n.path("scmRevision").asText();
-
-		if (scmBranch.startsWith(scmRevision) && scmRevision.length() > 2) {
-			n.put("scmBranch", "");
-		}
-		if (n.path("profile").asText().trim().length() == 0) {
-			n.put("profile", "unknown");
-		}
+	public CheckInProcessor getCheckInProcessor() {
+		return processor;
 	}
+	public void setCheckInProcessor(CheckInProcessor p) {
+		this.processor = p;
+	}
+
 }

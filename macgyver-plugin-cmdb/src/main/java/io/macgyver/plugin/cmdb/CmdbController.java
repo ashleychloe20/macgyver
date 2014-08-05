@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Optional;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -45,18 +43,15 @@ public class CmdbController implements MenuDecorator {
 	@RequestMapping(value = "/cmdb/computeInstances")
 	public ModelAndView viewComputeInstances(ModelAndView m) {
 
-		List<ObjectNode> results = Lists.newArrayList();
-
+		
 		JsonPathComparator pc = Xson.pathComparator("$.name")
 
 		.build();
 		
 		Result r = neo4j.execCypher("match (ci:ComputeInstance) return ci");
 		
-		Iterable<ObjectNode> t = r.asObjectNodeIterable("ci");
-		
-
-		Iterables.addAll(results, t);
+		List<ObjectNode> results = r.asVertexDataList("ci");
+	
 
 		m.setViewName("cmdb/computeInstances");
 		m.addObject("results", results);
@@ -99,17 +94,15 @@ public class CmdbController implements MenuDecorator {
 	public ModelAndView viewAppInstances(ModelAndView m) {
 
 	
-			List<ObjectNode> results = Lists.newArrayList();
-
+			
 			JsonPathComparator pc = Xson.pathComparator("$.data.environment")
 					.sortBy("$.data.host").sortBy("$.data.appId").build();
 			
 			String cypher = "match (ai:AppInstance) return ai";
 			
-			Iterable<ObjectNode> t = neo4j.execCypher(cypher).asObjectNodeIterable("ai");
+			List<ObjectNode> results = neo4j.execCypher(cypher).asVertexList("ai");
 
-			Iterables.addAll(results, t);
-			Collections.sort(results, pc);
+			Collections.sort(results,pc);
 			for (ObjectNode ai : results) {
 				try {
 					if (appInstanceViewDecorator!=null) {

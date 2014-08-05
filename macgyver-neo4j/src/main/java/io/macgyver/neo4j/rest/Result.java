@@ -8,7 +8,7 @@ public interface Result {
 
 	boolean hasNext();
 	boolean next();
-	int getColumn(String name);
+	int getColumnIndex(String name);
 	List<String> getColumnNames();
 	
 	String getString(int column);
@@ -17,7 +17,11 @@ public interface Result {
 	List getList(int column);
 	ObjectNode getObjectNode(String column);
 	ObjectNode getObjectNode(int column);
-	Vertex getVertex(String column);
-	Vertex getVertex(int col);
-	Iterable<ObjectNode> asObjectNodeIterable(String column);
+	
+	
+	List<ObjectNode> asVertexList(String column);
+	List<ObjectNode> asVertexList(int column);
+
+	List<ObjectNode> asVertexDataList(String column);
+	List<ObjectNode> asVertexDataList(int c);
 }

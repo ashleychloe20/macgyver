@@ -42,7 +42,6 @@ public class CmdbApiController {
 	@Autowired
 	AppInstanceManager appInstanceManager;
 
-	CheckInProcessor processor = new BasicCheckInProcessor();
 
 	ObjectMapper mapper = new ObjectMapper();
 	
@@ -55,7 +54,7 @@ public class CmdbApiController {
 			
 			
 			HttpServletRequest request) throws IOException {
-	
+		CheckInProcessor processor = appInstanceManager.getCheckInProcessor();
 
 				if (!processor.checkAuth(request)) {
 					return new ResponseEntity<ObjectNode>(HttpStatus.UNAUTHORIZED);
@@ -69,5 +68,6 @@ public class CmdbApiController {
 		
 		return new ResponseEntity<ObjectNode>(mapper.createObjectNode(), HttpStatus.OK);
 	}
+
 
 }

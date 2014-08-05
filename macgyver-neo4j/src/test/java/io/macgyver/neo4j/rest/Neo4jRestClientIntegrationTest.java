@@ -29,7 +29,7 @@ public class Neo4jRestClientIntegrationTest extends AbstractIntegrationTest{
 		while (rs.next()) {
 			logger.debug("v.age: {}" , rs.getString("v.age"));
 
-			logger.debug("vertex props: {}",rs.getVertex("v").getProperties());
+			logger.debug("vertex props: {}",rs.getObjectNode("v").path("data"));
 		}
 	}
 }

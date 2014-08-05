@@ -1,6 +1,6 @@
 package io.macgyver.neo4j.rest;
 
-import io.macgyver.neo4j.rest.impl.ResultSetImpl;
+import io.macgyver.neo4j.rest.impl.NonStreamingResultSetImpl;
 import io.macgyver.neo4j.rest.impl.SslTrust;
 
 import java.util.List;
@@ -113,7 +113,7 @@ public class Neo4jRestClient {
 
 	public Result execCypher(String cypher, ObjectNode params) {
 		ObjectNode n = execCypherWithJsonResponse(cypher, params);
-		return new ResultSetImpl(n);
+		return new NonStreamingResultSetImpl(n);
 	}
 
 	public ObjectNode execCypherWithJsonResponse(String cypher) {

@@ -1,6 +1,6 @@
 package io.macgyver.neo4j.rest;
 
-import io.macgyver.neo4j.rest.impl.ResultSetImpl;
+import io.macgyver.neo4j.rest.impl.NonStreamingResultSetImpl;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,7 +17,7 @@ public class ResultSetImplTest {
 	public void testInvalidArgument1() {
 		ObjectNode n = m.createObjectNode();
 		
-		ResultSetImpl rsi = new ResultSetImpl(n);
+		NonStreamingResultSetImpl rsi = new NonStreamingResultSetImpl(n);
 		
 	}
 	
@@ -29,7 +29,7 @@ public class ResultSetImplTest {
 		ObjectNode columns = m.createObjectNode();
 		n.set("data", data);
 		n.set("columns",columns);
-		ResultSetImpl rsi = new ResultSetImpl(n);
+		NonStreamingResultSetImpl rsi = new NonStreamingResultSetImpl(n);
 		
 	}
 	
@@ -41,7 +41,7 @@ public class ResultSetImplTest {
 		ArrayNode columns = m.createArrayNode();
 		n.set("data", data);
 		n.set("columns",columns);
-		ResultSetImpl rs = new ResultSetImpl(n);
+		NonStreamingResultSetImpl rs = new NonStreamingResultSetImpl(n);
 		
 		Assert.assertFalse(rs.hasNext());
 		Assert.assertFalse(rs.next());
@@ -76,7 +76,7 @@ public class ResultSetImplTest {
 		n.set("columns",columns);
 		
 		data.add(d1);
-		ResultSetImpl rs = new ResultSetImpl(n);
+		NonStreamingResultSetImpl rs = new NonStreamingResultSetImpl(n);
 		
 		Assert.assertTrue(rs.hasNext());
 		Assert.assertTrue(rs.next());

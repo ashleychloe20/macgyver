@@ -1,6 +1,8 @@
 package io.macgyver.neo4j.rest.impl;
 
-import java.util.ArrayList;
+import io.macgyver.neo4j.rest.Neo4jException;
+import io.macgyver.neo4j.rest.Result;
+
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,11 +11,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-import io.macgyver.neo4j.rest.Neo4jException;
-import io.macgyver.neo4j.rest.Vertex;
-import io.macgyver.neo4j.rest.Result;
-
-public class ResultSetImpl implements Result {
+public class NonStreamingResultSetImpl implements Result {
 
 	ObjectNode resultData;
 	ArrayNode dataNode;
@@ -21,7 +19,7 @@ public class ResultSetImpl implements Result {
 	int rowIndex = -1;
 	int rowCount;
 
-	public ResultSetImpl(ObjectNode resultData) {
+	public NonStreamingResultSetImpl(ObjectNode resultData) {
 		Preconditions.checkNotNull(resultData);
 		this.resultData = resultData;
 
@@ -64,7 +62,7 @@ public class ResultSetImpl implements Result {
 	}
 
 	@Override
-	public int getColumn(String name) {
+	public int getColumnIndex(String name) {
 		ArrayNode n = getColumnArrayNode();
 		for (int i = 0; i < n.size(); i++) {
 			if (n.get(i).asText().equals(name)) {
@@ -93,7 +91,7 @@ public class ResultSetImpl implements Result {
 	}
 
 	public String getString(String columnName) {
-		return getString(getColumn(columnName));
+		return getString(getColumnIndex(columnName));
 	}
 
 	public ObjectNode getObjectNode(int column) {
@@ -106,25 +104,34 @@ public class ResultSetImpl implements Result {
 				+ " does not contain a json object");
 	}
 
-	public Iterable<ObjectNode> asObjectNodeIterable(String col) {
+	public List<ObjectNode> asVertexList(String name) {
+		return asVertexList(getColumnIndex(name));
+	}
+	public List<ObjectNode> asVertexList(int col) {
 		List<ObjectNode> list = Lists.newArrayList();
 		while (next()) {
-			ObjectNode n = getObjectNode(col);
+			ObjectNode n = (ObjectNode) getObjectNode(col);
+			list.add(n);
+		}
+		return list;
+	}
+	
+	public List<ObjectNode> asVertexDataList(String name) {
+		return asVertexDataList(getColumnIndex(name));
+	}
+	public List<ObjectNode> asVertexDataList(int col) {
+		List<ObjectNode> list = Lists.newArrayList();
+		while (next()) {
+			ObjectNode n = (ObjectNode) getObjectNode(col).path("data");
 			list.add(n);
 		}
 		return list;
 	}
 	public ObjectNode getObjectNode(String columnName) {
-		return getObjectNode(getColumn(columnName));
+		return getObjectNode(getColumnIndex(columnName));
 	}
 
-	public Vertex getVertex(int i) {
-		return new Neo4jNodeImpl(getObjectNode(i));
-	}
 
-	public Vertex getVertex(String columnName) {
-		return new Neo4jNodeImpl(getObjectNode(getColumn(columnName)));
-	}
 
 	public String convertToString(JsonNode n) {
 		String output = null;
@@ -144,7 +151,7 @@ public class ResultSetImpl implements Result {
 
 	@Override
 	public List getList(String column) {
-		return getList(getColumn(column));
+		return getList(getColumnIndex(column));
 	}
 
 	@Override
