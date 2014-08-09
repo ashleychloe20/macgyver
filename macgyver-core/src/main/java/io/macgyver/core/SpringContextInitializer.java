@@ -4,6 +4,7 @@ import io.macgyver.core.crypto.Crypto;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,55 +16,98 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
-public class SpringContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+/**
+ * This class allows us to access and mutate the environment before the
+ * ApplicationContext is booted. This allows us to apply property decryption so
+ * that cipher-text values are stored on disk, but plain-text values are
+ * injected into the Spring runtime.
+ * 
+ * @author rschoening
+ *
+ */
+public class SpringContextInitializer implements
+		ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	Logger logger = LoggerFactory.getLogger(SpringContextInitializer.class);
-	
+
 	Crypto crypto = new Crypto();
+
+	Properties capturedProperties = new Properties();
+	
+	Set<String> interestingProperties = Sets.newHashSet("macgyver.home","neo4j.url","neo4j.username","neo4j.password");
 	
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		
-		
+
+		// We will store any properties that we want to change in this
+		// Properties instance
 		Properties overrides = new Properties();
+
 		
-		MutablePropertySources sources = applicationContext.getEnvironment().getPropertySources();
 		
-		// convert the iterator to a list so that we don't encounter ConcurrentModificationException
-		List<PropertySource<?>> propertySourceList = Lists.newArrayList(sources.iterator());
-		
-		for (PropertySource<?> ps: propertySourceList) {
-			
-			logger.info("ps: "+ps);
+		MutablePropertySources sources = applicationContext.getEnvironment()
+				.getPropertySources();
+
+		// convert the Iterator to a List so that we don't encounter
+		// ConcurrentModificationException
+		// if we want to add/remove PropertySource instances
+
+		List<PropertySource<?>> propertySourceList = Lists.newArrayList(sources
+				.iterator());
+
+		for (PropertySource<?> ps : propertySourceList) {
+
+			logger.info("PropertySource: " + ps);
+
+			// We're only interested in EnumerablePropertySource instances,
+			// since they are the only ones that we can iterate across keys
 			if (ps instanceof EnumerablePropertySource<?>) {
-				logger.info("inspecting PropertySource: {}",ps);
+
 				EnumerablePropertySource<?> eps = (EnumerablePropertySource<?>) ps;
-				
+
 				String propertyNames[] = eps.getPropertyNames();
-				if (propertyNames!=null) {
-					for (String name: propertyNames) {
+				if (propertyNames != null) {
+					for (String name : propertyNames) {
 						Object val = eps.getProperty(name);
-						
-						processProperty(name,val, overrides);
+						processProperty(name, val, overrides);
 					}
 				}
-				
+
 			}
 		}
 
+
+		// Now that we have accumulated some overrides, we mutate the environment
+		if (overrides.isEmpty()) {
+			sources.addFirst(new PropertiesPropertySource("macgyver-override",
+					overrides));
+		}
 		
-		sources.addFirst(new PropertiesPropertySource("macgyver-override", overrides));
 		
+		capturedProperties.put("macgyver.home", applicationContext.getEnvironment().getProperty("macgyver.home"));
+		Bootstrap.getInstance().init(capturedProperties);
+	
 		
+
 	}
 
 	protected void processProperty(String name, Object val, Properties overrides) {
-		logger.info("inspecting property: {}",name);
-		if (val !=null && val instanceof String) {
-			String decryptedValue = crypto.decryptStringWithPassThrough(val.toString());
+		logger.debug("processProperty: {}", name);
+		if (val != null && val instanceof String) {
+			
+			
+			
+			// apply decryption
+			String decryptedValue = crypto.decryptStringWithPassThrough(val
+					.toString());
 			if (!val.equals(decryptedValue)) {
 				overrides.put(name, val);
+			}
+			
+			if (interestingProperties.contains(name)) {
+				capturedProperties.put(name, val.toString());
 			}
 		}
 	}

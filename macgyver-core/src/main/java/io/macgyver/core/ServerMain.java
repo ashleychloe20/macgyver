@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 
 /**
@@ -28,34 +29,16 @@ public class ServerMain {
 
 	static Logger logger = org.slf4j.LoggerFactory.getLogger(ServerMain.class);
 
-	public static String computeTemplateRoots() {
-		try {
-			File webDir = Bootstrap.getInstance()
-					.getWebDir();
-			String templateRoots = "classpath:/web/templates";
 
-			templateRoots = webDir.toURI().toURL().toString() + ","
-					+ templateRoots;
-
-			return templateRoots;
-		} catch (MalformedURLException e) {
-			throw new ConfigurationException(e);
-		}
-
-	}
 
 	public static void main(String[] args) throws Exception {
 
-		{
-			// need to move this block upstream to Bootstrap
-			System.setProperty("spring.gsp.reloadingEnabled", "true");
-			String templateRoots = computeTemplateRoots();
-			logger.info("spring.gsp.templateRoots=" + templateRoots);
-			System.setProperty("spring.gsp.templateRoots", templateRoots);
-		}
+	
 
+		Bootstrap.printBanner();
+		
 		SpringApplication app = new SpringApplication(ServerMain.class);
-		app.setShowBanner(false);
+		
 		
 		app.addInitializers(new SpringContextInitializer());
 		

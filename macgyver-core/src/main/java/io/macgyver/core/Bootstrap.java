@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
 
@@ -27,12 +28,14 @@ import com.google.common.io.CharStreams;
  */
 public class Bootstrap {
 
-	Logger logger = LoggerFactory.getLogger(Bootstrap.class);
+	static Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
 	public static Bootstrap instance = new Bootstrap();
 
-	
+	protected Properties bootstrapProps = new Properties();
 
+	private File macgyverHome;
+	
 	public static Bootstrap getInstance() {
 		if (instance == null) {
 			throw new IllegalStateException();
@@ -40,47 +43,28 @@ public class Bootstrap {
 		return instance;
 	}
 
-	public Bootstrap() {
-		init();
+	protected Bootstrap() {
+
 	}
 
 
-	public File getExtensionDir() {
-		return determineExtensionDir();
+	public File getMacGyverHome() {
+		Preconditions.checkNotNull(macgyverHome);
+		return macgyverHome;
 	}
 	public File getWebDir() {
-		return new File(determineExtensionDir(),"web");
+		return new File(getMacGyverHome(),"web");
 	}
 	public File getConfigDir() {
-		return new File(determineExtensionDir(),"config");
+		return new File(getMacGyverHome(),"config");
 	}
 	public File getDataDir() {
-		return new File(determineExtensionDir(),"data");
+		return new File(getMacGyverHome(),"data");
 	}
 	public File getScriptsDir() {
-		return new File(determineExtensionDir(),"scripts");
+		return new File(getMacGyverHome(),"scripts");
 	}
-	private File determineExtensionDir() {
-		try {
-			String location = System.getProperty("macgyver.home");
-			if (!Strings.isNullOrEmpty(location)) {
-				return new File(location).getCanonicalFile();
-			}
-			location = System.getenv("MACGYVER_HOME");
-			if (!Strings.isNullOrEmpty(location)) {
-				return new File(location).getCanonicalFile();
-			}
-			
-			
-			
-			return new File(".").getCanonicalFile();
 	
-			
-		} catch (IOException e) {
-			throw new ConfigurationException(e);
-		}
-
-	}
 
 	AtomicBoolean initialized = new AtomicBoolean(false);
 
@@ -109,21 +93,29 @@ public class Bootstrap {
 		}
 	
 		
-		val = new File(determineExtensionDir(),name).getAbsolutePath();
+		val = new File(getMacGyverHome(),name).getAbsolutePath();
 		logger.info("resolved location ("+name+") via macgyver.home: "+val);
 		return new File(val);
 	}
-	public synchronized void init() {
+	public synchronized void init(Properties p) {
 		if (initialized.get()) {
-			throw new IllegalStateException("Already initialized");
+		//	throw new IllegalStateException("Already initialized");
+			//return;
 		}
-		printBanner();
-
-		File extDir = determineExtensionDir();
 	
+
+		System.out.println(p);
+		bootstrapProps.putAll(p);
+		
+		String val = bootstrapProps.getProperty("macgyver.home");
+		
+		Preconditions.checkNotNull(val,"macgyver.home must be set");
+		macgyverHome = new File(val).getAbsoluteFile();
+		
+		
 			
 		
-			logger.info("macgyver home    : {}",determineExtensionDir());
+			logger.info("macgyver home    : {}",getMacGyverHome());
 			logger.info("macgyver config  : {}",getConfigDir());
 			logger.info("macgyver scripts : {}",getScriptsDir());
 			logger.info("macgyver   data  : {}",getDataDir());
@@ -131,20 +123,39 @@ public class Bootstrap {
 			
 	
 
-		
+			// need to move this block upstream to Bootstrap
+			System.setProperty("spring.gsp.reloadingEnabled", "true");
+			String templateRoots = computeTemplateRoots();
+			logger.info("spring.gsp.templateRoots=" + templateRoots);
+			System.setProperty("spring.gsp.templateRoots", templateRoots);
 
 		
 
 		initialized.set(true);
 
+	
 	}
+	public static String computeTemplateRoots() {
+		try {
+			File webDir = Bootstrap.getInstance()
+					.getWebDir();
+			String templateRoots = "classpath:/web/templates";
 
-	public void printBanner() {
+			templateRoots = webDir.toURI().toURL().toString() + ","
+					+ templateRoots;
+
+			return templateRoots;
+		} catch (MalformedURLException e) {
+			throw new ConfigurationException(e);
+		}
+
+	}
+	public static void printBanner() {
 
 		// Spring boot doesn't support alternate banner until 1.1.x
 		String bannerText = "\n";
 		try {
-			URL url = ServerMain.class.getResource("/banner.txt");
+			URL url = ServerMain.class.getResource("/banner_alt.txt");
 			if (url != null) {
 				try (InputStreamReader reader = new InputStreamReader(
 						url.openStream(), Charsets.UTF_8)) {
@@ -174,4 +185,6 @@ public class Bootstrap {
 		}
 		logger.info(bannerText);
 	}
+	
+	
 }

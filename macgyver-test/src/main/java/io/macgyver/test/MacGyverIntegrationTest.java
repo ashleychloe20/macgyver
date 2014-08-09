@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ public abstract class MacGyverIntegrationTest extends
 	protected static Logger logger = LoggerFactory
 			.getLogger(MacGyverIntegrationTest.class);
 
-	public static synchronized boolean isNeo4jAvailable() {
+	public static synchronized boolean isNeo4jAvailablex() {
 
 		
 		if (neo4jAvailable == null) {
@@ -71,17 +72,12 @@ public abstract class MacGyverIntegrationTest extends
 		
 
 		String macGyverHome = System.getProperty("macgyver.home");
-		/*if (Strings.isNullOrEmpty(macGyverHome)) {
-			File dir = new File(".");
-			File f = new File(dir, "config/services.groovy");
-			if (f.exists()) {
-				macGyverHome = dir.getAbsolutePath();
-			}
-		}*/
+	
 		if (Strings.isNullOrEmpty(macGyverHome)) {
 			File dir = new File("./src/test/resources/ext");
 			macGyverHome = dir.getAbsolutePath();
 			System.setProperty("macgyver.home", macGyverHome);
+			
 		}
 		
 	
@@ -99,9 +95,13 @@ public abstract class MacGyverIntegrationTest extends
 			}
 		}
 
-		Assume.assumeTrue(isNeo4jAvailable());
+		//Assume.assumeTrue(isNeo4jAvailable());
 	}
 
+	@Before
+	public void checkNeo() {
+		Assume.assumeTrue(isNeo4jAvailablex());	
+	}
 	/**
 	 * Allows integration tests to be written using properties that are held
 	 * outside the project.

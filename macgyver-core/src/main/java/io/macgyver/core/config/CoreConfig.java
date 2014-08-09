@@ -1,5 +1,6 @@
 package io.macgyver.core.config;
 
+import grails.util.Environment;
 import io.macgyver.core.Bootstrap;
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
@@ -27,18 +28,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import com.google.common.base.Preconditions;
 import com.ning.http.client.AsyncHttpClient;
 
 @Configuration
-public class CoreConfig {
+public class CoreConfig implements EnvironmentAware{
 
 	@Autowired
-	ApplicationContext applicationContext;
+	org.springframework.core.env.Environment env;
 
 	static Logger logger = LoggerFactory.getLogger(CoreConfig.class);
 
@@ -65,7 +70,7 @@ public class CoreConfig {
 
 	@Bean(name = "macKernel")
 	public Kernel macKernel() {
-		
+	
 		return new Kernel();
 	}
 
@@ -112,7 +117,7 @@ public class CoreConfig {
 
 
 
-	public boolean isUnitTest() {
+	public static boolean isUnitTest() {
 
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
@@ -147,7 +152,7 @@ public class CoreConfig {
 	}
 
 	@Bean
-	public MacGyverBeanFactoryPostProcessor macBeanFactoryPostProcessor() {
+	public static MacGyverBeanFactoryPostProcessor macBeanFactoryPostProcessor() {
 		return new MacGyverBeanFactoryPostProcessor();
 	}
 
@@ -163,11 +168,11 @@ public class CoreConfig {
 
 
 
-	
 
 	@Bean(name = "macGraphClient")
 	public Neo4jRestClient macGraphClient() throws MalformedURLException{
-		return new Neo4jRestClient();
+		Preconditions.checkNotNull(env);
+		return new Neo4jRestClient(env.getProperty("neo4j.url"));
 
 	}
 	
@@ -178,12 +183,20 @@ public class CoreConfig {
 	public ExtensionResourceProvider macExtensionResourceProvider() {
 		ExtensionResourceProvider loader = new ExtensionResourceProvider();
 		
-		FileSystemResourceProvider fsLoader = new FileSystemResourceProvider(Bootstrap.getInstance().getExtensionDir());
+		FileSystemResourceProvider fsLoader = new FileSystemResourceProvider(Bootstrap.getInstance().getMacGyverHome());
 		loader.addResourceLoader(fsLoader);
 		
 		
 		
 		return loader;
+	}
+
+
+	@Override
+	public void setEnvironment(
+			org.springframework.core.env.Environment environment) {
+		this.env = environment;
+		
 	}
 	
 
