@@ -25,7 +25,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
-@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = { TestConfig.class })
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = { TestConfig.class }, initializers={SoftDependencyInitializer.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class MacGyverIntegrationTest extends
 		AbstractJUnit4SpringContextTests {

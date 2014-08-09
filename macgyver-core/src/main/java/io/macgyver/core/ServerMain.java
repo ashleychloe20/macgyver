@@ -56,6 +56,9 @@ public class ServerMain {
 
 		SpringApplication app = new SpringApplication(ServerMain.class);
 		app.setShowBanner(false);
+		
+		app.addInitializers(new SpringContextInitializer());
+		
 		ConfigurableApplicationContext ctx = app.run(args);
 
 		Environment env = ctx.getEnvironment();
