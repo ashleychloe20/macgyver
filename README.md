@@ -1,7 +1,7 @@
 MacGyver Multi-Tool
 ===================
 
-[![Build Status](http://ci.macgyver.io/job/macgyver-ci/badge/icon)](http://ci.macgyver.io/job/macgyver-ci/)
+[![Build Status](http://ci.macgyver.io/buildStatus/icon?job=macgyver-ci)](http://ci.macgyver.io/job/macgyver-ci/)
 
 [ ![Download](https://api.bintray.com/packages/robschoening/io-macgyver/io-macgyver/images/download.png) ](https://bintray.com/robschoening/io-macgyver/io-macgyver/_latestVersion)
 
