@@ -35,7 +35,7 @@ public class SpringContextInitializer implements ApplicationContextInitializer<C
 		
 		for (PropertySource<?> ps: propertySourceList) {
 			
-			
+			logger.info("ps: "+ps);
 			if (ps instanceof EnumerablePropertySource<?>) {
 				logger.info("inspecting PropertySource: {}",ps);
 				EnumerablePropertySource<?> eps = (EnumerablePropertySource<?>) ps;
@@ -55,7 +55,7 @@ public class SpringContextInitializer implements ApplicationContextInitializer<C
 		
 		sources.addFirst(new PropertiesPropertySource("macgyver-override", overrides));
 		
-	
+		
 	}
 
 	protected void processProperty(String name, Object val, Properties overrides) {

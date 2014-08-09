@@ -5,7 +5,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'groovy'
 apply plugin:'application'
-
+apply plugin: 'spring-boot' 
 
 configurations {
 all*.exclude group: 'org.apache.maven.scm'
@@ -58,13 +58,20 @@ dependencies {
 	compile 'net.lingala.zip4j:zip4j:1.3.2'
 
     compile("org.codehaus.groovy:groovy-all:2.3.1")
+	
+	
+	// * * * * * * * * * * //
+	//     GSP Support     //
+	// * * * * * * * * * * //
     compile("org.grails:grails-gsp-spring-boot:1.0.0.RC1")  {
 		exclude (group: "org.springframework.boot", module: "spring-boot-cli")
 	}  
-    compile("org.grails:grails-web-gsp:2.4.0") {
+    compile("org.grails:grails-web-gsp:2.4.3") {
 		exclude (group: "org.springframework.boot", module: "spring-boot-cli")
 	}
-    compile("org.grails:grails-web-jsp:2.4.0")   
+    compile("org.grails:grails-web-jsp:2.4.3")   
+	compile 'org.grails:grails-web-gsp-taglib:2.4.3'
+
 
 
 
@@ -74,7 +81,6 @@ dependencies {
     
     
 
-	
     testCompile("org.springframework.boot:spring-boot-starter-test:${SPRING_BOOT_VERSION}")
     testCompile "org.springframework:spring-test:${SPRING_VERSION}"
     testCompile group: "junit", name: "junit", version: "${JUNIT_VERSION}"

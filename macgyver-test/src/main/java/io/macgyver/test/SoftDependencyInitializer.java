@@ -23,6 +23,7 @@ public class SoftDependencyInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext> ci = null;
 
 		try {
+		
 			Class clazz = Class
 					.forName("io.macgyver.core.SpringContextInitializer");
 			ci = (ApplicationContextInitializer<ConfigurableApplicationContext>) clazz
@@ -30,7 +31,7 @@ public class SoftDependencyInitializer implements
 		} catch (Exception e) {
 			logger.warn("", e);
 		}
-
+		System.out.println("CI: "+ci);
 		if (ci != null) {
 			ci.initialize(applicationContext);
 		}
