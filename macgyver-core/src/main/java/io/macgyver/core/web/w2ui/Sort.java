@@ -3,8 +3,8 @@ package io.macgyver.core.web.w2ui;
 public class Sort {
 
 	public static enum Direction {
-		asc("asc"),
-		desc("desc");
+		ASCENDING("ASCENDING"),
+		DESCENDING("DESCENDING");
 		
 		private final String direction;
 		
@@ -14,13 +14,23 @@ public class Sort {
 		public String toString() {
 			return direction;
 		}
+		
+		public static Direction fromString(String input) {
+			if ("asc".equalsIgnoreCase(input)) {
+				return ASCENDING;
+			}
+			else if ("desc".equalsIgnoreCase(input)) {
+				return DESCENDING;
+			}
+			return Direction.valueOf(input);
+		}
 		 public boolean equalsName(String otherName){
 		        return (otherName == null)? false:direction.equals(otherName);
 		    }
 	}
 	
 	String field;
-	Direction direction = Direction.asc;
+	Direction direction = Direction.ASCENDING;
 	
 	
 	public Sort(String field, Direction d) {

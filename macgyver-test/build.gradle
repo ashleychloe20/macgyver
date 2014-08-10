@@ -24,8 +24,9 @@ dependencies {
     compile "org.codehaus.groovy:groovy-all:${GROOVY_VERSION}"
     compile "com.google.guava:guava:${GUAVA_VERSION}"
 	compile 'org.kohsuke:wordnet-random-name:1.2'
-	compile 'org.springframework.boot:spring-boot:1.1.4.RELEASE'
-	compile 'org.springframework.boot:spring-boot-starter-test:1.1.4.RELEASE'
+	compile "org.springframework.boot:spring-boot:${SPRING_BOOT_VERSION}"
+	compile "org.springframework.boot:spring-boot-starter-test:${SPRING_BOOT_VERSION}"
+	compile "org.mockito:mockito-all:${MOCKITO_VERSION}"
 	compile project(":macgyver-neo4j")
     
 

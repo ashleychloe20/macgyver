@@ -44,11 +44,19 @@ public class GridDataRequest {
 	}
 
 	public int getLimit() {
-		return Integer.parseInt(request.getParameter("limit"));
+		try {
+			return Integer.parseInt(request.getParameter("limit"));
+		} catch (NumberFormatException e) {
+			return 100;
+		}
 	}
 
 	public int getOffset() {
-		return Integer.parseInt(request.getParameter("offset"));
+		try {
+			return Integer.parseInt(request.getParameter("offset"));
+		} catch (NumberFormatException e) {
+			return 0;
+		}
 	}
 
 	public boolean isGetRecordsRequest() {
@@ -56,7 +64,8 @@ public class GridDataRequest {
 	}
 
 	public void setDefaultSort(String sort) {
-		defaultSort = Lists.newArrayList(new Sort(sort, Sort.Direction.asc));
+		defaultSort = Lists.newArrayList(new Sort(sort,
+				Sort.Direction.ASCENDING));
 	}
 
 	public List<Sort> getSortOrder() {

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -35,6 +36,7 @@ public class GridDataControl {
 	boolean caseSensitive=false;
 
 	public GridDataControl(HttpServletRequest request) {
+		Preconditions.checkNotNull(request);
 		gridRequest = new GridDataRequest(request);
 	}
 
@@ -142,7 +144,7 @@ public class GridDataControl {
 
 		Comparator comparator = null;
 
-		if (sort.getDirection() == Sort.Direction.asc) {
+		if (sort.getDirection() == Sort.Direction.ASCENDING) {
 			comparator = Xson.pathComparator("$." + sort.getField(),
 					SortOrder.ASCENDING);
 		} else {
