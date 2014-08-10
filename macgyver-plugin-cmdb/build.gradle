@@ -12,6 +12,7 @@ configurations {
 }
 
 
+mainClassName = 'io.macgyver.core.ServerMain'
 
 dependencies {
 

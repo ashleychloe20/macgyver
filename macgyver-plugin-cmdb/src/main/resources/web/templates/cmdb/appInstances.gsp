@@ -9,27 +9,7 @@
 </head>
 <body>
 
-  <script type="text/javascript" type="text/javascript">
 
-  $(document).ready(function () {
-
-      (function ($) {
-
-          $('#filter').keyup(function () {
-
-              var rex = new RegExp($(this).val(), 'i');
-              $('.searchable tr').hide();
-              $('.searchable tr').filter(function () {
-                  return rex.test($(this).text());
-              }).show();
-
-          })
-
-      }(jQuery));
-
-  });
-  
-  </script>
   
 
   
@@ -37,63 +17,39 @@
     <div class="panel-heading">
       <h3 class="panel-title">App Instances</h3>
     </div>
-	<input id="filter" type="text" class="form-control" placeholder="type here to filter...">
+
     <div class="computeInstances">
 
-  
-	<table class="table table-striped table-bordered table-condensed">
-		<thead>
-			
-	<tr>
-	<th>Environment</th>
-	<th class="sort" data-sort="internalHostname" >Host</th>
-	<th class="sort" data-sort="appId">App Name</th>
-	<th class="sort" data-sort="appId">Classifier</th>
-	<th>Version</th>
-	<th class="sort" data-sort="appId">Revision</th>
-	<th class="sort" data-sort="appId">Branch</th>
-	<th class="sort" data-sort="appId">Last Contact</th>
-		
-		
+    <div id="xxgrid" style="width: 100%; height: 600px;"></div>
 
-	</tr>
-</thead>
-<tbody class="searchable">
-	<g:each in="${results}" var="result">
-	<%
+
+    <script>
+    $(function () {
+ 
+
+ 
+        $('#xxgrid').w2grid({
+            name: 'grid',
+            header: 'App Instances',
+			url : '/cmdb/appInstances/data.json',
 	
-	def props = result.path("data")
-	def ts = props.path("lastContactTs").asLong(0)
-	def lastContact  = (ts==0) ? "" : new PrettyTime().format(new Date(ts))
-	def scmViewRevisionUrl = props.path("scmViewRevisionUrl").asText()
-	
-	%>
-	  <tr>
-		  <td>${props.path("environment").asText()}</td>
-		  <td>${props.path("host").asText()}</td>
-		  <td>${props.path("appId").asText()}</td>
-		  <td>${props.path("classifier").asText()}</td>
-		  <td>${props.path("version").asText()}</td>
-	
-	  <td>
-  		<g:if test="${scmViewRevisionUrl.length()>0}">
-  			<a href="${scmViewRevisionUrl}">
-  		</g:if>
-		  
-		  ${props.path("scmRevision").asText()}
-	<g:if test="${scmViewRevisionUrl.length()>0}">
-		<a href="${scmViewRevisionUrl}">
-	</g:if>
-	  
-	  </td>
-	  
-	   <td>${props.path("scmBranch").asText()}</td>
-	    <td>${lastContact}</td>
-	  </tr>
-	</g:each>
-	
-</tbody>
-	</table>
+	        show: {
+	            toolbar: true,
+				footer: true
+	        },
+            columns: [
+                { field: 'environment', caption: 'Environment', size: '30%' , sortable:true},
+                { field: 'host', caption: 'Host', size: '30%' },
+                { field: 'appId', caption: 'App', size: '40%' , sortable:true},
+				{ field: 'classifier', caption: 'Classifier', size: '40%' , sortable:true},
+				{ field: 'version', caption: 'Version', size: '40%' , sortable:true},
+				{ field: 'scmRevision', caption: 'Revision', size: '40%' , sortable:true},
+				{ field: 'scmBranch', caption: 'Branch', size: '40%' , sortable:true},
+				{ field: 'lastContactTsPretty', caption: 'Last Contact', size: '40%' , sortable:true}
+            ]
+        });
+    });
+    </script>
 
     </div>
   </div>
