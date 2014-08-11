@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.servermanager.compute.functions;
+package io.macgyver.jclouds.vsphere.compute.functions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.FluentIterable.from;
+import io.macgyver.jclouds.vsphere.Server;
 
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +39,6 @@ import org.jclouds.domain.Credentials;
 import org.jclouds.domain.Location;
 import org.jclouds.domain.LoginCredentials;
 import org.jclouds.location.predicates.LocationPredicates;
-import org.jclouds.servermanager.Server;
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;

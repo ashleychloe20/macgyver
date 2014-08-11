@@ -14,11 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.servermanager.compute.strategy;
+package io.macgyver.jclouds.vsphere.compute.strategy;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Iterables.contains;
 import static com.google.common.collect.Iterables.filter;
+import io.macgyver.jclouds.vsphere.Datacenter;
+import io.macgyver.jclouds.vsphere.Hardware;
+import io.macgyver.jclouds.vsphere.Image;
+import io.macgyver.jclouds.vsphere.Server;
+import io.macgyver.jclouds.vsphere.ServerManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,11 +31,6 @@ import javax.inject.Singleton;
 import org.jclouds.compute.ComputeServiceAdapter;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.domain.LoginCredentials;
-import org.jclouds.servermanager.Datacenter;
-import org.jclouds.servermanager.Hardware;
-import org.jclouds.servermanager.Image;
-import org.jclouds.servermanager.Server;
-import org.jclouds.servermanager.ServerManager;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;

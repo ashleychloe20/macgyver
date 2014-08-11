@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.servermanager.compute.functions;
+package io.macgyver.jclouds.vsphere.compute.functions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import io.macgyver.jclouds.vsphere.Datacenter;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -25,7 +26,6 @@ import javax.inject.Singleton;
 import org.jclouds.domain.Location;
 import org.jclouds.domain.LocationBuilder;
 import org.jclouds.domain.LocationScope;
-import org.jclouds.servermanager.Datacenter;
 
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;

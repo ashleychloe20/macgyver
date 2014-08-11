@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.servermanager.compute.functions;
+package io.macgyver.jclouds.vsphere.compute.functions;
 
 import javax.inject.Singleton;
 
@@ -28,10 +28,10 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 
 @Singleton
-public class ServerManagerHardwareToHardware implements Function<org.jclouds.servermanager.Hardware, Hardware> {
+public class ServerManagerHardwareToHardware implements Function<io.macgyver.jclouds.vsphere.Hardware, Hardware> {
 
    @Override
-   public Hardware apply(org.jclouds.servermanager.Hardware from) {
+   public Hardware apply(io.macgyver.jclouds.vsphere.Hardware from) {
       HardwareBuilder builder = new HardwareBuilder();
       builder.ids(from.id + "");
       builder.name(from.name);

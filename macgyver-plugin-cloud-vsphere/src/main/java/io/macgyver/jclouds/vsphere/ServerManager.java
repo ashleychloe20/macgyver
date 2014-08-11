@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.servermanager;
+package io.macgyver.jclouds.vsphere;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -81,7 +81,7 @@ public class ServerManager {
       return hardware.get(hardwareId);
    }
 
-   public Iterable<org.jclouds.servermanager.Hardware> listHardware() {
+   public Iterable<io.macgyver.jclouds.vsphere.Hardware> listHardware() {
       return hardware.values();
    }
 

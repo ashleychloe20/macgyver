@@ -14,21 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.servermanager.compute.config;
+package io.macgyver.jclouds.vsphere.compute.config;
+
+import io.macgyver.jclouds.vsphere.Datacenter;
+import io.macgyver.jclouds.vsphere.Hardware;
+import io.macgyver.jclouds.vsphere.Image;
+import io.macgyver.jclouds.vsphere.Server;
+import io.macgyver.jclouds.vsphere.compute.functions.DatacenterToLocation;
+import io.macgyver.jclouds.vsphere.compute.functions.ServerManagerHardwareToHardware;
+import io.macgyver.jclouds.vsphere.compute.functions.ServerManagerImageToImage;
+import io.macgyver.jclouds.vsphere.compute.functions.ServerToNodeMetadata;
+import io.macgyver.jclouds.vsphere.compute.strategy.ServerManagerComputeServiceAdapter;
 
 import org.jclouds.compute.ComputeServiceAdapter;
 import org.jclouds.compute.config.ComputeServiceAdapterContextModule;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.domain.Location;
-import org.jclouds.servermanager.Datacenter;
-import org.jclouds.servermanager.Hardware;
-import org.jclouds.servermanager.Image;
-import org.jclouds.servermanager.Server;
-import org.jclouds.servermanager.compute.functions.DatacenterToLocation;
-import org.jclouds.servermanager.compute.functions.ServerManagerHardwareToHardware;
-import org.jclouds.servermanager.compute.functions.ServerManagerImageToImage;
-import org.jclouds.servermanager.compute.functions.ServerToNodeMetadata;
-import org.jclouds.servermanager.compute.strategy.ServerManagerComputeServiceAdapter;
 
 import com.google.common.base.Function;
 import com.google.inject.TypeLiteral;

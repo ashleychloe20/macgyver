@@ -14,34 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.servermanager;
+package io.macgyver.jclouds.vsphere;
 
 import com.google.common.base.Objects;
 
 /**
- * This would be replaced with the real java object related to the underlying server
+ * This would be replaced with the real java object related to the underlying image
  */
-public class Server {
-   public enum Status {
-      ACTIVE, BUILD, TERMINATED, UNRECOGNIZED
-
-   }
+public class Image {
 
    public int id;
    public String name;
-   public Status status;
-   public String datacenter;
-   public int imageId;
-   public int hardwareId;
-   public String publicAddress;
-   public String privateAddress;
-   public String loginUser;
-   public String password;
+
+   public Image(int id, String name) {
+      this.id = id;
+      this.name = name;
+   }
 
    @Override
    public int hashCode() {
-      return Objects.hashCode(id, name, status, datacenter, imageId, hardwareId, publicAddress, privateAddress,
-            loginUser);
+      return Objects.hashCode(id, name);
    }
 
    @Override
@@ -53,10 +45,7 @@ public class Server {
 
    @Override
    public String toString() {
-      return Objects.toStringHelper(this).add("id", id).add("name", name).add("status", status)
-            .add("datacenter", datacenter).add("imageId", imageId).add("hardwareId", hardwareId)
-            .add("publicAddress", publicAddress).add("privateAddress", privateAddress).add("loginUser", loginUser)
-            .toString();
+      return Objects.toStringHelper(this).add("id", id).add("name", name).toString();
    }
 
 }

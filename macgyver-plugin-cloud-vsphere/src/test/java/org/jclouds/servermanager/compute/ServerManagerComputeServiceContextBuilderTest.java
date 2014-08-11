@@ -17,12 +17,13 @@
 package org.jclouds.servermanager.compute;
 
 
+import io.macgyver.jclouds.vsphere.ServerManagerApiMetadata;
+
 import java.util.Properties;
 
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.internal.ContextImpl;
-import org.jclouds.servermanager.ServerManagerApiMetadata;
 import org.junit.Assert;
 import org.junit.Test;
 

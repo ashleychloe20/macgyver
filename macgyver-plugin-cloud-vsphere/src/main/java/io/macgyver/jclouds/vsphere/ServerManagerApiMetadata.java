@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.servermanager;
+package io.macgyver.jclouds.vsphere;
+
+import io.macgyver.jclouds.vsphere.compute.config.ServerManagerComputeServiceContextModule;
 
 import java.net.URI;
 
 import org.jclouds.apis.internal.BaseApiMetadata;
 import org.jclouds.compute.ComputeServiceContext;
-import org.jclouds.servermanager.compute.config.ServerManagerComputeServiceContextModule;
 
 /**
  * Implementation of {@link ApiMetadata} for an example of library integration (ServerManager)

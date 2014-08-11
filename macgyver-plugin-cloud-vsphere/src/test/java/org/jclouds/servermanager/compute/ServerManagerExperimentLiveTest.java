@@ -16,12 +16,13 @@
  */
 package org.jclouds.servermanager.compute;
 
+import io.macgyver.jclouds.vsphere.ServerManagerApiMetadata;
+
 import java.util.Set;
 
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.ComputeMetadata;
-import org.jclouds.servermanager.ServerManagerApiMetadata;
 
 public class ServerManagerExperimentLiveTest  {
 
