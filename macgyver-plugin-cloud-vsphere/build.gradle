@@ -18,6 +18,10 @@ dependencies {
   
     testCompile project(':macgyver-test')
      compile project(':macgyver-plugin-cloud')
+	 compile project(':macgyver-plugin-cmdb')
+	 
+	 //org.apache.jcloud
+	 testCompile "org.apache.jclouds:jclouds-compute:1.8.0:test-jar"
      compile 'com.vmware:vijava:5.1'
 }
 

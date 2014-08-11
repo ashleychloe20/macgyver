@@ -15,12 +15,10 @@ configurations {
 
 dependencies {
 
-  	compile "org.apache.jclouds:jclouds:${JCLOUDS_VERSION}"
-	compile "org.apache.jclouds.driver:jclouds-slf4j:${JCLOUDS_VERSION}"
-	compile "org.apache.jclouds.driver:jclouds-sshj:${JCLOUDS_VERSION}"
-	compile project(':macgyver-core')
+  
     testCompile project(':macgyver-test')
-     
-     
+     compile project(':macgyver-plugin-cloud')
+	 compile project(':macgyver-plugin-cmdb')
+     compile "org.apache.jclouds.provider:aws-ec2:${JCLOUDS_VERSION}"
 }
 

@@ -15,12 +15,13 @@ buildscript {
 		springBootVersion = '1.1.5.RELEASE'
 	}
     repositories {
+		mavenLocal()
     	mavenCentral()
     }
     dependencies {
 
         classpath 'org.ajoberstar:gradle-git:0.8.0'
-		 classpath("org.springframework.boot:spring-boot-gradle-plugin:${SPRING_BOOT_VERSION}")
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${SPRING_BOOT_VERSION}")
     }
 }
 
@@ -54,9 +55,9 @@ subprojects {
  
 	
     repositories {
-  
+  	   mavenLocal()
         mavenCentral()
-        mavenLocal()
+       
 		jcenter()
 
     }
