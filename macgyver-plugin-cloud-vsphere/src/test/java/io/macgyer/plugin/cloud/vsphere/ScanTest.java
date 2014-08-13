@@ -52,7 +52,7 @@ public class ScanTest extends MacGyverIntegrationTest {
 		
 		VmQueryTemplate t = new VmQueryTemplate(serviceInstance);
 		for (VirtualMachine vm : t.findAllVirtualMachines()) {
-			System.out.println(vm);
+			logger.info("vm: {}",vm);
 		}
 		
 		

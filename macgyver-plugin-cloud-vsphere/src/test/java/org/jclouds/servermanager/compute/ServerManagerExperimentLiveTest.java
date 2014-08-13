@@ -18,6 +18,7 @@ package org.jclouds.servermanager.compute;
 
 import io.macgyver.jclouds.vsphere.ServerManagerApiMetadata;
 
+import java.util.Properties;
 import java.util.Set;
 
 import org.jclouds.ContextBuilder;
@@ -34,11 +35,13 @@ public class ServerManagerExperimentLiveTest  {
    public void testAndExperiment() {
       ComputeServiceContext context = null;
       try {
-         context = ContextBuilder.newBuilder(new ServerManagerApiMetadata()).build(ComputeServiceContext.class);
-
-         Set<ComputeMetadata> x ;
+    	  
+    	
+         context = ContextBuilder.newBuilder(new ServerManagerApiMetadata().toBuilder().credentialName("abc").build()).credentials("abc", "def").overrides(new Properties()).build(ComputeServiceContext.class);
+ 
+     
          for (ComputeMetadata md : context.getComputeService().listNodes()) {
-        	 System.out.println(md);
+        	 System.out.println(">>"+md);
          }
 
 

@@ -25,6 +25,7 @@ import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.internal.ContextImpl;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -38,12 +39,14 @@ public class ServerManagerComputeServiceContextBuilderTest {
       context.close();
    }
 
+   @Ignore
    @Test
    public void testCanBuildById() {
       ComputeServiceContext context = ContextBuilder.newBuilder("servermanager").build(ComputeServiceContext.class);
       context.close();
    }
 
+   @Ignore
    @Test
    public void testCanBuildWithOverridingProperties() {
       Properties overrides = new Properties();
@@ -56,6 +59,7 @@ public class ServerManagerComputeServiceContextBuilderTest {
       context.close();
    }
 
+   @Ignore
    @Test
    public void testUnwrapIsCorrectType() {
       ComputeServiceContext context = ContextBuilder.newBuilder("servermanager").build(ComputeServiceContext.class);

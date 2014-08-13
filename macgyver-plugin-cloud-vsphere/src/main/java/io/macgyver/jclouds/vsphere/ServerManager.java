@@ -22,7 +22,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Singleton;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.vmware.vim25.mo.VirtualMachine;
 
 /**
  * This would be replaced with the real connection to the service that can
@@ -31,70 +34,75 @@ import com.google.common.collect.Maps;
 @Singleton
 public class ServerManager {
 
-   private static final Map<Integer, Server> servers = Maps.newHashMap();
-   private static final Map<Integer, Image> images = ImmutableMap.of(1, new Image(1, "ubuntu"));
-   private static final Map<Integer, Hardware> hardware = ImmutableMap.of(1, new Hardware(1, "small", 1, 512, 10));
+	private static final Map<Integer, Image> images = ImmutableMap.of(1,
+			new Image(1, "ubuntu"));
+	private static final Map<Integer, Hardware> hardware = ImmutableMap.of(1,
+			new Hardware(1, "small", 1, 512, 10));
 
-   private static final AtomicInteger nodeIds = new AtomicInteger(0);
+	private static final AtomicInteger nodeIds = new AtomicInteger(0);
 
-   /**
-    * simulate creating a server, as this is really going to happen with the api underneath
-    * 
-    * @param name
-    * @param name
-    * @param imageId
-    * @param hardwareId
-    * @return new server
-    */
-   public Server createServerInDC(String datacenter, String name, int imageId, int hardwareId) {
-      Server server = new Server();
-      server.id = nodeIds.getAndIncrement();
-      server.name = name;
-      server.datacenter = datacenter;
-      server.imageId = imageId;
-      server.hardwareId = hardwareId;
-      server.publicAddress = "7.1.1." + server.id;
-      server.privateAddress = "10.1.1." + server.id;
-      server.loginUser = "root";
-      server.password = "password";
-      servers.put(server.id, server);
-      return server;
-   }
+	@Inject
+	ServerManagerApiMetadata smd;
 
-   public Server getServer(int serverId) {
-      return servers.get(serverId);
-   }
+	public ServerManager() {
 
-   public Iterable<Server> listServers() {
-      return servers.values();
-   }
+	}
 
-   public Image getImage(int imageId) {
-      return images.get(imageId);
-   }
+	/**
+	 * simulate creating a server, as this is really going to happen with the
+	 * api underneath
+	 * 
+	 * @param name
+	 * @param name
+	 * @param imageId
+	 * @param hardwareId
+	 * @return new server
+	 */
+	public VirtualMachine createServerInDC(String datacenter, String name,
+			int imageId, int hardwareId) {
 
-   public Iterable<Image> listImages() {
-      return images.values();
-   }
+		return null;
+	}
 
-   public Hardware getHardware(int hardwareId) {
-      return hardware.get(hardwareId);
-   }
+	public VirtualMachine getServer(int serverId) {
 
-   public Iterable<io.macgyver.jclouds.vsphere.Hardware> listHardware() {
-      return hardware.values();
-   }
+		return null;
+	}
 
-   public void destroyServer(int serverId) {
-      servers.remove(serverId);
-   }
+	public Iterable<VirtualMachine> listServers() {
 
-   public void rebootServer(int serverId) {
-   }
+		System.out.println(smd.getEndpointName());
+		System.out.println(smd.getIdentityName());
+		return Lists.newArrayList();
+		// return servers.values();
+	}
 
-   public void stopServer(int serverId) {
-   }
-   
-   public void startServer(int serverId) {
-   }
+	public Image getImage(int imageId) {
+		return images.get(imageId);
+	}
+
+	public Iterable<Image> listImages() {
+		return images.values();
+	}
+
+	public Hardware getHardware(int hardwareId) {
+		return hardware.get(hardwareId);
+	}
+
+	public Iterable<io.macgyver.jclouds.vsphere.Hardware> listHardware() {
+		return hardware.values();
+	}
+
+	public void destroyServer(int serverId) {
+		// servers.remove(serverId);
+	}
+
+	public void rebootServer(int serverId) {
+	}
+
+	public void stopServer(int serverId) {
+	}
+
+	public void startServer(int serverId) {
+	}
 }

@@ -22,40 +22,42 @@ import static com.google.common.collect.Iterables.filter;
 import io.macgyver.jclouds.vsphere.Datacenter;
 import io.macgyver.jclouds.vsphere.Hardware;
 import io.macgyver.jclouds.vsphere.Image;
-import io.macgyver.jclouds.vsphere.Server;
 import io.macgyver.jclouds.vsphere.ServerManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceAdapter;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.domain.LoginCredentials;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
+import com.vmware.vim25.mo.VirtualMachine;
 
 /**
  * defines the connection between the {@link ServerManager} implementation and the jclouds
  * {@link ComputeService}
  */
 @Singleton
-public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter<Server, Hardware, Image, Datacenter> {
+public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter<VirtualMachine, Hardware, Image, Datacenter> {
    private final ServerManager client;
 
    @Inject
    public ServerManagerComputeServiceAdapter(ServerManager client) {
       this.client = checkNotNull(client, "client");
+      
    }
 
    @Override
-   public NodeAndInitialCredentials<Server>  createNodeWithGroupEncodedIntoName(String tag, String name, Template template) {
+   public NodeAndInitialCredentials<VirtualMachine>  createNodeWithGroupEncodedIntoName(String tag, String name, Template template) {
       // create the backend object using parameters from the template.
-      Server from = client.createServerInDC(template.getLocation().getId(), name,
+      VirtualMachine from = client.createServerInDC(template.getLocation().getId(), name,
             Integer.parseInt(template.getImage().getProviderId()),
             Integer.parseInt(template.getHardware().getProviderId()));
-      return new NodeAndInitialCredentials<Server>(from, from.id + "", LoginCredentials.builder().user(from.loginUser)
-            .password(from.password).build());
+      return new NodeAndInitialCredentials<VirtualMachine>(from, from.getMOR().getVal() + "", LoginCredentials.builder().user("none")
+            .password("none").build());
    }
 
    @Override
@@ -75,17 +77,17 @@ public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter
    }
    
    @Override
-   public Iterable<Server> listNodes() {
+   public Iterable<VirtualMachine> listNodes() {
       return client.listServers();
    }
 
    @Override
-   public Iterable<Server> listNodesByIds(final Iterable<String> ids) {
-      return filter(listNodes(), new Predicate<Server>() {
+   public Iterable<VirtualMachine> listNodesByIds(final Iterable<String> ids) {
+      return filter(listNodes(), new Predicate<VirtualMachine>() {
 
             @Override
-            public boolean apply(Server server) {
-               return contains(ids, Integer.toString(server.id));
+            public boolean apply(VirtualMachine server) {
+               return contains(ids, server.getMOR().getVal());
             }
          });
    }
@@ -96,7 +98,7 @@ public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter
    }
 
    @Override
-   public Server getNode(String id) {
+   public VirtualMachine getNode(String id) {
       int serverId = Integer.parseInt(id);
       return client.getServer(serverId);
    }

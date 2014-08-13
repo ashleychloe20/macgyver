@@ -21,7 +21,7 @@ dependencies {
 	 compile project(':macgyver-plugin-cmdb')
 	 
 	 //org.apache.jcloud
-	 testCompile "org.apache.jclouds:jclouds-compute:1.8.0:test-jar"
+	// testCompile "org.apache.jclouds:jclouds-compute:1.8.0:test"
      compile 'com.vmware:vijava:5.1'
 }
 

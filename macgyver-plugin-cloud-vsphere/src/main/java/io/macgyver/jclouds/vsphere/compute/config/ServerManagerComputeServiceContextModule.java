@@ -19,7 +19,7 @@ package io.macgyver.jclouds.vsphere.compute.config;
 import io.macgyver.jclouds.vsphere.Datacenter;
 import io.macgyver.jclouds.vsphere.Hardware;
 import io.macgyver.jclouds.vsphere.Image;
-import io.macgyver.jclouds.vsphere.Server;
+
 import io.macgyver.jclouds.vsphere.compute.functions.DatacenterToLocation;
 import io.macgyver.jclouds.vsphere.compute.functions.ServerManagerHardwareToHardware;
 import io.macgyver.jclouds.vsphere.compute.functions.ServerManagerImageToImage;
@@ -33,16 +33,17 @@ import org.jclouds.domain.Location;
 
 import com.google.common.base.Function;
 import com.google.inject.TypeLiteral;
+import com.vmware.vim25.mo.VirtualMachine;
 
 public class ServerManagerComputeServiceContextModule extends
-         ComputeServiceAdapterContextModule<Server, Hardware, Image, Datacenter> {
+         ComputeServiceAdapterContextModule<VirtualMachine, Hardware, Image, Datacenter> {
 
    @Override
    protected void configure() {
       super.configure();
-      bind(new TypeLiteral<ComputeServiceAdapter<Server, Hardware, Image, Datacenter>>() {
+      bind(new TypeLiteral<ComputeServiceAdapter<VirtualMachine, Hardware, Image, Datacenter>>() {
       }).to(ServerManagerComputeServiceAdapter.class);
-      bind(new TypeLiteral<Function<Server, NodeMetadata>>() {
+      bind(new TypeLiteral<Function<VirtualMachine, NodeMetadata>>() {
       }).to(ServerToNodeMetadata.class);
       bind(new TypeLiteral<Function<Image, org.jclouds.compute.domain.Image>>() {
       }).to(ServerManagerImageToImage.class);
@@ -51,6 +52,8 @@ public class ServerManagerComputeServiceContextModule extends
       bind(new TypeLiteral<Function<Datacenter, Location>>() {
       }).to(DatacenterToLocation.class);
       // to have the compute service adapter override default locations
-      install(new LocationsFromComputeServiceAdapterModule<Server, Hardware, Image, Datacenter>(){});
+      install(new LocationsFromComputeServiceAdapterModule<VirtualMachine, Hardware, Image, Datacenter>(){});
+      
+      
    }
 }
