@@ -20,7 +20,7 @@
     <title>MacGyver</title>
 
 
-  <link rel="stylesheet" type="text/css" href="http://w2ui.com/src/w2ui-1.4.min.css" />
+  <link rel="stylesheet" type="text/css" href="/resources/ext/w2ui/w2ui-1.4.1.min.css" />
 	  
     <!-- Bootstrap core CSS -->
    <!-- <link href="/webjars/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"> -->
@@ -41,7 +41,7 @@
 		-->
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-	    <script type="text/javascript" src="http://w2ui.com/src/w2ui-1.4.min.js"></script>
+	    <script type="text/javascript" src="/resources/ext/w2ui/w2ui-1.4.1.min.js"></script>
 		
 	      <g:layoutHead />
   </head>
