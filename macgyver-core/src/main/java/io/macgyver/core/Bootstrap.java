@@ -4,16 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.VFS;
+import javax.tools.FileObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
 
@@ -26,13 +28,14 @@ import com.google.common.io.CharStreams;
  */
 public class Bootstrap {
 
-	Logger logger = LoggerFactory.getLogger(Bootstrap.class);
+	static Logger logger = LoggerFactory.getLogger(Bootstrap.class);
 
 	public static Bootstrap instance = new Bootstrap();
-	VirtualFileSystem vfsManager = null;
 
+	protected Properties bootstrapProps = new Properties();
+
+	private File macgyverHome;
 	
-
 	public static Bootstrap getInstance() {
 		if (instance == null) {
 			throw new IllegalStateException();
@@ -40,79 +43,119 @@ public class Bootstrap {
 		return instance;
 	}
 
-	public Bootstrap() {
-		init();
+	protected Bootstrap() {
+
 	}
 
 
-
-	public VirtualFileSystem getVirtualFileSystem() {
-		return vfsManager;
+	public File getMacGyverHome() {
+		Preconditions.checkNotNull(macgyverHome);
+		return macgyverHome;
 	}
+	public File getWebDir() {
+		return new File(getMacGyverHome(),"web");
+	}
+	public File getConfigDir() {
+		return new File(getMacGyverHome(),"config");
+	}
+	public File getDataDir() {
+		return new File(getMacGyverHome(),"data");
+	}
+	public File getScriptsDir() {
+		return new File(getMacGyverHome(),"scripts");
+	}
+	
 
-	private File determineExtensionDir() {
+	AtomicBoolean initialized = new AtomicBoolean(false);
+
+	public File resolveConfig(String name) {
+		return new File(getConfigDir(),name);
+	}
+	protected File findLocation(String name) throws  MalformedURLException {
+		
+
+		
+		String syspropKey = "macgyver."+name.toLowerCase()+".dir";
+		String val = System.getProperty(syspropKey);
+		if (!Strings.isNullOrEmpty(val)) {
+			logger.info("resolved location ("+name+") via sysprop: "+syspropKey+"="+val);
+			return new File(val);
+		}
+		
+		
+	
+		
+		String envKey = "MACGYVER_EXT_"+name.toUpperCase().trim()+"_DIR";
+		val = System.getenv(envKey);
+		if (!Strings.isNullOrEmpty(val)) {
+			logger.info("resolved location ("+name+") via env var: "+envKey+"="+val);
+			return new File(val);
+		}
+	
+		
+		val = new File(getMacGyverHome(),name).getAbsolutePath();
+		logger.info("resolved location ("+name+") via macgyver.home: "+val);
+		return new File(val);
+	}
+	public synchronized void init(Properties p) {
+		if (initialized.get()) {
+		//	throw new IllegalStateException("Already initialized");
+			//return;
+		}
+	
+
+		System.out.println(p);
+		bootstrapProps.putAll(p);
+		
+		String val = bootstrapProps.getProperty("macgyver.home");
+		
+		Preconditions.checkNotNull(val,"macgyver.home must be set");
+		macgyverHome = new File(val).getAbsoluteFile();
+		
+		
+			
+		
+			logger.info("macgyver home    : {}",getMacGyverHome());
+			logger.info("macgyver config  : {}",getConfigDir());
+			logger.info("macgyver scripts : {}",getScriptsDir());
+			logger.info("macgyver   data  : {}",getDataDir());
+			logger.info("macgyver    web  : {}",getWebDir());
+			
+	
+
+			// need to move this block upstream to Bootstrap
+			System.setProperty("spring.gsp.reloadingEnabled", "true");
+			String templateRoots = computeTemplateRoots();
+			logger.info("spring.gsp.templateRoots=" + templateRoots);
+			System.setProperty("spring.gsp.templateRoots", templateRoots);
+
+		
+
+		initialized.set(true);
+
+	
+	}
+	public static String computeTemplateRoots() {
 		try {
-			String location = System.getProperty("macgyver.ext.location");
+			File webDir = Bootstrap.getInstance()
+					.getWebDir();
+			String templateRoots = "classpath:/web/templates";
 
-			if (!Strings.isNullOrEmpty(location)) {
-				return new File(location).getCanonicalFile();
-			}
+			templateRoots = webDir.toURI().toURL().toString() + ","
+					+ templateRoots;
 
-			File extLocation = new File("./config");
-			if (extLocation.exists()) {
-				return extLocation.getParentFile().getCanonicalFile();
-			}
-
-			extLocation = new File("./src/test/resources/ext");
-			if (extLocation.exists()) {
-				return extLocation.getCanonicalFile();
-			}
-			throw new ConfigurationException("macgyver.ext.location not set");
-		} catch (IOException e) {
+			return templateRoots;
+		} catch (MalformedURLException e) {
 			throw new ConfigurationException(e);
 		}
 
 	}
-
-	AtomicBoolean initialized = new AtomicBoolean(false);
-
-	public synchronized void init() {
-		if (initialized.get()) {
-			throw new IllegalStateException("Already initialized");
-		}
-		printBanner();
-
-		File extDir = determineExtensionDir();
-		try {
-			FileObject configLocation = VFS.getManager().resolveFile(
-					new File(extDir, "config").toURI().toURL().toString());
-			FileObject scriptsLocation = VFS.getManager().resolveFile(
-					new File(extDir, "scripts").toURI().toURL().toString());
-			FileObject dataLocation = VFS.getManager().resolveFile(
-					new File(extDir, "data").toURI().toURL().toString());
-			FileObject webLocation = VFS.getManager().resolveFile(
-					new File(extDir, "web").toURI().toURL().toString());
-
-			vfsManager = new VirtualFileSystem(configLocation, scriptsLocation,
-					dataLocation, webLocation);
-	
-
-		
-
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		initialized.set(true);
-
-	}
-
-	public void printBanner() {
+	public static void printBanner() {
 
 		// Spring boot doesn't support alternate banner until 1.1.x
 		String bannerText = "\n";
 		try {
-			URL url = ServerMain.class.getResource("/banner.txt");
+			URL url = ServerMain.class.getResource("/banner_alt.txt");
 			if (url != null) {
 				try (InputStreamReader reader = new InputStreamReader(
 						url.openStream(), Charsets.UTF_8)) {
@@ -142,4 +185,6 @@ public class Bootstrap {
 		}
 		logger.info(bannerText);
 	}
+	
+	
 }

@@ -1,4 +1,4 @@
-// Schedule {"cron":"*/5 * * * * ?"}
+//#@Schedule {"cron":"*/5 * * * * ?"}
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 /*

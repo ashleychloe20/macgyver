@@ -3,6 +3,7 @@ package io.macgyver.plugin.cmdb;
 import static org.junit.Assert.assertNotNull;
 import io.macgyver.test.MacGyverIntegrationTest;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.List;
@@ -17,137 +18,114 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
-import com.tinkerpop.blueprints.TransactionalGraph;
-import com.tinkerpop.blueprints.Vertex;
 
 public class AppInstanceManagerTest extends MacGyverIntegrationTest {
 	@Autowired
 	AppInstanceManager manager;
 
-	@Autowired
-	TransactionalGraph graph;
-
 	SecureRandom secureRandom;
-	
-	public AppInstanceManagerTest() throws NoSuchAlgorithmException{
+
+	public AppInstanceManagerTest() throws NoSuchAlgorithmException {
 		super();
-		
+
 		secureRandom = SecureRandom.getInstance("sha1prng");
 	}
-	@Test(expected = ORecordDuplicatedException.class)
+
+	@Test
 	public void testUnique() {
 		String host = "unknown_" + System.currentTimeMillis();
 		String appId = "myapp";
 		String groupId = "mygroup";
 
-		manager.getOrCreateAppInstanceVertex(host, groupId, appId);
-		try {
-			Vertex v = graph.addVertex("class:AppInstance");
-			v.setProperty("host", host);
-			v.setProperty("artifactId", appId);
-			v.setProperty("groupId", groupId);
-			v.setProperty("vertexId",
-					AppInstance.calculateVertexId(host, groupId, appId, null));
-		} finally {
-			graph.commit();
-		}
+		ObjectNode v1 = manager.getOrCreateAppInstance(host, groupId,
+				appId);
+
+		ObjectNode v2 = manager.getOrCreateAppInstance(host, groupId,
+				appId);
+
 	}
 
 	@Test
 	public void testIt() {
 		String host = "unknown_" + System.currentTimeMillis();
-		String appId = "myapp";
-		String groupId = "group";
+		String appId = "junit_myapp";
+		String groupId = "junit_group";
 
-		String vid = AppInstance.calculateVertexId(host, groupId, appId, null);
 		assertNotNull(manager
-				.getOrCreateAppInstanceVertex(host, groupId, appId));
+				.getOrCreateAppInstance(host, groupId, appId));
 
 	}
 
 	@Test
 	public void x() throws Exception {
 
-		Assert.assertNotNull(manager.getOrCreateAppInstanceVertex("localhost",
-				"group", "test"));
+		Assert.assertNotNull(manager.getOrCreateAppInstance("localhost",
+				"junit_group", "junit_test"));
 
 	}
 
-	@Test
-	public void testXX() {
-		int nodesToAdd = 50;
-		List<Vertex> list = Lists.newArrayList();
-		Iterables.addAll(list, graph.query().has("vertexType", "AppInstance")
-				.vertices());
-
-		int beforeCount = list.size();
-
-		for (int i = 0; i < nodesToAdd; i++) {
-
-			manager.getOrCreateAppInstanceVertex("host_" + i, "group", "app_"
-					+ i);
-			manager.getOrCreateAppInstanceVertex("host_" + i, "group", "app_"
-					+ i);
-
-		}
-		manager.getGraph().commit();
-		list.clear();
-		Iterables.addAll(list, graph.query().has("vertexType", "AppInstance")
-				.vertices());
-		int afterCount = list.size();
-		Assert.assertEquals(nodesToAdd, afterCount - beforeCount);
-
-	}
-	
 	protected int randomInt() {
 		return secureRandom.nextInt();
 	}
+
 	@Test
-	public void testMultiThead() {
+	public void testMultiThead() throws IOException {
+		ThreadPoolExecutor x = null;
+		try {
+			int threadCount = 5;
+			long t0 = System.currentTimeMillis();
+			int iterationCount = 1000;
+			final int keySpace = 50;
 
-		long t0 = System.currentTimeMillis();
+			BlockingQueue<Runnable> q = new ArrayBlockingQueue<>(iterationCount);
+			for (int i = 0; i < iterationCount; i++) {
+				final Runnable r = new Runnable() {
 
-		BlockingQueue<Runnable> q = new ArrayBlockingQueue<>(2000);
-		for (int i = 0; i < 2000; i++) {
-			final Runnable r = new Runnable() {
+					@Override
+					public void run() {
 
-				@Override
-				public void run() {
-					String x = "id_" + (randomInt()% 200);
-					Vertex v = manager.getOrCreateAppInstanceVertex(x, x, x);
-					v.setProperty("someproperty_"
-							+ (new Random().nextInt() % 5), UUID.randomUUID()
-							.toString());
+						String x = "junit_group_"
+								+ (Math.abs(randomInt()) % keySpace);
+						ObjectNode v = manager.getOrCreateAppInstance(x,
+								x, x);
+						/*
+						 * v.setProperty("someproperty_" + (new
+						 * Random().nextInt() % keySpace), UUID.randomUUID()
+						 * .toString());
+						 */
 
-					try {
-						manager.getGraph().commit();
-					} catch (RuntimeException e) {
-						logger.warn("problem committing transaction: {}",
-								e.toString());
 					}
+
+				};
+				q.add(r);
+			}
+
+			x = new ThreadPoolExecutor(threadCount, threadCount, 5,
+					TimeUnit.SECONDS, q);
+
+			x.prestartAllCoreThreads();
+
+			while (!q.isEmpty()) {
+				try {
+					Thread.sleep(10L);
+				} catch (Exception e) {
 				}
+			}
 
-			};
-			q.add(r);
-		}
-
-		ThreadPoolExecutor x = new ThreadPoolExecutor(5, 5, 5,
-				TimeUnit.SECONDS, q);
-
-		x.prestartAllCoreThreads();
-
-		while (!q.isEmpty()) {
-			try {
-				Thread.sleep(500L);
-			} catch (Exception e) {
+			long t1 = System.currentTimeMillis();
+			long tdur = t1 - t0;
+			logger.info(
+					"processed {} getOrCreateAppInstance calls in {}ms ({}/sec) using {} threads",
+					iterationCount, tdur,
+					((double) iterationCount / tdur) * 1000, threadCount);
+		} finally {
+			if (x!=null) {
+				x.shutdown();
 			}
 		}
-
-		long t1 = System.currentTimeMillis();
-		System.out.println(t1 - t0);
 	}
 
 }

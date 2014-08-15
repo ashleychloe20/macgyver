@@ -80,20 +80,6 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 
 	}
 
-	public void seedData() {
-		
-		Optional<InternalUser> admin = userManager.getInternalUser("admin");
-		if (admin.isPresent()) {
-			logger.info("admin user already exists");
-		}
-		else {
-			List<String> roleList = Lists.newArrayList("ROLE_MACGYVER_SHELL","ROLE_MACGYVER_UI", "ROLE_MACGYVER_ADMIN");
-			
-			userManager.createUser("admin", roleList);
-			userManager.setPassword("admin", "admin");
-		}
-		
 
-	}
 
 }

@@ -1,0 +1,25 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin:'application'
+
+
+configurations {
+	all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
+	all*.exclude group: 'log4j'
+	all*.exclude group: 'xml-apis'
+    all*.exclude group: 'commons-logging'
+}
+
+
+
+dependencies {
+
+	compile 'com.codahale.metrics:metrics-core:3.0.2'
+	compile 'com.codahale.metrics:metrics-graphite:3.0.2'
+	
+	compile project(':macgyver-core')
+	testCompile project(':macgyver-test')
+
+}
+

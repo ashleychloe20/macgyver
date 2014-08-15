@@ -2,13 +2,14 @@ package io.macgyver.core.service;
 
 import groovy.util.ConfigObject;
 import groovy.util.ConfigSlurper;
+import io.macgyver.core.Bootstrap;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.ServiceNotFoundException;
-import io.macgyver.core.VirtualFileSystem;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
@@ -16,7 +17,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.vfs2.FileObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,23 +210,25 @@ public class ServiceRegistry {
 			IOException {
 		Properties p = new Properties();
 
-		FileObject configGroovy = applicationContext
-				.getBean(VirtualFileSystem.class).getConfigLocation()
-				.resolveFile("services.groovy");
+		File configGroovy = Bootstrap.getInstance().resolveConfig("services.groovy");
 
+		logger.info("loading services from: {}",configGroovy);
 		ConfigSlurper slurper = new ConfigSlurper();
 		if (Kernel.getExecutionProfile().isPresent()) {
 			slurper.setEnvironment(Kernel.getExecutionProfile().get());
 		}
 
 		if (configGroovy.exists()) {
-			ConfigObject obj = slurper.parse(configGroovy.getURL());
+			ConfigObject obj = slurper.parse(configGroovy.toURI().toURL());
 
 			p = obj.toProperties();
 
 			p = crypto.decryptProperties(p);
 
 			
+		}
+		else {
+			logger.warn("services config file not found: {}",configGroovy);
 		}
 		return p;
 

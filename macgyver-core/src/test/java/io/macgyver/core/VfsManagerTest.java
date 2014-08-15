@@ -1,12 +1,15 @@
 package io.macgyver.core;
 
+import io.macgyver.core.resource.Resource;
+import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.apache.commons.vfs2.FileObject;
+import javax.tools.FileObject;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,33 +18,10 @@ import com.google.common.io.Files;
 
 public class VfsManagerTest extends MacGyverIntegrationTest {
 
-	@Autowired
-	VirtualFileSystem vfsManager;
 
-	@Test
-	public void testConfigVfs() throws IOException {
-
-		File configDir = new File("./src/test/resources/ext/config");
-		configDir.mkdirs();
-		
-		File tempFile = new File(configDir, ".junit_"
-				+ UUID.randomUUID().toString() + ".tmp");
-		Files.touch(tempFile);
-		try {
-
-			FileObject fo = vfsManager.getConfigLocation();
-
-			Assert.assertTrue(tempFile.exists());
-
-			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
-		
-			Assert.assertTrue(vfsTest2.exists());
-		} finally {
-			tempFile.delete();
-		}
-
-	}
 	
+	@Autowired
+	ExtensionResourceProvider resourceLoader;
 
 	
 	@Test
@@ -54,11 +34,11 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 		Files.touch(tempFile);
 		try {
 			
-			FileObject fo = vfsManager.getWebLocation();
+			File fo = Bootstrap.getInstance().getWebDir();
 
 			Assert.assertTrue(tempFile.exists());
 
-			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
+			File vfsTest2 = new File(Bootstrap.getInstance().getWebDir(), tempFile.getName());
 			Assert.assertTrue(vfsTest2.exists());
 		} finally {
 			tempFile.delete();
@@ -76,39 +56,19 @@ public class VfsManagerTest extends MacGyverIntegrationTest {
 		Files.touch(tempFile);
 		try {
 
-			FileObject fo = vfsManager.getScriptsLocation();
-
+			Resource r = resourceLoader.getResourceByPath("scripts/"+tempFile.getName());
+			
+			Assert.assertNotNull(r);
+			
 			Assert.assertTrue(tempFile.exists());
 
-			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
-			Assert.assertTrue(vfsTest2.exists());
+	
 		} finally {
 			tempFile.delete();
 		}
 
 	}
-	@Test
-	public void testDataVfs() throws IOException {
-
-		File dataDir = new File("./src/test/resources/ext/data");
-		dataDir.mkdirs();
-		
-		File tempFile = new File(dataDir, ".junit_"
-				+ UUID.randomUUID().toString() + ".tmp");
-		Files.touch(tempFile);
-		try {
-
-			FileObject fo = vfsManager.getDataLocation();
-
-			Assert.assertTrue(tempFile.exists());
-
-			FileObject vfsTest2 = fo.resolveFile(tempFile.getName());
-			Assert.assertTrue(vfsTest2.exists());
-		} finally {
-			tempFile.delete();
-		}
-
-	}
+	
 	
 
 }

@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 public class UserManagerTest extends MacGyverIntegrationTest {
@@ -38,7 +39,7 @@ public class UserManagerTest extends MacGyverIntegrationTest {
 	@Test
 	public void testUpdateRoles() {
 		String username = "user_" + UUID.randomUUID().toString();
-		userManager.createUser(username, Lists.newArrayList("ROLE_A"));
+		userManager.createUser(username, Lists.newArrayList("ROLE_A","ROLE_X"));
 		
 		Assert.assertTrue(userManager.getInternalUser(username).get().getRoles().contains("ROLE_A"));
 		Assert.assertFalse(userManager.getInternalUser(username).get().getRoles().contains("ROLE_B"));

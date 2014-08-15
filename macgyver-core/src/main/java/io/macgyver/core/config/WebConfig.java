@@ -1,15 +1,5 @@
 package io.macgyver.core.config;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
-import io.macgyver.core.graph.TransactionalGraphFilter;
 import io.macgyver.core.web.CoreApiController;
 import io.macgyver.core.web.HomeController;
 import io.macgyver.core.web.MacgyverWeb;
@@ -28,11 +18,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @Configuration
 @ComponentScan(basePackageClasses = { HomeController.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
+@EnableGlobalMethodSecurity(securedEnabled = true, proxyTargetClass = true,prePostEnabled=true)
 public class WebConfig implements EnvironmentAware {
 
 	
@@ -90,15 +82,8 @@ public class WebConfig implements EnvironmentAware {
 	public StandardMenuDecorator macStandardMenuDecorator() {
 		return new StandardMenuDecorator();
 	}
-	@Bean
-	public TransactionalGraphFilter macGraphFilter() {
-		return new TransactionalGraphFilter();
-	}
-	@Bean
-	public FilterRegistrationBean macGraphFilterRegistrationBean() {
-		FilterRegistrationBean b = new FilterRegistrationBean();
-		
-		b.setFilter(macGraphFilter());
-		return b;
-	}
+
+
+	
+	
 }

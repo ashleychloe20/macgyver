@@ -1,12 +1,13 @@
 package io.macgyver.core;
 
 import io.macgyver.core.auth.InternalAuthenticationProvider;
+import io.macgyver.core.resource.Resource;
+import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.script.ScriptExecutor;
 
+import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -31,7 +32,7 @@ public class Startup implements InitializingBean {
 	InternalAuthenticationProvider internalAuthenticationProvider;
 
 	@Autowired
-	VirtualFileSystem vfsManager;
+	ExtensionResourceProvider resourceLoader;
 	
 	@Subscribe
 	public void onStart(ContextRefreshedEvent event) throws IOException {
@@ -40,7 +41,7 @@ public class Startup implements InitializingBean {
 		}
 		logger.info("STARTED: {}", event);
 		runInitScripts();
-		seedMapDB();
+		
 	}
 
 	@Override
@@ -51,45 +52,34 @@ public class Startup implements InitializingBean {
 	}
 
 	public void runInitScripts() throws IOException {
-		FileObject initScriptsFileObject = vfsManager.getScriptsLocation().resolveFile("init");
 		
+		for (Resource r: resourceLoader.findResources()) {
+			if (r.getPath().startsWith("scripts/init/")) {
+				runInitScript(r);
+			}
 		
-		if (!initScriptsFileObject.exists() ) {
-			logger.info("init scripts dir does not exist: {}", initScriptsFileObject);
-			return;
 		}
 		
-		FileObject [] childObjects = initScriptsFileObject.getChildren();
-		
-		for (int i=0; childObjects!=null && i<childObjects.length; i++) {
-			runInitScript(childObjects[i]);
-		}
-	
+
 	}
 
-	public void runInitScript(FileObject f) throws IOException {
+	public void runInitScript(Resource resource) throws IOException {
 		
 		
-		if (f.getType().equals(FileType.FOLDER)) {
-			return;
-		}
+	
 		ScriptExecutor se = new ScriptExecutor();
-		if (se.isSupportedScript(f)) {
+		if (se.isSupportedScript(resource)) {
 			try {
-				se.run(f, null, false);
+				se.run(resource, null, false);
 			}
 			catch (RuntimeException e) {
 				kernel.registerStartupError(e);
 				throw e;
 			}
 		} else {
-			logger.info("ignoring file in init script dir: {}", f);
+			logger.info("ignoring file in init script dir: {}", resource);
 		}
 	}
 
-	protected void seedMapDB() {
-
-		internalAuthenticationProvider.seedData();
-
-	}
+	
 }

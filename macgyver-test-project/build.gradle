@@ -22,9 +22,12 @@ dependencies {
 
     testCompile 'junit:junit:4.11'
  
-	compile project(":macgyver-jdbc")
-	compile project(":macgyver-github")
-	compile project(":macgyver-metrics")
+	compile project(":macgyver-plugin-jdbc")
+	compile project(":macgyver-plugin-github")
+	compile project(":macgyver-plugin-metrics")
+    compile project(":macgyver-plugin-newrelic")
+    compile project(":macgyver-plugin-cmdb")
+	compile project(":macgyver-plugin-git")
 	compile project(":macgyver-core")
     compile project(":macgyver-jython")
     compile project(":macgyver-jruby")
@@ -32,21 +35,20 @@ dependencies {
 	compile 'com.h2database:h2:1.3.175'
 
 
+compile 'aspectj:aspectjweaver:1.5.4'
+
 }
 
-
+ applicationDefaultJvmArgs = ["-Xmx1g","-Xms128m","-XX:MaxPermSize=128m"]
 run {  
-    
-    if ( project.hasProperty("macgyver.project.dir")) {
-        systemProperty "macgyver.project.dir", project['macgyver.project.dir']
-    }
+   
 	if (project.hasProperty('profile')) {
 		systemProperty 'profile', project['profile']
 	}
     if ( project.hasProperty("appArgs") ) {  
         args Eval.me(appArgs)  
     }  
-	
+	//args "--debug"
 	systemProperty "logback.configurationFile", "./conf/logback.groovy"
 }
 

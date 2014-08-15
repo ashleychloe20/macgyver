@@ -1,7 +1,0 @@
-
-
-testRedisPool {
-	
-	serviceType="redis"
-	
-}

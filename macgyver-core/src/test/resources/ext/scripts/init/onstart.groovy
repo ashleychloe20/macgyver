@@ -1,3 +1,3 @@
 
 
-System.out.println("onstart.groovy")
+// something would happen here

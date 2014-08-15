@@ -3,7 +3,7 @@
 <%@ page import="io.macgyver.core.web.navigation.*" %>
 <%
 	MenuManager menuManager = Kernel.getInstance().getApplicationContext().getBean(MenuManager.class);
-	MenuItem rootMenu = menuManager.getRootMenuForCurrentUser();
+	Menu menu = menuManager.getRootMenuForCurrentUser();
 
 %>
 
@@ -19,8 +19,12 @@
 
     <title>MacGyver</title>
 
+
+  <link rel="stylesheet" type="text/css" href="/resources/ext/w2ui/w2ui-1.4.1.min.css" />
+	  
     <!-- Bootstrap core CSS -->
-    <link href="/webjars/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+   <!-- <link href="/webjars/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"> -->
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" >
 
 
 
@@ -32,9 +36,13 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-	    <script src="/webjars/jquery/2.1.1/jquery.min.js"></script>
+	<!--    <script src="/webjars/jquery/2.1.1/jquery.min.js"></script>
 	    <script src="/webjars/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-	    
+		-->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+	    <script type="text/javascript" src="/resources/ext/w2ui/w2ui-1.4.1.min.js"></script>
+		
 	      <g:layoutHead />
   </head>
 
@@ -62,15 +70,15 @@
               <li><a href="#">Link</a></li>
 					-->
 					
-			<g:each in="${rootMenu.getChildMenuItems()}" var="c">
+			<g:each in="${menu.getRootObjectNode().get("items")}" var="c">
              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">${c.getDisplayName()} <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">${c.path("display").asText()} <b class="caret"></b></a>
 				
                 <ul class="dropdown-menu">
-                	<g:each in="${c.getChildMenuItems()}" var="child">
+                	<g:each in="${c.get("items")}" var="child">
 				
 					
-                  		  <li><a href="${child.getUriPath()}">${child.getDisplayName()}</a></li>
+                  		  <li><a href="${child.path("url").asText()}">${child.path("display").asText()}</a></li>
 					
                   	</g:each>
 		
@@ -94,4 +102,5 @@
  </div> <!-- /container -->
 
   </body>
+
 </html>

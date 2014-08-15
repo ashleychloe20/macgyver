@@ -1,5 +1,6 @@
 package io.macgyver.core.config;
 
+import grails.util.Environment;
 import io.macgyver.core.Bootstrap;
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
@@ -8,48 +9,41 @@ import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
 import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.Startup;
-import io.macgyver.core.VirtualFileSystem;
 import io.macgyver.core.auth.InternalUserManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
-import io.macgyver.core.graph.CoreIndexInitializer;
-import io.macgyver.core.graph.GraphRepository;
+import io.macgyver.core.resource.provider.filesystem.FileSystemResourceProvider;
 import io.macgyver.core.script.BindingSupplierManager;
+import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.service.ServiceRegistry;
+import io.macgyver.neo4j.rest.Neo4jRestClient;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.util.Properties;
 
-import org.apache.commons.configuration.BaseConfiguration;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileSystemManager;
-import org.apache.commons.vfs2.VFS;
-import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import com.google.common.io.Files;
+import com.google.common.base.Preconditions;
 import com.ning.http.client.AsyncHttpClient;
-import com.tinkerpop.blueprints.TransactionalGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
 @Configuration
-public class CoreConfig {
+public class CoreConfig implements EnvironmentAware{
 
 	@Autowired
-	ApplicationContext applicationContext;
+	org.springframework.core.env.Environment env;
 
 	static Logger logger = LoggerFactory.getLogger(CoreConfig.class);
 
@@ -76,7 +70,7 @@ public class CoreConfig {
 
 	@Bean(name = "macKernel")
 	public Kernel macKernel() {
-		
+	
 		return new Kernel();
 	}
 
@@ -116,14 +110,14 @@ public class CoreConfig {
 	}
 
 	@Bean
-	public ServiceRegistry macServiceInstanceRegistry() {
+	public ServiceRegistry macServiceRegistry() {
 		return new ServiceRegistry();
 	}
 
 
 
 
-	public boolean isUnitTest() {
+	public static boolean isUnitTest() {
 
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
@@ -158,7 +152,7 @@ public class CoreConfig {
 	}
 
 	@Bean
-	public MacGyverBeanFactoryPostProcessor macBeanFactoryPostProcessor() {
+	public static MacGyverBeanFactoryPostProcessor macBeanFactoryPostProcessor() {
 		return new MacGyverBeanFactoryPostProcessor();
 	}
 
@@ -172,60 +166,38 @@ public class CoreConfig {
 		return new InternalUserManager();
 	}
 
-	@Bean(name = "macFileSystemManager")
-	public FileSystemManager macFileSystemManager() throws FileSystemException {
-		return VFS.getManager();
-	}
 
-	@Bean(name = "macVfsManager")
-	public VirtualFileSystem macVfsManager() throws FileSystemException,
-			MalformedURLException {
 
-		VirtualFileSystem mgr = Bootstrap.getInstance().getVirtualFileSystem();
 
-		logger.info("macVfsManager: {}", mgr);
-		return mgr;
-
-	}
-	@Bean(name = "macGraphRepository")
-	@Primary
-	public GraphRepository macGraphRepository() {
-		return new GraphRepository(macGraph());
-	}
-	@Bean(name = "macGraph", destroyMethod = "shutdown")
-	public TransactionalGraph macGraph() {
-		if (isUnitTest()) {
-
-			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
-
-			conf.setProperty("storage.directory", Files.createTempDir().getAbsolutePath());
-			conf.setProperty("cache.db-cache", true);
-			OrientGraph g = new OrientGraph("plocal:"+Files.createTempDir().getAbsolutePath());
-		
-			return g;
-
-		} else {
-			FileObject obj = Bootstrap.getInstance().getVirtualFileSystem()
-					.getDataLocation();
-			if (!(obj instanceof LocalFile)) {
-				throw new IllegalStateException(
-						"data location must be local filesystem");
-			}
-			LocalFile file = (LocalFile) obj;
-			File dir = new java.io.File(file.getName().getPath(), "orientdb");
-			org.apache.commons.configuration.Configuration conf = new BaseConfiguration();
-
-			conf.setProperty("storage.directory", dir.getAbsolutePath());
-
-			OrientGraph g = new OrientGraph("plocal:"+dir.getAbsolutePath());
-			return g;
-
-		}
+	@Bean(name = "macGraphClient")
+	public Neo4jRestClient macGraphClient() throws MalformedURLException{
+		Preconditions.checkNotNull(env);
+		return new Neo4jRestClient(env.getProperty("neo4j.url"));
 
 	}
 	
+
+	
+	
 	@Bean
-	public CoreIndexInitializer macCoreIndexInitializer() {
-		return new CoreIndexInitializer();
+	public ExtensionResourceProvider macExtensionResourceProvider() {
+		ExtensionResourceProvider loader = new ExtensionResourceProvider();
+		
+		FileSystemResourceProvider fsLoader = new FileSystemResourceProvider(Bootstrap.getInstance().getMacGyverHome());
+		loader.addResourceLoader(fsLoader);
+		
+		
+		
+		return loader;
 	}
+
+
+	@Override
+	public void setEnvironment(
+			org.springframework.core.env.Environment environment) {
+		this.env = environment;
+		
+	}
+	
+
 }

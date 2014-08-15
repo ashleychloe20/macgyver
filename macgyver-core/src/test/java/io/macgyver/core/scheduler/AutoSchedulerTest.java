@@ -10,6 +10,7 @@ import javax.json.JsonObject;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
@@ -26,11 +27,11 @@ public class AutoSchedulerTest {
 		String data = "blah\nblah\n//   #@Schedule    " + expected + "   \n\nblah";
 		Files.write(data, f, Charsets.UTF_8);
 
-		LineProcessor<Optional<JsonObject>> lp = new AutoScheduler.CrontabLineProcessor();
+		LineProcessor<Optional<ObjectNode>> lp = new AutoScheduler.CrontabLineProcessor();
 
-		Optional<JsonObject> x = Files.readLines(f, Charsets.UTF_8, lp);
+		Optional<ObjectNode> x = Files.readLines(f, Charsets.UTF_8, lp);
 
 		Assert.assertTrue(x.isPresent());
-		org.junit.Assert.assertEquals(cronExpression, x.get().getString("cron"));
+		org.junit.Assert.assertEquals(cronExpression, x.get().get("cron").asText());
 	}
 }

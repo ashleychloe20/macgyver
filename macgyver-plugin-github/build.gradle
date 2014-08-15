@@ -1,0 +1,26 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin:'application'
+
+
+configurations {
+	all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
+	all*.exclude group: 'log4j'
+	all*.exclude group: 'xml-apis'
+    all*.exclude group: 'commons-logging'
+}
+
+
+
+dependencies {
+
+    compile 'org.kohsuke:github-api:1.53'
+	compile 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
+    testCompile project(':macgyver-test')
+	 compile project(':macgyver-core')
+	 compile project(':macgyver-plugin-git')
+
+
+}
+

@@ -1,23 +1,27 @@
 
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.12'
+    gradleVersion = '2.1'
 }
 /*allprojects {
     group 'io.macgyver'
     version = '1.0.0-SNAPSHOT'
 }
 */
+
+
 buildscript {
 	ext {
-		springBootVersion = '1.0.2.RELEASE'
+		springBootVersion = '1.1.5.RELEASE'
 	}
     repositories {
+		mavenLocal()
     	mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+
         classpath 'org.ajoberstar:gradle-git:0.8.0'
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${SPRING_BOOT_VERSION}")
     }
 }
 
@@ -25,13 +29,10 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'eclipse'
-    apply plugin: 'spring-boot'
 	
     
     group 'io.macgyver'
     version = "${MACGYVER_VERSION}"
-    
-    mainClassName = 'io.macgyver.core.ServerMain'
     
     
     
@@ -40,7 +41,7 @@ subprojects {
     	all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
     	all*.exclude group: 'log4j'
     	all*.exclude group: 'xml-apis'
-       
+        all*.exclude group: 'javax.ws.rs' , module: 'jsr311-api'
 		provided
     }
     
@@ -54,9 +55,9 @@ subprojects {
  
 	
     repositories {
-  
+  	   mavenLocal()
         mavenCentral()
-        mavenLocal()
+       
 		jcenter()
 
     }
@@ -110,7 +111,27 @@ subprojects {
 	    }
 	}
 
+    tasks.eclipse.doLast { 
+        /** Seems that blueprints-neo4j is bringing in a broken transitive dependency that bothers Eclipse.
+         ** This patches the problem by removing the broken classpath entry. **/
+        def nodesToRemove = []
+        def file = new File(".classpath")
+        def root = new XmlParser().parse(file)
     
+        // find the broken elements
+        root.findAll{it.@path =~ /neo4j.*\.pom/ }.each {
+            nodesToRemove.add(it)
+        }
+    
+        // remove the broken elements
+        nodesToRemove.each {
+            it.parent().remove(it)
+        }
+        // write the file back outq
+        file.withWriter {
+            new XmlNodePrinter(new PrintWriter(it)).print(root)
+        }
+    }
     
 }
 

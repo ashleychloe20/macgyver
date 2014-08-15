@@ -2,14 +2,14 @@ package io.macgyver.core;
 
 import groovy.lang.Binding;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -37,7 +37,9 @@ public class MacGyverBeanFactoryPostProcessor implements
 	public void postProcessBeanFactory(
 			ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		try {
-		FileObject beansGroovyFile = Bootstrap.getInstance().getVirtualFileSystem().getConfigLocation().resolveFile("springConfig.groovy");
+			File beansGroovyFile = Bootstrap.getInstance().resolveConfig("springConfig.groovy");
+			
+		
 		if (beansGroovyFile.exists()) {
 			logger.info("adding beans from: {}",beansGroovyFile);
 			GroovyBeanDefinitionReader gbdr = new GroovyBeanDefinitionReader(
@@ -48,7 +50,7 @@ public class MacGyverBeanFactoryPostProcessor implements
 			b.setProperty("properties", pa);
 			gbdr.setBinding(b);
 			
-			InputStreamResource isr = new InputStreamResource(beansGroovyFile.getContent().getInputStream()) {
+			InputStreamResource isr = new InputStreamResource(new FileInputStream(beansGroovyFile)) {
 
 				@Override
 				public String getFilename() {
@@ -65,9 +67,7 @@ public class MacGyverBeanFactoryPostProcessor implements
 			logger.info("groovy bean config file not found: {}",beansGroovyFile);
 		}
 		}
-		catch (FileSystemException e) {
-			throw new MacGyverException("",e);
-		}
+		catch (Exception e) {}
 	}
 
 	

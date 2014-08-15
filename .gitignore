@@ -27,4 +27,6 @@ macgyver-core/src/test/resources/ext/data
 macgyver-core-revision.properties
 macgyver-cmdb/src/test/resources/ext/data
 **/src/test/resources/ext/data/*
-macgyver-orientdb/orientdb
+macgyver-core/data/
+macgyver-titan-bdb/
+macgyver-test-project/data/
