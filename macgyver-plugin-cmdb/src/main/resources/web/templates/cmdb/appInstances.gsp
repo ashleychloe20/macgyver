@@ -39,7 +39,7 @@
 	        },
             columns: [
                 { field: 'environment', caption: 'Environment', size: '30%' , sortable:true},
-                { field: 'host', caption: 'Host', size: '30%' },
+                { field: 'host', caption: 'Host', size: '30%' , sortable:true},
                 { field: 'appId', caption: 'App', size: '40%' , sortable:true},
 				{ field: 'classifier', caption: 'Classifier', size: '40%' , sortable:true},
 				{ field: 'version', caption: 'Version', size: '40%' , sortable:true},

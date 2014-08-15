@@ -68,7 +68,7 @@ public class AppInstanceManager {
 		if (Strings.isNullOrEmpty(group)) {
 			group = "";
 		}
-		logger.info("host:{} group:{} app:{}", host, group, app);
+		logger.debug("host:{} group:{} app:{}", host, group, app);
 
 		if (!Strings.isNullOrEmpty(host) && !Strings.isNullOrEmpty(app)) {
 			ObjectNode n = getOrCreateAppInstance(host, group, app);

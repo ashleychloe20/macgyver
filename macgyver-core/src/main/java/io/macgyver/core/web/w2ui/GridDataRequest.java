@@ -69,20 +69,25 @@ public class GridDataRequest {
 	}
 
 	public List<Sort> getSortOrder() {
+
 		List<Sort> list = Lists.newArrayList();
+		try {
+			for (int i = 0; i < 10; i++) {
+				String sortFieldParam = String.format("sort[%d][field]", i);
+				String sortFieldVal = request.getParameter(sortFieldParam);
+				String sortDirectionParam = String.format(
+						"sort[%d][direction]", i);
+				String sortDirection = request.getParameter(sortDirectionParam);
+				if (sortFieldVal != null && sortDirection != null) {
+					list.add(new Sort(sortFieldVal, Sort.Direction
+							.fromString(sortDirection)));
 
-		for (int i = 0; i < 10; i++) {
-			String sortFieldParam = String.format("sort[%d][field]", i);
-			String sortFieldVal = request.getParameter(sortFieldParam);
-			String sortDirectionParam = String.format("sort[%d][direction]", i);
-			String sortDirection = request.getParameter(sortDirectionParam);
-			if (sortFieldVal != null && sortDirection != null) {
-				list.add(new Sort(sortFieldVal, Sort.Direction
-						.valueOf(sortDirection)));
-
-			} else {
-				break;
+				} else {
+					break;
+				}
 			}
+		} catch (Exception e) {
+			logger.warn("problem sort", e);
 		}
 
 		if (list.isEmpty()) {
