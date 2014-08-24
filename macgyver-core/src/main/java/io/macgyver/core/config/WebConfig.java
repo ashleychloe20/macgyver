@@ -5,6 +5,7 @@ import io.macgyver.core.web.HomeController;
 import io.macgyver.core.web.MacgyverWeb;
 import io.macgyver.core.web.navigation.MenuManager;
 import io.macgyver.core.web.navigation.StandardMenuDecorator;
+import io.macgyver.core.web.vaadin.MyVaadinUI;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,6 +22,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import com.vaadin.server.VaadinServlet;
 
 @Configuration
 @ComponentScan(basePackageClasses = { HomeController.class })
@@ -84,6 +88,13 @@ public class WebConfig implements EnvironmentAware {
 	}
 
 
+	@Bean
+	public ServletRegistrationBean macVaadinServlet() {
+		ServletRegistrationBean sb = new ServletRegistrationBean(new VaadinServlet(), "/ui/*","/VAADIN/*");
+		sb.addInitParameter("ui", MyVaadinUI.class.getName());
+		
+		return sb;
+	}
 	
 	
 }

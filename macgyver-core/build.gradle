@@ -13,6 +13,7 @@ all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
 all*.exclude group: 'log4j'
 all*.exclude group: 'xml-apis'
 all*.exclude group: 'commons-logging'
+//all*.exclude group: 'javax.validation'
 
 }
 mainClassName = 'io.macgyver.core.ServerMain'
@@ -60,7 +61,26 @@ dependencies {
 
     compile("org.codehaus.groovy:groovy-all:2.3.1")
 	
+
 	
+   /* compile(group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final') { 
+          artifact { 
+              name = "validation-api" 
+              type = 'jar' 
+          } 
+          artifact { 
+              name = "validation-api" 
+              classifier = 'sources' 
+              type = 'jar' 
+          } 
+      } 
+	   */
+  	compile("com.vaadin:vaadin-server:${VAADIN_VERSION}")
+  	compile("com.vaadin:vaadin-client-compiled:${VAADIN_VERSION}")
+	compile("com.vaadin:vaadin-themes:${VAADIN_VERSION}")
+  //	compile("com.vaadin:vaadin-client:${VAADIN_VERSION}")
+  	//compile("com.vaadin:vaadin-push:${VAADIN_VERSION}")
+	  
 	// * * * * * * * * * * //
 	//     GSP Support     //
 	// * * * * * * * * * * //
