@@ -15,9 +15,9 @@ public class HomeController {
 	@RequestMapping("/")
 	@ResponseBody
 	public ModelAndView home() {
-		ModelAndView m = new ModelAndView("home");
-		
-		return m;
+
+		return new ModelAndView("redirect:/ui/");
+	
 		
 	}
 	

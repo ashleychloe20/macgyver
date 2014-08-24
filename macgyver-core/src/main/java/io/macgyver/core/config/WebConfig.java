@@ -5,7 +5,8 @@ import io.macgyver.core.web.HomeController;
 import io.macgyver.core.web.MacgyverWeb;
 import io.macgyver.core.web.navigation.MenuManager;
 import io.macgyver.core.web.navigation.StandardMenuDecorator;
-import io.macgyver.core.web.vaadin.MyVaadinUI;
+import io.macgyver.core.web.vaadin.MacGyverUI;
+import io.macgyver.core.web.vaadin.MacGyverVaadinServlet;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,8 +91,8 @@ public class WebConfig implements EnvironmentAware {
 
 	@Bean
 	public ServletRegistrationBean macVaadinServlet() {
-		ServletRegistrationBean sb = new ServletRegistrationBean(new VaadinServlet(), "/ui/*","/VAADIN/*");
-		sb.addInitParameter("ui", MyVaadinUI.class.getName());
+		ServletRegistrationBean sb = new ServletRegistrationBean(new MacGyverVaadinServlet(), "/ui/*","/VAADIN/*");
+		sb.addInitParameter("ui", MacGyverUI.class.getName());
 		
 		return sb;
 	}

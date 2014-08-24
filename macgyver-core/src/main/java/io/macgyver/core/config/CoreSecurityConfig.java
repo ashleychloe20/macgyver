@@ -62,7 +62,7 @@ public class CoreSecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll().and().
 
 				formLogin().loginPage("/login").failureUrl("/login")
-				.defaultSuccessUrl("/").and().logout().permitAll();
+				.defaultSuccessUrl("/ui").and().logout().permitAll();
 	}
 
 	@Override
