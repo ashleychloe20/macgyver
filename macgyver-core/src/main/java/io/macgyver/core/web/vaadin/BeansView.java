@@ -27,7 +27,7 @@ public class BeansView extends VerticalLayout implements View {
 		table.addContainerProperty("class", String.class, null);
 		table.setWidth(1200, Unit.PIXELS);
 		table.setHeight(600,Unit.PIXELS);
-		// Show exactly the currently contained rows (items)
+		
 		table.setPageLength(table.size());
 
 		table.setColumnWidth("name", 600);

@@ -1,6 +1,8 @@
 package io.macgyver.plugin.cmdb;
 
 import io.macgyver.core.MacGyverException;
+import io.macgyver.core.web.vaadin.MacGyverUI;
+import io.macgyver.core.web.vaadin.MacGyverUICreateEvent;
 import io.macgyver.neo4j.rest.Neo4jRestClient;
 import io.macgyver.neo4j.rest.Result;
 
@@ -19,6 +21,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.eventbus.Subscribe;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 
 public class AppInstanceManager {
 	Logger logger = LoggerFactory.getLogger(AppInstanceManager.class);
@@ -26,6 +32,9 @@ public class AppInstanceManager {
 	@Autowired
 	Neo4jRestClient neo4j;
 
+	
+
+	
 	CheckInProcessor processor = new BasicCheckInProcessor();
 
 	public ObjectNode getOrCreateAppInstance(String host, String groupId,

@@ -4,8 +4,7 @@ import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.core.util.ObjectNodeDecorator;
 import io.macgyver.core.web.navigation.Menu;
 import io.macgyver.core.web.navigation.MenuDecorator;
-import io.macgyver.core.web.w2ui.GridDataControl;
-import io.macgyver.core.web.w2ui.GridDataRequest;
+
 import io.macgyver.neo4j.rest.Neo4jRestClient;
 import io.macgyver.neo4j.rest.Result;
 import io.macgyver.xson.JsonPathComparator;
@@ -103,42 +102,7 @@ public class CmdbController implements MenuDecorator {
 	}
 
 	
-	@RequestMapping(value = "/cmdb/appInstances/data.json", produces=MediaType.APPLICATION_JSON,method={RequestMethod.POST})
-	@ResponseBody
-	public ObjectNode viewAppInstances(HttpServletRequest request) {
 
-		
-		
-		
-			String cypher = "match (ai:AppInstance) return ai";
-			
-			List<ObjectNode> results = neo4j.execCypher(cypher).asVertexList("ai");
-
-			GridDataControl control = new GridDataControl(request);
-			control.setDefaultSort("environment");
-			
-			int index=0;
-			for (ObjectNode ai : results) {
-				index++;
-				ObjectNode n = (ObjectNode) ai.path("data");
-			
-				
-				long ts = n.path("lastContactTs").asLong(0);
-				n.put("lastContactTsPretty", ts == 0 ? "" : new PrettyTime().format(new Date(ts)));
-				
-				
-				control.addRow(n);
-			}
-			
-		
-			
-			return control.process();
-	
-		
-		
-		
-
-	}
 	
 	@RequestMapping(value = "/cmdb/appInstances")
 	public ModelAndView viewAppInstances(ModelAndView m) {

@@ -1,5 +1,12 @@
 package io.macgyver.core.web.vaadin;
 
+import io.macgyver.core.Kernel;
+import io.macgyver.core.eventbus.MacGyverEventBus;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
@@ -20,7 +27,8 @@ import com.vaadin.ui.VerticalLayout;
 public class MacGyverUI extends UI
 {
 
-  
+	Logger logger = LoggerFactory.getLogger(MacGyverUI.class);
+	
 	MenuBar menubar;
 	Navigator navigator;
 	
@@ -87,6 +95,12 @@ public class MacGyverUI extends UI
       
         
         hl.setComponentAlignment(menubar, Alignment.MIDDLE_CENTER);
+        
+        MacGyverUICreateEvent event = new MacGyverUICreateEvent(this);
+        
+        MacGyverEventBus bus = Kernel.getInstance().getApplicationContext().getBean(MacGyverEventBus.class);
+        logger.info("{}.post({})",this,event);
+        bus.post(event);
         
         
     }
