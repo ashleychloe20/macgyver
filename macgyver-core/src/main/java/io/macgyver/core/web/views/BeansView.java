@@ -1,4 +1,4 @@
-package io.macgyver.core.web.vaadin;
+package io.macgyver.core.web.views;
 
 import org.springframework.context.ApplicationContext;
 
@@ -50,7 +50,6 @@ public class BeansView extends VerticalLayout implements View {
 		table.removeAllItems();
 
 		ApplicationContext ctx = Kernel.getInstance().getApplicationContext();
-
 		for (String name : ctx.getBeanDefinitionNames()) {
 
 			Object newItemId = table.addItem();

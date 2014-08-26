@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.macgyver.core.Kernel;
+import io.macgyver.core.web.vaadin.IndexedJsonContainer;
 import io.macgyver.neo4j.rest.Neo4jRestClient;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -40,7 +41,7 @@ public class AppInstancesView extends VerticalLayout implements View {
 		setMargin(true);
 		setSizeFull();
 		// setWidth(800, Unit.PIXELS);
-		table = new Table("App Instances");
+		table = new Table("App Instances",new IndexedJsonContainer());
 
 		// Define two columns for the built-in container
 		table.addContainerProperty("environment", String.class, null);
@@ -148,7 +149,7 @@ public class AppInstancesView extends VerticalLayout implements View {
 
 		ApplicationContext ctx = Kernel.getInstance().getApplicationContext();
 
-		Container container = table.getContainerDataSource();
+		IndexedJsonContainer container = (IndexedJsonContainer) table.getContainerDataSource();
 		Collection<?> containerProps = container.getContainerPropertyIds();
 
 		String searchValue = searchTextField.getValue();
@@ -163,7 +164,10 @@ public class AppInstancesView extends VerticalLayout implements View {
 					String pretty = pt.format(new Date(lastContact));
 					node.put("lastContactPrettyTs", pretty);
 				}
-				Object newItemId = table.addItem();
+				
+				container.addJsonObject(node);
+				
+				/*Object newItemId = table.addItem();
 				Item row1 = table.getItem(newItemId);
 
 				for (Object name : containerProps) {
@@ -172,7 +176,7 @@ public class AppInstancesView extends VerticalLayout implements View {
 
 					row1.getItemProperty(name).setValue(val);
 
-				}
+				}*/
 			}
 
 		}

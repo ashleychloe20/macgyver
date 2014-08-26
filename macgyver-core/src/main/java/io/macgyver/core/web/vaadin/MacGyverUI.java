@@ -2,6 +2,9 @@ package io.macgyver.core.web.vaadin;
 
 import io.macgyver.core.Kernel;
 import io.macgyver.core.eventbus.MacGyverEventBus;
+import io.macgyver.core.web.vaadin.MacGyverUIDecorator.MacGyverUICreateEvent;
+import io.macgyver.core.web.views.BeansView;
+import io.macgyver.core.web.views.HomeView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +32,8 @@ public class MacGyverUI extends UI
 
 	Logger logger = LoggerFactory.getLogger(MacGyverUI.class);
 	
-	MenuBar menubar;
-	Navigator navigator;
+	protected MenuBar menubar;
+	protected Navigator navigator;
 	
 	
 	public static  MacGyverUI getMacGyverUI() {
@@ -96,11 +99,10 @@ public class MacGyverUI extends UI
         
         hl.setComponentAlignment(menubar, Alignment.MIDDLE_CENTER);
         
-        MacGyverUICreateEvent event = new MacGyverUICreateEvent(this);
-        
-        MacGyverEventBus bus = Kernel.getInstance().getApplicationContext().getBean(MacGyverEventBus.class);
-        logger.info("{}.post({})",this,event);
-        bus.post(event);
+ 
+        MacGyverUIDecorator.dispatch(new MacGyverUIDecorator.MacGyverUICreateEvent(this));
+        MacGyverUIDecorator.dispatch(new MacGyverUIDecorator.MacGyverUIPostCreateEvent(this));
+       
         
         
     }
