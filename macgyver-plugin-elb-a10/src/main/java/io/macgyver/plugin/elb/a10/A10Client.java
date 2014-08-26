@@ -171,10 +171,12 @@ public class A10Client {
 
 			ObjectNode response = (ObjectNode) new ObjectMapper()
 					.readTree(rawResponse);
+			
 			ObjectMapper mapper = new ObjectMapper();
 			String body = mapper.writerWithDefaultPrettyPrinter()
 					.writeValueAsString(response);
 			logger.info("response: \n{}", body);
+			throwExceptionIfNecessary(response);
 
 			return response;
 		} catch (IOException e) {
@@ -195,7 +197,7 @@ public class A10Client {
 		return invoke("system.performance.get");
 	}
 
-	public ObjectNode getAllSLB() {
+	public ObjectNode getServiceGroupAll() {
 
 		ObjectNode obj = invoke("slb.service_group.getAll");
 

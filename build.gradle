@@ -70,9 +70,15 @@ subprojects {
         from sourceSets.main.allSource
     }
 
+	task javadoc(type:Javadoc, overwrite:true) {
+		// needed because of vaadin's habit of keeping source in jars
+	}
+		
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
         from javadoc.destinationDir
+		
+		
     }
 	
 	artifacts {
