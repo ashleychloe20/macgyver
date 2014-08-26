@@ -51,8 +51,10 @@ public abstract class MacGyverUIDecorator {
 		}
 
 	}
+	
 	@Subscribe
 	public final void dispatchCreateEvent(MacGyverUICreateEvent createEvent) {
+		LoggerFactory.getLogger(getClass()).info("dispatchCreateEvent");
 		decorate(createEvent);
 	}
 	

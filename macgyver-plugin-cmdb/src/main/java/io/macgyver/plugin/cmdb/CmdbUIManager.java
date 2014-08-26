@@ -20,10 +20,7 @@ public class CmdbUIManager extends MacGyverUIDecorator {
 	@Autowired
 	Neo4jRestClient neo4j;
 
-	@Subscribe
-	public void onCreateEvent(MacGyverUICreateEvent event) {
 
-	}
 
 	@Override
 	public void decorate(MacGyverUICreateEvent event) {
