@@ -1,5 +1,7 @@
 package io.macgyver.core.web.vaadin;
 
+import java.util.List;
+
 import io.macgyver.core.Kernel;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 import io.macgyver.core.web.vaadin.MacGyverUIDecorator.MacGyverUICreateEvent;
@@ -10,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
@@ -62,6 +66,7 @@ public class MacGyverUI extends UI
         HorizontalLayout hl = new HorizontalLayout();
         
         menubar = new MenuBar();
+        
         hl.addComponent(menubar);
         hl.setWidth(100, Unit.PERCENTAGE);
         
@@ -89,7 +94,7 @@ public class MacGyverUI extends UI
         MenuItem home = menubar.addItem("Home", navigateMenuCommand(""));
         
 
-
+        
    
    
       
@@ -104,7 +109,7 @@ public class MacGyverUI extends UI
         MacGyverUIDecorator.dispatch(new MacGyverUIDecorator.MacGyverUIPostCreateEvent(this));
        
         
-        
+        addMenuItem("Admin","Beans2",mycommand);
     }
     
     public MenuBar.Command navigateMenuCommand(final String name) {
@@ -119,4 +124,50 @@ public class MacGyverUI extends UI
  		return cmd;
     }
 
+   
+    /**
+     * Adds a menu item: topLevel > item
+     * @param topLevel
+     * @param item 
+     * @param cmd command to be executed when menu item is selected
+     * @return The newly created menu item
+     */
+    
+    public MenuItem addMenuItem(String topLevel, String item, MenuBar.Command cmd) {
+    	return addMenuItem(topLevel, item, cmd, true);
+    }
+    
+	public MenuItem addMenuItem(String topLevel, String item, MenuBar.Command cmd, boolean replace) {
+		Preconditions.checkNotNull(topLevel);
+		Preconditions.checkNotNull(item);
+		MenuItem topItem = null;
+		for (MenuItem t: menubar.getItems()) {
+			if (topLevel.equals(t.getText())) {
+				topItem = t;
+			}
+		}
+		if (topItem==null) {
+			topItem = menubar.addItem(topLevel, null);
+		}
+		
+		List<MenuItem> itemsToRemove = Lists.newArrayList();
+		MenuItem subItem = null;
+		for (MenuItem t: topItem.getChildren()) {
+			if (t.getText().equals(item)) {
+				if (!replace) {
+					throw new IllegalStateException("Menu item "+topLevel+"/"+item +" already exists");
+				}
+				// need to go through this pattern to avoid concurrent modification exception
+				itemsToRemove.add(t);
+			}
+		}
+		
+		for (MenuItem t: itemsToRemove) {
+			topItem.removeChild(t);
+		}
+		logger.debug("adding menu item {}/{} with command ",topLevel,item, cmd);
+		return topItem.addItem(item, cmd);
+		
+		
+	}
 }
