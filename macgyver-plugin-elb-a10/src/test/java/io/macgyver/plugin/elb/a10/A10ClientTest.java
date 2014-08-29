@@ -18,7 +18,7 @@ import io.macgyver.plugin.elb.a10.A10Client;
 import io.macgyver.plugin.elb.a10.A10RemoteException;
 import io.macgyver.test.MacGyverIntegrationTest;
 
-public class A10ClientTest extends MacGyverIntegrationTest {
+public class A10ClientTest  {
 
 	@Test
 	public void testRemoteException() throws IOException {
@@ -39,5 +39,13 @@ public class A10ClientTest extends MacGyverIntegrationTest {
 			Assert.assertEquals("1008",e.getErrorCode());
 			Assert.assertEquals("Invalid web service method name", e.getErrorMessage());
 		}
+	}
+	
+	@Test
+	public void testToMap() {
+		A10Client client = new A10Client("http://localhost", "xx", "");
+		Assert.assertTrue(client.toMap(null).isEmpty());
+		Assert.assertEquals("2",client.toMap("a","1","b","2").get("b"));
+		
 	}
 }

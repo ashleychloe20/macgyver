@@ -138,9 +138,28 @@ public class A10Client {
 	}
 
 	public ObjectNode invoke(String method) {
-		return invoke(method, null);
+		Map<String,String> m = Maps.newHashMap();
+		return invoke(method, m);
 	}
 
+	protected Map<String,String> toMap(String...args) {
+		Map<String,String> m = Maps.newHashMap();
+		if (args==null || args.length==0) {
+			return m;
+		}
+		if (args.length %2 !=0) {
+			throw new IllegalArgumentException("arguments must be in multiples of 2 (key/value)");
+		}	
+		for (int i=0; i<args.length; i+=2) {
+			Preconditions.checkNotNull(args[i]);
+			Preconditions.checkNotNull(args[i+1]);
+			m.put(args[i], args[i+1]);
+		}
+		return m;
+	}
+	public ObjectNode invoke(String method, String...args) {
+		return invoke(method,toMap(args));
+	}
 	public ObjectNode invoke(String method, Map<String, String> params) {
 		if (params == null) {
 			params = Maps.newConcurrentMap();
