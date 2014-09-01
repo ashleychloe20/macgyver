@@ -16,15 +16,27 @@
  */
 package io.macgyver.jclouds.vsphere;
 
+import io.macgyver.jclouds.vsphere.compute.functions.CreateAndConnectVSphereClient;
+import io.macgyver.plugin.cloud.vsphere.VSphereExceptionWrapper;
+import io.macgyver.plugin.cloud.vsphere.VmQueryTemplate;
+
+import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Singleton;
 
+import org.jclouds.compute.ComputeServiceContext;
+import org.jclouds.rest.config.CredentialStoreModule;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.vmware.vim25.mo.InventoryNavigator;
+import com.vmware.vim25.mo.ManagedEntity;
+import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
 
 /**
@@ -32,19 +44,19 @@ import com.vmware.vim25.mo.VirtualMachine;
  * create/list/reboot/get/destroy things
  */
 @Singleton
-public class ServerManager {
+public class VSphereServerManager {
 
-	private static final Map<Integer, Image> images = ImmutableMap.of(1,
-			new Image(1, "ubuntu"));
-	private static final Map<Integer, Hardware> hardware = ImmutableMap.of(1,
-			new Hardware(1, "small", 1, 512, 10));
 
 	private static final AtomicInteger nodeIds = new AtomicInteger(0);
 
 	@Inject
-	ServerManagerApiMetadata smd;
+	VSphereApiMetadata smd;
 
-	public ServerManager() {
+	@Inject
+	CreateAndConnectVSphereClient client;
+
+	
+	public VSphereServerManager() {
 
 	}
 
@@ -71,38 +83,58 @@ public class ServerManager {
 
 	public Iterable<VirtualMachine> listServers() {
 
-		System.out.println(smd.getEndpointName());
-		System.out.println(smd.getIdentityName());
-		return Lists.newArrayList();
-		// return servers.values();
+	
+		ServiceInstance si = client.get().getInstance();
+		
+		try {
+
+			InventoryNavigator nav = new InventoryNavigator(si.getRootFolder());
+
+			ManagedEntity[] entitites = nav
+					.searchManagedEntities("VirtualMachine");
+			List<VirtualMachine> vmList = Lists.newArrayList();
+
+			for (ManagedEntity me : entitites) {
+				vmList.add((VirtualMachine) me);
+			}
+
+			return java.util.Collections.unmodifiableList(vmList);
+		} catch (RemoteException e) {
+			throw new VSphereExceptionWrapper(e);
+		}
+
 	}
 
 	public Image getImage(int imageId) {
-		return images.get(imageId);
+		throw new UnsupportedOperationException();
 	}
 
 	public Iterable<Image> listImages() {
-		return images.values();
+		throw new UnsupportedOperationException();
 	}
 
 	public Hardware getHardware(int hardwareId) {
-		return hardware.get(hardwareId);
+		throw new UnsupportedOperationException();
 	}
 
 	public Iterable<io.macgyver.jclouds.vsphere.Hardware> listHardware() {
-		return hardware.values();
+		return Lists.newArrayList();
+	
 	}
 
 	public void destroyServer(int serverId) {
-		// servers.remove(serverId);
+		throw new UnsupportedOperationException();
 	}
 
 	public void rebootServer(int serverId) {
+		throw new UnsupportedOperationException();
 	}
 
 	public void stopServer(int serverId) {
+		throw new UnsupportedOperationException();
 	}
 
 	public void startServer(int serverId) {
+		throw new UnsupportedOperationException();
 	}
 }

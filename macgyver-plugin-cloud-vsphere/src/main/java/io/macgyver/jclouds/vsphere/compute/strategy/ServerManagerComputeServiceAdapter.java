@@ -22,13 +22,14 @@ import static com.google.common.collect.Iterables.filter;
 import io.macgyver.jclouds.vsphere.Datacenter;
 import io.macgyver.jclouds.vsphere.Hardware;
 import io.macgyver.jclouds.vsphere.Image;
-import io.macgyver.jclouds.vsphere.ServerManager;
+import io.macgyver.jclouds.vsphere.VSphereServerManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceAdapter;
+import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.domain.LoginCredentials;
 
@@ -37,19 +38,21 @@ import com.google.common.collect.ImmutableSet;
 import com.vmware.vim25.mo.VirtualMachine;
 
 /**
- * defines the connection between the {@link ServerManager} implementation and the jclouds
+ * defines the connection between the {@link VSphereServerManager} implementation and the jclouds
  * {@link ComputeService}
  */
 @Singleton
 public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter<VirtualMachine, Hardware, Image, Datacenter> {
-   private final ServerManager client;
+   private final VSphereServerManager client;
 
    @Inject
-   public ServerManagerComputeServiceAdapter(ServerManager client) {
+   public ServerManagerComputeServiceAdapter(VSphereServerManager client) {
       this.client = checkNotNull(client, "client");
       
    }
 
+
+   
    @Override
    public NodeAndInitialCredentials<VirtualMachine>  createNodeWithGroupEncodedIntoName(String tag, String name, Template template) {
       // create the backend object using parameters from the template.
@@ -67,6 +70,7 @@ public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter
 
    @Override
    public Iterable<Image> listImages() {
+	  
       return client.listImages();
    }
    
@@ -78,6 +82,8 @@ public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter
    
    @Override
    public Iterable<VirtualMachine> listNodes() {
+	   System.out.println("listNodes: "+this);
+	   
       return client.listServers();
    }
 

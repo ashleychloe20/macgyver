@@ -40,54 +40,84 @@ import org.jclouds.domain.LoginCredentials;
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableSet;
+import com.vmware.vim25.GuestInfo;
 import com.vmware.vim25.mo.VirtualMachine;
 
 @Singleton
-public class ServerToNodeMetadata implements Function<VirtualMachine, NodeMetadata> {
+public class ServerToNodeMetadata implements
+		Function<VirtualMachine, NodeMetadata> {
 
-  /* public static final Map<Server.Status, Status> serverStatusToNodeStatus = ImmutableMap
-         .<Server.Status, Status> builder().put(Server.Status.ACTIVE, Status.RUNNING)//
-         .put(Server.Status.BUILD, Status.PENDING)//
-         .put(Server.Status.TERMINATED, Status.TERMINATED)//
-         .put(Server.Status.UNRECOGNIZED, Status.UNRECOGNIZED)//
-         .build();*/
+	/*
+	 * public static final Map<Server.Status, Status> serverStatusToNodeStatus =
+	 * ImmutableMap .<Server.Status, Status> builder().put(Server.Status.ACTIVE,
+	 * Status.RUNNING)// .put(Server.Status.BUILD, Status.PENDING)//
+	 * .put(Server.Status.TERMINATED, Status.TERMINATED)//
+	 * .put(Server.Status.UNRECOGNIZED, Status.UNRECOGNIZED)// .build();
+	 */
 
-   private final Supplier<Set<? extends Hardware>> hardware;
-   private final Supplier<Set<? extends Location>> locations;
-   private final Supplier<Set<? extends Image>> images;
-   private final Map<String, Credentials> credentialStore;
-   private final GroupNamingConvention nodeNamingConvention;
+	private final Supplier<Set<? extends Hardware>> hardware;
+	private final Supplier<Set<? extends Location>> locations;
+	private final Supplier<Set<? extends Image>> images;
+	private final Map<String, Credentials> credentialStore;
+	private final GroupNamingConvention nodeNamingConvention;
 
-   @Inject
-   ServerToNodeMetadata(Map<String, Credentials> credentialStore, @Memoized Supplier<Set<? extends Hardware>> hardware,
-         @Memoized Supplier<Set<? extends Location>> locations, @Memoized Supplier<Set<? extends Image>> images,
-         GroupNamingConvention.Factory namingConvention) {
-      this.nodeNamingConvention = checkNotNull(namingConvention, "namingConvention").createWithoutPrefix();
-      this.credentialStore = checkNotNull(credentialStore, "credentialStore");
-      this.hardware = checkNotNull(hardware, "hardware");
-      this.locations = checkNotNull(locations, "locations");
-      this.images = checkNotNull(images, "images");
-   }
+	@Inject
+	ServerToNodeMetadata(Map<String, Credentials> credentialStore,
+			@Memoized Supplier<Set<? extends Hardware>> hardware,
+			@Memoized Supplier<Set<? extends Location>> locations,
+			@Memoized Supplier<Set<? extends Image>> images,
+			GroupNamingConvention.Factory namingConvention) {
+		this.nodeNamingConvention = checkNotNull(namingConvention,
+				"namingConvention").createWithoutPrefix();
+		this.credentialStore = checkNotNull(credentialStore, "credentialStore");
+		this.hardware = checkNotNull(hardware, "hardware");
+		this.locations = checkNotNull(locations, "locations");
+		this.images = checkNotNull(images, "images");
+	}
 
-   @Override
-   public NodeMetadata apply(VirtualMachine from) {
-      // convert the result object to a jclouds NodeMetadata
-      NodeMetadataBuilder builder = new NodeMetadataBuilder();
-      builder.ids("a");
-      builder.name(from.getName());
-      
-  //    builder.location(from(locations.get()).firstMatch(LocationPredicates.idEquals(from.datacenter)).orNull());
-      builder.group(nodeNamingConvention.groupInUniqueNameOrNull(""));
-      builder.imageId("");
-  //    Image image = from(images.get()).firstMatch(ImagePredicates.idEquals(from.imageId + "")).orNull();
-   //   if (image != null)
-    //     builder.operatingSystem(image.getOperatingSystem());
-      builder.hardware(from(hardware.get()).firstMatch(HardwarePredicates.idEquals("")).orNull());
-//      builder.status(serverStatusToNodeStatus.get(from.status));
-      builder.status(Status.RUNNING);
-      builder.publicAddresses(ImmutableSet.<String> of(""));
-      builder.privateAddresses(ImmutableSet.<String> of(""));
-      builder.credentials(LoginCredentials.fromCredentials(credentialStore.get( "")));
-      return builder.build();
-   }
+	@Override
+	public NodeMetadata apply(VirtualMachine from) {
+
+		GuestInfo guestInfo = null;
+
+		try {
+			guestInfo = from.getGuest();
+
+		} finally {
+		}
+
+		// convert the result object to a jclouds NodeMetadata
+		NodeMetadataBuilder builder = new NodeMetadataBuilder();
+		builder.ids("a");
+		builder.name(from.getName());
+
+		// builder.location(from(locations.get()).firstMatch(LocationPredicates.idEquals(from.datacenter)).orNull());
+		builder.group(nodeNamingConvention.groupInUniqueNameOrNull(""));
+		builder.imageId("");
+		// Image image =
+		// from(images.get()).firstMatch(ImagePredicates.idEquals(from.imageId +
+		// "")).orNull();
+		// if (image != null)
+		// builder.operatingSystem(image.getOperatingSystem());
+		builder.hardware(from(hardware.get()).firstMatch(
+				HardwarePredicates.idEquals("")).orNull());
+		// builder.status(serverStatusToNodeStatus.get(from.status));
+		
+		builder.status(Status.RUNNING);
+		builder.publicAddresses(ImmutableSet.<String> of(""));
+		if (guestInfo != null) {
+			
+			String ipAddress = guestInfo.getIpAddress();
+			if (ipAddress != null) {
+				builder.privateAddresses(ImmutableSet.<String> of(guestInfo
+						.getIpAddress()));
+			}
+			else {
+				builder.privateAddresses(ImmutableSet.<String>of(""));
+			}
+		}
+		builder.credentials(LoginCredentials.fromCredentials(credentialStore
+				.get("")));
+		return builder.build();
+	}
 }

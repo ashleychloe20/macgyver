@@ -16,7 +16,8 @@
  */
 package org.jclouds.servermanager.compute;
 
-import io.macgyver.jclouds.vsphere.ServerManagerApiMetadata;
+import io.macgyver.jclouds.vsphere.VSphereApiMetadata;
+import io.macgyver.test.MacGyverIntegrationTest;
 
 import java.util.Properties;
 import java.util.Set;
@@ -24,31 +25,48 @@ import java.util.Set;
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.ComputeMetadata;
+import org.junit.Assume;
+import org.junit.Before;
 
-public class ServerManagerExperimentLiveTest  {
+import com.google.web.bindery.requestfactory.shared.impl.Constants;
 
-   public ServerManagerExperimentLiveTest() {
-    //  provider = "servermanager";
-   }
+public class ServerManagerExperimentLiveTest extends MacGyverIntegrationTest {
 
-   @org.junit.Test
-   public void testAndExperiment() {
-      ComputeServiceContext context = null;
-      try {
-    	  
-    	
-         context = ContextBuilder.newBuilder(new ServerManagerApiMetadata().toBuilder().credentialName("abc").build()).credentials("abc", "def").overrides(new Properties()).build(ComputeServiceContext.class);
- 
-     
-         for (ComputeMetadata md : context.getComputeService().listNodes()) {
-        	 System.out.println(">>"+md);
-         }
+	public ServerManagerExperimentLiveTest() {
 
+	}
 
-      } finally {
-         if (context != null)
-            context.close();
-      }
-   }
+	static ComputeServiceContext context;
+
+	@Before
+	public void setupContext() {
+		try {
+			if (context == null) {
+
+				String url = getPrivateProperty("vcenter.url");
+				String username = getPrivateProperty("vcenter.username");
+				String password = getPrivateProperty("vcenter.password");
+				Properties p = new Properties();
+
+				context = ContextBuilder.newBuilder(new VSphereApiMetadata())
+						.credentials(username, password).endpoint(url)
+						.overrides(p).build(ComputeServiceContext.class);
+				context.getComputeService().listNodes();  // force a connection
+
+			}
+		} catch (Exception e) {
+			logger.warn("could not connect", e);
+			Assume.assumeTrue(false);
+		}
+	}
+
+	@org.junit.Test
+	public void testAndExperiment() {
+		for (ComputeMetadata cmd: context.getComputeService().listNodes()) {
+			System.out.println(cmd);
+		}
+		
+
+	}
 
 }

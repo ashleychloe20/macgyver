@@ -26,18 +26,18 @@ import org.jclouds.compute.ComputeServiceContext;
 /**
  * Implementation of {@link ApiMetadata} for an example of library integration (ServerManager)
  */
-public class ServerManagerApiMetadata extends BaseApiMetadata {
+public class VSphereApiMetadata extends BaseApiMetadata {
 
    @Override
    public Builder toBuilder() {
       return new Builder().fromApiMetadata(this);
    }
 
-   public ServerManagerApiMetadata() {
+   public VSphereApiMetadata() {
       super(new Builder());
    }
 
-   protected ServerManagerApiMetadata(Builder builder) {
+   protected VSphereApiMetadata(Builder builder) {
       super(builder);
    }
 
@@ -47,18 +47,19 @@ public class ServerManagerApiMetadata extends BaseApiMetadata {
          id("servermanager")
          .name("ServerManager API")
          .identityName("Unused")
-         .defaultIdentity("foo")
-         .defaultCredential("bar")
-         .defaultEndpoint("http://demo")
+       //  .defaultIdentity("foo")
+       //  .defaultCredential("bar")
+       //  .defaultEndpoint("http://demo")
          .documentation(URI.create("http://www.jclouds.org/documentation/userguide/compute"))
          .view(ComputeServiceContext.class)
          .defaultModule(ServerManagerComputeServiceContextModule.class);
+         
       }
 
       @Override
-      public ServerManagerApiMetadata build() {
+      public VSphereApiMetadata build() {
     	  
-         return new ServerManagerApiMetadata(this);
+         return new VSphereApiMetadata(this);
       }
 
       @Override

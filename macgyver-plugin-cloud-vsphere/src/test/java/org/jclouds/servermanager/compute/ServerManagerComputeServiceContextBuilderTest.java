@@ -17,7 +17,7 @@
 package org.jclouds.servermanager.compute;
 
 
-import io.macgyver.jclouds.vsphere.ServerManagerApiMetadata;
+import io.macgyver.jclouds.vsphere.VSphereApiMetadata;
 
 import java.util.Properties;
 
@@ -35,7 +35,7 @@ public class ServerManagerComputeServiceContextBuilderTest {
    @Test
    public void testCanBuildWithApiMetadata() {
       ComputeServiceContext context = ContextBuilder.newBuilder(
-            new ServerManagerApiMetadata()).build(ComputeServiceContext.class);
+            new VSphereApiMetadata()).build(ComputeServiceContext.class);
       context.close();
    }
 
