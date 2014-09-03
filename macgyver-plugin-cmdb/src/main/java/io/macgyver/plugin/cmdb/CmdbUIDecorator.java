@@ -29,13 +29,10 @@ public class CmdbUIDecorator extends MacGyverUIDecorator {
 		MacGyverUI ui = event.getUI();
 
 		Navigator nav = ui.getNavigator();
-		MenuBar bar = ui.getMenuBar();
+	
 
-		MenuItem inventory = bar.addItem("Inventory", null);
-		inventory.addItem("App Instances",
-				ui.navigateMenuCommand("cmdb/appInstances"));
-
-		nav.addView("cmdb/appInstances", AppInstancesView.class);
+		ui.addMenuItem("Inventory", "App Instances", AppInstancesView.VIEW_NAME);
+		nav.addView(AppInstancesView.VIEW_NAME, AppInstancesView.class);
 
 	}
 

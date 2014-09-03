@@ -33,6 +33,7 @@ import com.vaadin.ui.VerticalLayout;
 
 public class AppInstancesView extends VerticalLayout implements View {
 
+	public static final String VIEW_NAME="cmdb/appInstances";
 	Table table;
 
 	TextField searchTextField;

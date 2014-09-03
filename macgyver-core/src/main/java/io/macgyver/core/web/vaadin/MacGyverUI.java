@@ -69,7 +69,7 @@ public class MacGyverUI extends UI {
 
 		MenuItem home = menubar.addItem("Home", navigateMenuCommand(""));
 
-		addMenuItem("Admin", "Beans", navigateMenuCommand("admin/beans"));
+		addMenuItem("Admin", "Beans", "admin/beans");
 
 		hl.setComponentAlignment(menubar, Alignment.MIDDLE_CENTER);
 
