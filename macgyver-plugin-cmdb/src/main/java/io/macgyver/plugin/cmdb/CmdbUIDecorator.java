@@ -13,9 +13,9 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 
-public class CmdbUIManager extends MacGyverUIDecorator {
+public class CmdbUIDecorator extends MacGyverUIDecorator {
 
-	Logger logger = LoggerFactory.getLogger(CmdbUIManager.class);
+	Logger logger = LoggerFactory.getLogger(CmdbUIDecorator.class);
 
 	@Autowired
 	Neo4jRestClient neo4j;

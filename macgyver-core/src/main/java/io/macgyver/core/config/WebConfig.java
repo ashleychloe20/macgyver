@@ -3,8 +3,6 @@ package io.macgyver.core.config;
 import io.macgyver.core.web.CoreApiController;
 import io.macgyver.core.web.HomeController;
 import io.macgyver.core.web.MacgyverWeb;
-import io.macgyver.core.web.navigation.MenuManager;
-import io.macgyver.core.web.navigation.StandardMenuDecorator;
 import io.macgyver.core.web.vaadin.MacGyverUI;
 import io.macgyver.core.web.vaadin.MacGyverVaadinServlet;
 
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +20,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-
-import com.vaadin.server.VaadinServlet;
 
 @Configuration
 @ComponentScan(basePackageClasses = { HomeController.class })
@@ -78,15 +73,7 @@ public class WebConfig implements EnvironmentAware {
 		return new MacgyverWeb();
 	}
 
-	@Bean
-	public MenuManager macMenuManager() {
-		return new MenuManager();
-	}
 
-	@Bean
-	public StandardMenuDecorator macStandardMenuDecorator() {
-		return new StandardMenuDecorator();
-	}
 
 
 	@Bean
