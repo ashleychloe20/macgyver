@@ -44,6 +44,8 @@ public class AppInstancesView extends VerticalLayout implements View {
 		// setWidth(800, Unit.PIXELS);
 		table = new Table("App Instances",new IndexedJsonContainer());
 
+		table.addStyleName("compact");
+		table.addStyleName("small");
 		// Define two columns for the built-in container
 		table.addContainerProperty("environment", String.class, null);
 		table.addContainerProperty("host", String.class, null);

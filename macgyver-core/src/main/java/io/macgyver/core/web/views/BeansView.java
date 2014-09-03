@@ -22,6 +22,8 @@ public class BeansView extends VerticalLayout implements View {
 		//setWidth(800, Unit.PIXELS);
 		table = new Table("Spring Beans");
 
+		table.addStyleName("compact");
+		table.addStyleName("small");
 		// Define two columns for the built-in container
 		table.addContainerProperty("name", String.class, null);
 		table.addContainerProperty("class", String.class, null);
