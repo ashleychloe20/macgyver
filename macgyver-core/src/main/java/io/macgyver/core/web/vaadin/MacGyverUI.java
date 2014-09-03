@@ -109,7 +109,7 @@ public class MacGyverUI extends UI
         MacGyverUIDecorator.dispatch(new MacGyverUIDecorator.MacGyverUIPostCreateEvent(this));
        
         
-        addMenuItem("Admin","Beans2",mycommand);
+        
     }
     
     public MenuBar.Command navigateMenuCommand(final String name) {
