@@ -14,4 +14,11 @@ public class VSphereApiMetadataTest {
 		
 		assertEquals("https://ssx",md.getDefaultEndpoint().get());
 	}
+	
+	@Test
+	public void testX() {
+		VSphereApiMetadata md = new VSphereApiMetadata().toBuilder().credentialName("hello").build();
+		
+		assertEquals("hello", md.getCredentialName().get());
+	}
 }

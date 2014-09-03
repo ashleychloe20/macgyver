@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.servermanager.compute;
+package io.macgyver.jclouds.vsphere;
 
 import io.macgyver.jclouds.vsphere.VSphereApiMetadata;
 import io.macgyver.test.MacGyverIntegrationTest;
@@ -25,6 +25,7 @@ import java.util.Set;
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.ComputeMetadata;
+import org.jclouds.compute.domain.NodeMetadata;
 import org.junit.Assume;
 import org.junit.Before;
 
@@ -51,7 +52,7 @@ public class ServerManagerExperimentLiveTest extends MacGyverIntegrationTest {
 				context = ContextBuilder.newBuilder(new VSphereApiMetadata())
 						.credentials(username, password).endpoint(url)
 						.overrides(p).build(ComputeServiceContext.class);
-				context.getComputeService().listNodes();  // force a connection
+			
 
 			}
 		} catch (Exception e) {
@@ -62,11 +63,12 @@ public class ServerManagerExperimentLiveTest extends MacGyverIntegrationTest {
 
 	@org.junit.Test
 	public void testAndExperiment() {
-		for (ComputeMetadata cmd: context.getComputeService().listNodes()) {
+	/*	for (ComputeMetadata cmd: context.getComputeService().listNodes()) {
 			System.out.println(cmd);
 		}
-		
-
+		*/
+		NodeMetadata md = context.getComputeService().getNodeMetadata("42143f20-3672-298a-75b5-ba18b3390fc4");
+	
 	}
 
 }

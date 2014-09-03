@@ -14,24 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyver.jclouds.vsphere.compute.config;
+package io.macgyver.jclouds.vsphere;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 
 import javax.inject.Singleton;
-
-import io.macgyver.jclouds.vsphere.Datacenter;
-import io.macgyver.jclouds.vsphere.Hardware;
-import io.macgyver.jclouds.vsphere.Image;
-import io.macgyver.jclouds.vsphere.VSphereServiceInstance;
-import io.macgyver.jclouds.vsphere.compute.functions.CreateAndConnectVSphereClient;
-import io.macgyver.jclouds.vsphere.compute.functions.DatacenterToLocation;
-import io.macgyver.jclouds.vsphere.compute.functions.ServerManagerHardwareToHardware;
-import io.macgyver.jclouds.vsphere.compute.functions.ServerManagerImageToImage;
-import io.macgyver.jclouds.vsphere.compute.functions.ServerToNodeMetadata;
-import io.macgyver.jclouds.vsphere.compute.strategy.ServerManagerComputeServiceAdapter;
 
 import org.jclouds.compute.ComputeServiceAdapter;
 import org.jclouds.compute.config.ComputeServiceAdapterContextModule;
@@ -55,12 +44,12 @@ public class ServerManagerComputeServiceContextModule
 		super.configure();
 		bind(
 				new TypeLiteral<ComputeServiceAdapter<VirtualMachine, Hardware, Image, Datacenter>>() {
-				}).to(ServerManagerComputeServiceAdapter.class);
+				}).to(VSphereComputeServiceAdapter.class);
 		bind(new TypeLiteral<Function<VirtualMachine, NodeMetadata>>() {
-		}).to(ServerToNodeMetadata.class);
+		}).to(VirtualMachineToNodeMetaData.class);
 		bind(
 				new TypeLiteral<Function<Image, org.jclouds.compute.domain.Image>>() {
-				}).to(ServerManagerImageToImage.class);
+				}).to(VSphereImageToImage.class);
 		bind(new TypeLiteral<Supplier<VSphereServiceInstance>>() {
 		}).to((Class) CreateAndConnectVSphereClient.class);
 		bind(

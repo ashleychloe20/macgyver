@@ -48,7 +48,6 @@ public class ServiceRegistry {
 	@Autowired
 	Crypto crypto;
 
-
 	@SuppressWarnings("unchecked")
 	public <T> T get(String name, Class<T> t) {
 		return (T) get(name);
@@ -94,9 +93,7 @@ public class ServiceRegistry {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Subscribe
-	public void startAfterSpringContextInitialized(
-			Kernel.KernelStartedEvent event) throws Exception {
+	public void startAfterSpringContextInitialized() throws RuntimeException, IOException {
 
 		collectServiceFactories();
 
@@ -210,9 +207,10 @@ public class ServiceRegistry {
 			IOException {
 		Properties p = new Properties();
 
-		File configGroovy = Bootstrap.getInstance().resolveConfig("services.groovy");
+		File configGroovy = Bootstrap.getInstance().resolveConfig(
+				"services.groovy");
 
-		logger.info("loading services from: {}",configGroovy);
+		logger.info("loading services from: {}", configGroovy);
 		ConfigSlurper slurper = new ConfigSlurper();
 		if (Kernel.getExecutionProfile().isPresent()) {
 			slurper.setEnvironment(Kernel.getExecutionProfile().get());
@@ -225,10 +223,8 @@ public class ServiceRegistry {
 
 			p = crypto.decryptProperties(p);
 
-			
-		}
-		else {
-			logger.warn("services config file not found: {}",configGroovy);
+		} else {
+			logger.warn("services config file not found: {}", configGroovy);
 		}
 		return p;
 

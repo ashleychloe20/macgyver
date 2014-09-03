@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.servermanager.compute;
+package io.macgyver.jclouds.vsphere;
 
 
 import io.macgyver.jclouds.vsphere.VSphereApiMetadata;
@@ -35,14 +35,19 @@ public class ServerManagerComputeServiceContextBuilderTest {
    @Test
    public void testCanBuildWithApiMetadata() {
       ComputeServiceContext context = ContextBuilder.newBuilder(
-            new VSphereApiMetadata()).build(ComputeServiceContext.class);
+            new VSphereApiMetadata()).credentials("a","b").endpoint("https://somewhere").build(ComputeServiceContext.class);
+      
+      System.out.println(context.unwrap());
+      
       context.close();
+  
    }
 
-   @Ignore
+
    @Test
    public void testCanBuildById() {
-      ComputeServiceContext context = ContextBuilder.newBuilder("servermanager").build(ComputeServiceContext.class);
+	  
+      ComputeServiceContext context = ContextBuilder.newBuilder("vsphere").credentials("a", "b").endpoint("https://somewhere").build(ComputeServiceContext.class);
       context.close();
    }
 
@@ -59,11 +64,11 @@ public class ServerManagerComputeServiceContextBuilderTest {
       context.close();
    }
 
-   @Ignore
+
    @Test
    public void testUnwrapIsCorrectType() {
-      ComputeServiceContext context = ContextBuilder.newBuilder("servermanager").build(ComputeServiceContext.class);
-
+	   ComputeServiceContext context = ContextBuilder.newBuilder("vsphere").credentials("a", "b").endpoint("https://somewhere").build(ComputeServiceContext.class);
+	      context.close();
       Assert.assertEquals(context.unwrap().getClass(), ContextImpl.class);
 
       context.close();

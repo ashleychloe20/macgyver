@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyver.jclouds.vsphere.compute.functions;
+package io.macgyver.jclouds.vsphere;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.FluentIterable.from;
@@ -41,10 +41,12 @@ import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableSet;
 import com.vmware.vim25.GuestInfo;
+import com.vmware.vim25.VirtualMachinePowerState;
+import com.vmware.vim25.VirtualMachineRuntimeInfo;
 import com.vmware.vim25.mo.VirtualMachine;
 
 @Singleton
-public class ServerToNodeMetadata implements
+public class VirtualMachineToNodeMetaData implements
 		Function<VirtualMachine, NodeMetadata> {
 
 	/*
@@ -62,7 +64,7 @@ public class ServerToNodeMetadata implements
 	private final GroupNamingConvention nodeNamingConvention;
 
 	@Inject
-	ServerToNodeMetadata(Map<String, Credentials> credentialStore,
+	VirtualMachineToNodeMetaData(Map<String, Credentials> credentialStore,
 			@Memoized Supplier<Set<? extends Hardware>> hardware,
 			@Memoized Supplier<Set<? extends Location>> locations,
 			@Memoized Supplier<Set<? extends Image>> images,
@@ -78,32 +80,39 @@ public class ServerToNodeMetadata implements
 	@Override
 	public NodeMetadata apply(VirtualMachine from) {
 
-		GuestInfo guestInfo = null;
+		GuestInfo guestInfo = from.getGuest();
+		VirtualMachineRuntimeInfo rt = from.getRuntime();
 
-		try {
-			guestInfo = from.getGuest();
 
-		} finally {
-		}
 
+		
+		
+		
 		// convert the result object to a jclouds NodeMetadata
 		NodeMetadataBuilder builder = new NodeMetadataBuilder();
-		builder.ids("a");
-		builder.name(from.getName());
 
-		// builder.location(from(locations.get()).firstMatch(LocationPredicates.idEquals(from.datacenter)).orNull());
+		builder.id(from.getConfig().getUuid());
+		builder.name(from.getName());
+		
+		
 		builder.group(nodeNamingConvention.groupInUniqueNameOrNull(""));
 		builder.imageId("");
-		// Image image =
-		// from(images.get()).firstMatch(ImagePredicates.idEquals(from.imageId +
-		// "")).orNull();
-		// if (image != null)
-		// builder.operatingSystem(image.getOperatingSystem());
+
 		builder.hardware(from(hardware.get()).firstMatch(
 				HardwarePredicates.idEquals("")).orNull());
-		// builder.status(serverStatusToNodeStatus.get(from.status));
+	
 		
-		builder.status(Status.RUNNING);
+		VirtualMachinePowerState ps = rt.getPowerState();
+	
+		if (ps==VirtualMachinePowerState.poweredOn) {
+			builder.status(Status.RUNNING);
+		}
+		else if (ps==VirtualMachinePowerState.poweredOff || ps==VirtualMachinePowerState.suspended) {
+			builder.status(Status.SUSPENDED);
+		}
+		else {
+			builder.status(Status.UNRECOGNIZED);
+		}
 		builder.publicAddresses(ImmutableSet.<String> of(""));
 		if (guestInfo != null) {
 			

@@ -12,16 +12,16 @@ configurations {
 }
 
 
+mainClassName = 'io.macgyver.core.ServerMain'
+
 
 dependencies {
 
   
     testCompile project(':macgyver-test')
      compile project(':macgyver-plugin-cloud')
-	 compile project(':macgyver-plugin-cmdb')
+	 compile 'com.vmware:vijava:5.1'
 	 
-	 //org.apache.jcloud
-	// testCompile "org.apache.jclouds:jclouds-compute:1.8.0:test"
-     compile 'com.vmware:vijava:5.1'
+
 }
 

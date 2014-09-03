@@ -4,6 +4,7 @@ import io.macgyver.core.auth.InternalAuthenticationProvider;
 import io.macgyver.core.resource.Resource;
 import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.script.ScriptExecutor;
+import io.macgyver.core.service.ServiceRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +28,9 @@ public class Startup implements InitializingBean {
 	@Autowired
 	Kernel kernel;
 
-
+	@Autowired
+	ServiceRegistry registry;
+	
 	@Autowired
 	InternalAuthenticationProvider internalAuthenticationProvider;
 
@@ -40,6 +43,8 @@ public class Startup implements InitializingBean {
 			return;
 		}
 		logger.info("STARTED: {}", event);
+		
+		registry.startAfterSpringContextInitialized();
 		runInitScripts();
 		
 	}

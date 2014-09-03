@@ -14,31 +14,33 @@ import com.vmware.vim25.mo.ServiceInstance;
 @Component
 public class VSphereFactory extends BasicServiceFactory<ServiceInstance> {
 
+	public static final String CERTIFICATE_VERIFICATION_DEFAULT = "false";
 
-	public static final String CERTIFICATE_VERIFICATION_DEFAULT="true";
 	public VSphereFactory() {
-		super("vsphere");
+		super("vijava");
 	}
 
 	@Override
 	protected ServiceInstance doCreateInstance(ServiceDefinition def) {
 		try {
-		logger.info("connecting to vcenter at: {}", def.getProperties().getProperty("url"));
-		boolean ignoreCerts = ! Boolean.parseBoolean(def.getProperties().getProperty(CERTIFICATE_VERIFICATION_ENABLED,
-				CERTIFICATE_VERIFICATION_DEFAULT)); // invert boolean value meaning
-		ServiceInstance si = new ServiceInstance(new URL(
-				
-				def.getProperties().getProperty("url")), def.getProperties().getProperty("username"),
-				def.getProperties().getProperty("password"), ignoreCerts);
+			logger.info("connecting to vcenter at: {}", def.getProperties()
+					.getProperty("url"));
+			boolean ignoreCerts = !Boolean.parseBoolean(def.getProperties()
+					.getProperty(CERTIFICATE_VERIFICATION_ENABLED,
+							CERTIFICATE_VERIFICATION_DEFAULT)); // invert
+																// boolean value
+																// meaning
+			ServiceInstance si = new ServiceInstance(new URL(
 
-		return si;
-		}
-		catch (IOException e) {
+			def.getProperties().getProperty("url")), def.getProperties()
+					.getProperty("username"), def.getProperties().getProperty(
+					"password"), ignoreCerts);
+
+			return si;
+		} catch (IOException e) {
 			throw new MacGyverException(e);
 		}
-		
+
 	}
-
-
 
 }

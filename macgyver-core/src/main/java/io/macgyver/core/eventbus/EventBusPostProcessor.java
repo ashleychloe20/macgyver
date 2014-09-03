@@ -37,7 +37,7 @@ public class EventBusPostProcessor implements BeanPostProcessor,
 			Package p = bean.getClass().getPackage();
 			
 			if (p!=null) {
-				log.info("registering spring bean {} with {}", beanName,
+				log.trace("registering spring bean {} with {}", beanName,
 						eventBus);
 				eventBus.register(bean);
 			}

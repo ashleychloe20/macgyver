@@ -14,15 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyver.jclouds.vsphere.compute.strategy;
+package io.macgyver.jclouds.vsphere;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Iterables.contains;
 import static com.google.common.collect.Iterables.filter;
-import io.macgyver.jclouds.vsphere.Datacenter;
-import io.macgyver.jclouds.vsphere.Hardware;
-import io.macgyver.jclouds.vsphere.Image;
-import io.macgyver.jclouds.vsphere.VSphereServerManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -42,11 +38,11 @@ import com.vmware.vim25.mo.VirtualMachine;
  * {@link ComputeService}
  */
 @Singleton
-public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter<VirtualMachine, Hardware, Image, Datacenter> {
+public class VSphereComputeServiceAdapter implements ComputeServiceAdapter<VirtualMachine, Hardware, Image, Datacenter> {
    private final VSphereServerManager client;
 
    @Inject
-   public ServerManagerComputeServiceAdapter(VSphereServerManager client) {
+   public VSphereComputeServiceAdapter(VSphereServerManager client) {
       this.client = checkNotNull(client, "client");
       
    }
@@ -76,14 +72,12 @@ public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter
    
    @Override
    public Image getImage(String id) {
-      int imageId = Integer.parseInt(id);
-      return client.getImage(imageId);
+	   throw new UnsupportedOperationException();    
    }
    
    @Override
    public Iterable<VirtualMachine> listNodes() {
-	   System.out.println("listNodes: "+this);
-	   
+
       return client.listServers();
    }
 
@@ -100,13 +94,12 @@ public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter
    
    @Override
    public Iterable<Datacenter> listLocations() {
-      return ImmutableSet.of(new Datacenter(1, "SFO"));
+	   throw new UnsupportedOperationException();    
    }
 
    @Override
    public VirtualMachine getNode(String id) {
-      int serverId = Integer.parseInt(id);
-      return client.getServer(serverId);
+      return client.getServer(id);
    }
 
    @Override
@@ -116,17 +109,16 @@ public class ServerManagerComputeServiceAdapter implements ComputeServiceAdapter
 
    @Override
    public void rebootNode(String id) {
-      client.rebootServer(Integer.parseInt(id));      
+      throw new UnsupportedOperationException();    
    }
 
    @Override
    public void resumeNode(String id) {
-      client.startServer(Integer.parseInt(id));      
-      
+      client.startServer(Integer.parseInt(id));  throw new UnsupportedOperationException();      
    }
 
    @Override
    public void suspendNode(String id) {
-      client.stopServer(Integer.parseInt(id));      
+	   throw new UnsupportedOperationException();       
    }
 }

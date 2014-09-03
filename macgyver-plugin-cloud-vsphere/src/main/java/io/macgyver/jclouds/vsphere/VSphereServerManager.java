@@ -16,7 +16,6 @@
  */
 package io.macgyver.jclouds.vsphere;
 
-import io.macgyver.jclouds.vsphere.compute.functions.CreateAndConnectVSphereClient;
 import io.macgyver.plugin.cloud.vsphere.VSphereExceptionWrapper;
 import io.macgyver.plugin.cloud.vsphere.VmQueryTemplate;
 
@@ -24,6 +23,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Singleton;
 
@@ -34,10 +34,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.vmware.vim25.ManagedObjectReference;
 import com.vmware.vim25.mo.InventoryNavigator;
 import com.vmware.vim25.mo.ManagedEntity;
 import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
+import com.vmware.vim25.mo.util.MorUtil;
 
 /**
  * This would be replaced with the real connection to the service that can
@@ -45,7 +47,6 @@ import com.vmware.vim25.mo.VirtualMachine;
  */
 @Singleton
 public class VSphereServerManager {
-
 
 	private static final AtomicInteger nodeIds = new AtomicInteger(0);
 
@@ -55,7 +56,6 @@ public class VSphereServerManager {
 	@Inject
 	CreateAndConnectVSphereClient client;
 
-	
 	public VSphereServerManager() {
 
 	}
@@ -73,28 +73,64 @@ public class VSphereServerManager {
 	public VirtualMachine createServerInDC(String datacenter, String name,
 			int imageId, int hardwareId) {
 
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
-	public VirtualMachine getServer(int serverId) {
+	public VirtualMachine getServer(String serverId) {
+		try {
+			ServiceInstance si = client.get().getInstance();
 
-		return null;
+			VirtualMachine vm = (VirtualMachine) si.getSearchIndex()
+					.findByUuid(null, serverId, true);
+			
+			if (vm==null) {
+				ManagedObjectReference mor  =new ManagedObjectReference();
+				mor.setType("VirtualMachine");
+				mor.setVal(serverId);
+				vm = (VirtualMachine) MorUtil.createExactManagedEntity(si.getServerConnection(), mor);
+				
+			}
+			return vm;
+		} catch (RemoteException e) {
+
+			throw new VSphereExceptionWrapper(e);
+		}
+
+		
+		
 	}
 
+	AtomicReference<String> vcenterUUID = new AtomicReference<String>();
+	protected String getVCenterUUID() {
+		if (vcenterUUID.get()==null) {
+			String uuid = client.get().getInstance().getAboutInfo().getInstanceUuid();
+			if (uuid==null) {
+				throw new IllegalStateException("Could not obtain vcenter UUID");
+			}
+			vcenterUUID.set(uuid);
+		}
+		
+		return vcenterUUID.get();
+	}
+	
 	public Iterable<VirtualMachine> listServers() {
 
-	
 		ServiceInstance si = client.get().getInstance();
-		
+
 		try {
 
 			InventoryNavigator nav = new InventoryNavigator(si.getRootFolder());
 
+	
 			ManagedEntity[] entitites = nav
 					.searchManagedEntities("VirtualMachine");
+
 			List<VirtualMachine> vmList = Lists.newArrayList();
 
 			for (ManagedEntity me : entitites) {
+				VirtualMachine vm = (VirtualMachine) me;
+
+				
 				vmList.add((VirtualMachine) me);
 			}
 
@@ -119,7 +155,7 @@ public class VSphereServerManager {
 
 	public Iterable<io.macgyver.jclouds.vsphere.Hardware> listHardware() {
 		return Lists.newArrayList();
-	
+
 	}
 
 	public void destroyServer(int serverId) {

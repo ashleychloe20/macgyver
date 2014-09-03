@@ -1,7 +1,6 @@
-package io.macgyver.jclouds.vsphere.compute.functions;
+package io.macgyver.jclouds.vsphere;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import io.macgyver.jclouds.vsphere.VSphereServiceInstance;
 
 import java.net.MalformedURLException;
 import java.net.URI;
