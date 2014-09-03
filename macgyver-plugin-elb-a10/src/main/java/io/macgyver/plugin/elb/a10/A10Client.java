@@ -194,7 +194,7 @@ public class A10Client {
 			ObjectMapper mapper = new ObjectMapper();
 			String body = mapper.writerWithDefaultPrettyPrinter()
 					.writeValueAsString(response);
-			logger.info("response: \n{}", body);
+			logger.debug("response: \n{}", body);
 			throwExceptionIfNecessary(response);
 
 			return response;
