@@ -91,7 +91,9 @@ public class VirtualMachineToNodeMetaData implements
 		// convert the result object to a jclouds NodeMetadata
 		NodeMetadataBuilder builder = new NodeMetadataBuilder();
 
-		builder.id(from.getConfig().getUuid());
+		String uuid = from.getConfig().getUuid();
+		builder.id(uuid);
+		builder.providerId(uuid);
 		builder.name(from.getName());
 		
 		
