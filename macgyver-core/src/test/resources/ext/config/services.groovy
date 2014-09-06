@@ -1,6 +1,6 @@
 
 
-println "HELLO!!!!"
+println "services.groovy execution"
 foo="bar"
 services {
 

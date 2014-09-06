@@ -31,7 +31,7 @@ public class SoftDependencyInitializer implements
 		} catch (Exception e) {
 			logger.warn("", e);
 		}
-		System.out.println("CI: "+ci);
+	
 		if (ci != null) {
 			ci.initialize(applicationContext);
 		}

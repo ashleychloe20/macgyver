@@ -37,10 +37,13 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.google.common.base.Preconditions;
+import com.hazelcast.config.Config;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import com.ning.http.client.AsyncHttpClient;
 
 @Configuration
-public class CoreConfig implements EnvironmentAware{
+public class CoreConfig implements EnvironmentAware {
 
 	@Autowired
 	org.springframework.core.env.Environment env;
@@ -70,7 +73,7 @@ public class CoreConfig implements EnvironmentAware{
 
 	@Bean(name = "macKernel")
 	public Kernel macKernel() {
-	
+
 		return new Kernel();
 	}
 
@@ -114,9 +117,7 @@ public class CoreConfig implements EnvironmentAware{
 		return new ServiceRegistry();
 	}
 
-
-
-
+	
 	public static boolean isUnitTest() {
 
 		StringWriter sw = new StringWriter();
@@ -166,38 +167,40 @@ public class CoreConfig implements EnvironmentAware{
 		return new InternalUserManager();
 	}
 
-
-
-
 	@Bean(name = "macGraphClient")
-	public Neo4jRestClient macGraphClient() throws MalformedURLException{
+	public Neo4jRestClient macGraphClient() throws MalformedURLException {
 		Preconditions.checkNotNull(env);
 		return new Neo4jRestClient(env.getProperty("neo4j.url"));
 
 	}
-	
 
-	
-	
 	@Bean
 	public ExtensionResourceProvider macExtensionResourceProvider() {
 		ExtensionResourceProvider loader = new ExtensionResourceProvider();
-		
-		FileSystemResourceProvider fsLoader = new FileSystemResourceProvider(Bootstrap.getInstance().getMacGyverHome());
+
+		FileSystemResourceProvider fsLoader = new FileSystemResourceProvider(
+				Bootstrap.getInstance().getMacGyverHome());
 		loader.addResourceLoader(fsLoader);
-		
-		
-		
+
 		return loader;
 	}
-
 
 	@Override
 	public void setEnvironment(
 			org.springframework.core.env.Environment environment) {
 		this.env = environment;
-		
-	}
-	
 
+	}
+
+	@Bean
+	public HazelcastInstance macHazelcast() {
+		Config cfg = new Config();
+		if (isUnitTest()) {
+			logger.warn("disabling hazelcast multicast discovery to speed up unit tests");
+			cfg.setProperty("hazelcast.local.localAddress", "127.0.0.1");
+			cfg.getNetworkConfig().getJoin().getMulticastConfig()
+					.setEnabled(false);
+		}
+		return Hazelcast.newHazelcastInstance(cfg);
+	}
 }

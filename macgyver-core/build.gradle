@@ -36,6 +36,8 @@ dependencies {
     
     compile 'com.lambdaworks:scrypt:1.4.0'
 
+	compile 'com.hazelcast:hazelcast:3.2.5'
+	
 	compile 'aspectj:aspectjweaver:1.5.4'
 	
     compile "org.glassfish:javax.json:1.0.4"
