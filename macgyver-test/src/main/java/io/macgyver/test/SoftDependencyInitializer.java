@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * DynamicInitializer exists so that we can avoid a cyclic dependency between
+ * SoftDependencyInitializer exists so that we can avoid a cyclic dependency between
  * macgyver-core and macgyver-test.
  * 
  * @author rschoening
@@ -17,6 +17,7 @@ public class SoftDependencyInitializer implements
 
 	Logger logger = LoggerFactory.getLogger(SoftDependencyInitializer.class);
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 
@@ -24,10 +25,10 @@ public class SoftDependencyInitializer implements
 
 		try {
 		
-			Class clazz = Class
+			Class<?> clazz = Class
 					.forName("io.macgyver.core.SpringContextInitializer");
-			ci = (ApplicationContextInitializer<ConfigurableApplicationContext>) clazz
-					.newInstance();
+			ci = ((ApplicationContextInitializer<ConfigurableApplicationContext>) clazz
+					.newInstance());
 		} catch (Exception e) {
 			logger.warn("", e);
 		}
