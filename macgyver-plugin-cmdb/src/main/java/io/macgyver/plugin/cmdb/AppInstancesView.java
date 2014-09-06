@@ -90,7 +90,6 @@ public class AppInstancesView extends VerticalLayout implements View {
 		table.setColumnHeader("scmBranch","Branch");
 		table.setColumnHeader("version", "Version");
 		table.setColumnHeader("lastContactPrettyTs","Last Contact");
-		setComponentAlignment(table, Alignment.MIDDLE_CENTER);
 
 		
 		BlurListener bl = new BlurListener() {
