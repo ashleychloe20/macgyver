@@ -195,12 +195,12 @@ public class CoreConfig implements EnvironmentAware {
 	@Bean
 	public HazelcastInstance macHazelcast() {
 		Config cfg = new Config();
-		if (isUnitTest()) {
-			logger.warn("disabling hazelcast multicast discovery to speed up unit tests");
+		
+			logger.warn("disabling hazelcast multicast discovery to speed things up");
 			cfg.setProperty("hazelcast.local.localAddress", "127.0.0.1");
 			cfg.getNetworkConfig().getJoin().getMulticastConfig()
 					.setEnabled(false);
-		}
+		
 		return Hazelcast.newHazelcastInstance(cfg);
 	}
 }

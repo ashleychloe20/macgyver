@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.macgyver.core.Kernel;
 import io.macgyver.core.web.vaadin.IndexedJsonContainer;
+import io.macgyver.core.web.vaadin.VaadinUtil;
 import io.macgyver.neo4j.rest.Neo4jRestClient;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -21,12 +22,15 @@ import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.Position;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -38,6 +42,8 @@ public class AppInstancesView extends VerticalLayout implements View {
 
 	TextField searchTextField;
 
+	int refreshCount=0;
+	
 	public AppInstancesView() {
 		setMargin(true);
 		setSizeFull();
@@ -111,6 +117,7 @@ public class AppInstancesView extends VerticalLayout implements View {
 			}
 		};
 		search.addClickListener(cl);
+		
 	}
 
 	@Override
@@ -129,6 +136,7 @@ public class AppInstancesView extends VerticalLayout implements View {
 			return false;
 		}
 		Iterator<String> t = row.fieldNames();
+		
 		while (t.hasNext()) {
 			if (row.path(t.next()).asText().contains(search)) {
 				return true;
@@ -155,7 +163,7 @@ public class AppInstancesView extends VerticalLayout implements View {
 		Collection<?> containerProps = container.getContainerPropertyIds();
 
 		String searchValue = searchTextField.getValue();
-
+		
 		for (ObjectNode node : results) {
 
 			if (filter(searchValue, node)) {
@@ -168,7 +176,7 @@ public class AppInstancesView extends VerticalLayout implements View {
 				}
 				
 				container.addJsonObject(node);
-				
+			
 				/*Object newItemId = table.addItem();
 				Item row1 = table.getItem(newItemId);
 
@@ -182,6 +190,19 @@ public class AppInstancesView extends VerticalLayout implements View {
 			}
 
 		}
+	
+		
+		if (VaadinUtil.isEmpty(container) && refreshCount>0) {
+			
+			Notification notification = new Notification("No Results Found");
+			notification.setPosition(Position.MIDDLE_CENTER);
+			notification.setDelayMsec(1000);
+		
+		
+			notification.show(Page.getCurrent());
+		}
+		refreshCount++;
+		
 		table.sort(new Object[] { "environment" }, new boolean[] { true });
 	}
 }
