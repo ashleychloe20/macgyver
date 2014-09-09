@@ -57,8 +57,12 @@ subprojects {
     repositories {
   	   mavenLocal()
         mavenCentral()
-       
 		jcenter()
+	    maven {
+			name "splunk"
+	        url "http://splunk.artifactoryonline.com/splunk/ext-releases-local/"
+	
+	    }
 
     }
     
