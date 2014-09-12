@@ -3,6 +3,7 @@ package io.macgyver.core.web.views;
 import org.springframework.context.ApplicationContext;
 
 import io.macgyver.core.Kernel;
+import io.macgyver.core.web.vaadin.ViewDecorators;
 
 import com.vaadin.data.Item;
 import com.vaadin.navigator.View;
@@ -40,9 +41,12 @@ public class BeansView extends VerticalLayout implements View {
 		table.setColumnHeader("class", "Class");
 		
 		setComponentAlignment(table, Alignment.MIDDLE_CENTER);
-
+		ViewDecorators.decorate(this);
 	}
 
+	public Table getTable() {
+		return table;
+	}
 	@Override
 	public void enter(ViewChangeEvent event) {
 		refresh();

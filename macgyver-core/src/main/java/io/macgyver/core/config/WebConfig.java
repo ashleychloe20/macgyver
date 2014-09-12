@@ -5,7 +5,12 @@ import io.macgyver.core.web.HomeController;
 import io.macgyver.core.web.MacgyverWeb;
 import io.macgyver.core.web.vaadin.MacGyverUI;
 import io.macgyver.core.web.vaadin.MacGyverVaadinServlet;
+import io.macgyver.core.web.vaadin.ViewDecorator;
+import io.macgyver.core.web.vaadin.ViewDecorators;
+import io.macgyver.core.web.views.BeansView;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -21,13 +26,15 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import com.vaadin.navigator.View;
+
 @Configuration
 @ComponentScan(basePackageClasses = { HomeController.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableGlobalMethodSecurity(securedEnabled = true, proxyTargetClass = true,prePostEnabled=true)
 public class WebConfig implements EnvironmentAware {
 
-	
+	Logger logger = LoggerFactory.getLogger(WebConfig.class);
 
 	@Autowired
 	private final org.springframework.core.io.ResourceLoader resourceLoader = new DefaultResourceLoader();
@@ -82,6 +89,11 @@ public class WebConfig implements EnvironmentAware {
 		sb.addInitParameter("ui", MacGyverUI.class.getName());
 		
 		return sb;
+	}
+	
+	@Bean
+	public ViewDecorators macViewDecorators() {
+		return new ViewDecorators();
 	}
 	
 	

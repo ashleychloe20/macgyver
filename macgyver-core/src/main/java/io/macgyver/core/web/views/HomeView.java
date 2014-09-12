@@ -1,5 +1,7 @@
 package io.macgyver.core.web.views;
 
+import io.macgyver.core.web.vaadin.ViewDecorators;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Alignment;
@@ -16,6 +18,7 @@ public class HomeView extends VerticalLayout implements View {
 
 		setComponentAlignment(home, Alignment.MIDDLE_CENTER);
 
+		ViewDecorators.decorate(this);
 	}
 
 	@Override

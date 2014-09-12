@@ -8,6 +8,7 @@ import java.util.List;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.web.vaadin.IndexedJsonContainer;
 import io.macgyver.core.web.vaadin.VaadinUtil;
+import io.macgyver.core.web.vaadin.ViewDecorators;
 import io.macgyver.neo4j.rest.Neo4jRestClient;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -118,6 +119,7 @@ public class AppInstancesView extends VerticalLayout implements View {
 		};
 		search.addClickListener(cl);
 		
+		ViewDecorators.decorate(this);
 	}
 
 	@Override
