@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.macgyver.core.Kernel;
+import io.macgyver.core.auth.AuthUtil;
+import io.macgyver.core.auth.MacGyverRole;
 import io.macgyver.core.eventbus.MacGyverEventBus;
 
 import com.google.common.base.Preconditions;
@@ -77,5 +79,12 @@ public abstract class MacGyverUIDecorator {
 		 MacGyverEventBus bus = Kernel.getInstance().getApplicationContext().getBean(MacGyverEventBus.class);
 	        logger.info("post {}",event);
 	        bus.post(event);
+	}
+	
+	public boolean currentUserHasRole(MacGyverRole role) {
+		return AuthUtil.currentUserHasRole(role);
+	}
+	public boolean currentUserHasRole(String role) {
+		return AuthUtil.currentUserHasRole(role);
 	}
 }

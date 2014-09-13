@@ -1,4 +1,4 @@
-package io.macgyver.core.web.auth;
+package io.macgyver.core.web.mvc;
 
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;

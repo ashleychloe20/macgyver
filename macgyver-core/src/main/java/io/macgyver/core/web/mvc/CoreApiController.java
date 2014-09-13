@@ -1,4 +1,4 @@
-package io.macgyver.core.web;
+package io.macgyver.core.web.mvc;
 
 import java.io.IOException;
 
@@ -47,7 +47,6 @@ public class CoreApiController {
 	@ResponseBody
 	@PreAuthorize("permitAll")
 	public String refreshResourceProviderHook(HttpServletRequest rquest) throws IOException {
-		logger.info(rquest.getParameter("payload"));
 		extensionProvider.refresh();
 		return "{}";
 	}

@@ -1,4 +1,4 @@
-package io.macgyver.core.web;
+package io.macgyver.core.web.mvc;
 
 import java.io.File;
 import java.net.MalformedURLException;

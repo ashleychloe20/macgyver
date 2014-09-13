@@ -1,4 +1,4 @@
-package io.macgyver.core.web.views;
+package io.macgyver.core.web.vaadin.views;
 
 import org.springframework.context.ApplicationContext;
 

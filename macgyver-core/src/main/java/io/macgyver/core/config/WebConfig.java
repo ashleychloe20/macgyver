@@ -1,13 +1,14 @@
 package io.macgyver.core.config;
 
-import io.macgyver.core.web.CoreApiController;
-import io.macgyver.core.web.HomeController;
-import io.macgyver.core.web.MacgyverWeb;
+import io.macgyver.core.web.mvc.CoreApiController;
+import io.macgyver.core.web.mvc.HomeController;
+import io.macgyver.core.web.mvc.MacgyverWeb;
 import io.macgyver.core.web.vaadin.MacGyverUI;
 import io.macgyver.core.web.vaadin.MacGyverVaadinServlet;
 import io.macgyver.core.web.vaadin.ViewDecorator;
 import io.macgyver.core.web.vaadin.ViewDecorators;
-import io.macgyver.core.web.views.BeansView;
+import io.macgyver.core.web.vaadin.views.AdminUIDecorator;
+import io.macgyver.core.web.vaadin.views.BeansView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,5 +97,9 @@ public class WebConfig implements EnvironmentAware {
 		return new ViewDecorators();
 	}
 	
+	@Bean
+	public AdminUIDecorator macAdminUIDecorator() {
+		return new AdminUIDecorator();
+	}
 	
 }

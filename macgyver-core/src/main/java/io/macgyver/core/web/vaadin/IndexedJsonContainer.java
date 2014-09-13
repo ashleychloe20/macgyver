@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Preconditions;
 import com.google.gwt.thirdparty.guava.common.collect.Maps;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 
 /**
@@ -31,6 +32,8 @@ public class IndexedJsonContainer extends IndexedContainer {
 
 	protected Map<String, String> xsonMap = Maps.newConcurrentMap();
 
+	protected Map<Object, ObjectNode> rawDataMap = Maps.newConcurrentMap();
+
 	/**
 	 * Maps a Json object into this container.
 	 * 
@@ -40,16 +43,44 @@ public class IndexedJsonContainer extends IndexedContainer {
 	public void addJsonObject(ObjectNode node) {
 		Preconditions.checkNotNull(node);
 		Object itemId = addItem();
+		rawDataMap.put(itemId, node);
 		for (Object pid : getContainerPropertyIds()) {
 			try {
 				String val = extractPropertyValue(node, pid.toString());
-
-				getItem(itemId).getItemProperty(pid).setValue(val);
+				Property p = getItem(itemId).getItemProperty(pid);
+				if (p != null && p.getType().equals(String.class)) {
+					getItem(itemId).getItemProperty(pid).setValue(val);
+				}
 			} catch (RuntimeException e) {
-				logger.warn("problem mapping json to container item: {}", pid);
+				logger.warn("problem mapping json to container item: "+pid, e);
+				
 			}
 
 		}
+	}
+
+	public ObjectNode getJsonObject(Object itemId) {
+		return rawDataMap.get(itemId);
+	}
+
+	@Override
+	protected void internalRemoveAllItems() {
+		super.internalRemoveAllItems();
+		rawDataMap.clear();
+	}
+
+	@Override
+	protected boolean internalRemoveItem(Object itemId) {
+		if (itemId != null) {
+			rawDataMap.remove(itemId);
+		}
+		return super.internalRemoveItem(itemId);
+	}
+
+	@Override
+	public boolean removeAllItems() {
+		rawDataMap.clear();
+		return super.removeAllItems();
 	}
 
 	/**
@@ -67,13 +98,18 @@ public class IndexedJsonContainer extends IndexedContainer {
 		}
 	}
 
+	public void addJsonObjects(Iterable<ObjectNode> list) {
+		for (ObjectNode n : list) {
+			addJsonObject(n);
+		}
+	}
+
 	public void addJsonPathPropertyExtractor(String propertyId, String jsonPath) {
 		Preconditions.checkNotNull(propertyId);
 		Preconditions.checkNotNull(jsonPath);
 		xsonMap.put(propertyId, jsonPath);
 	}
-	
-	
+
 	public String extractPropertyValue(ObjectNode data, String propertyId) {
 		Preconditions.checkNotNull(data);
 		Preconditions.checkNotNull(propertyId);
@@ -81,8 +117,7 @@ public class IndexedJsonContainer extends IndexedContainer {
 		String xson = xsonMap.get(propertyId);
 		if (xson == null) {
 			return data.path(propertyId).asText();
-		}
-		else {
+		} else {
 			return Xson.eval(data, xson);
 		}
 	}

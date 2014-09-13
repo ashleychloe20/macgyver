@@ -1,4 +1,4 @@
-package io.macgyver.core.web;
+package io.macgyver.core.web.mvc;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;

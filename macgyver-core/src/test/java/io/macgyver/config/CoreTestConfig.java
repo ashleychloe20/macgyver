@@ -1,7 +1,7 @@
 package io.macgyver.config;
 
 import io.macgyver.core.factory.TestBeanServiceFactory;
-import io.macgyver.core.web.MacgyverWeb;
+import io.macgyver.core.web.mvc.MacgyverWeb;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

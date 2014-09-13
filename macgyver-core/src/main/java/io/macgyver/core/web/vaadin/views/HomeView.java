@@ -1,4 +1,4 @@
-package io.macgyver.core.web.views;
+package io.macgyver.core.web.vaadin.views;
 
 import io.macgyver.core.web.vaadin.ViewDecorators;
 
@@ -13,10 +13,10 @@ public class HomeView extends VerticalLayout implements View {
 	public HomeView() {
 		setMargin(true);
 		setSizeFull();
-		Label home = new Label("Welcome to MacGyver");
-		addComponent(home);
+	//	Label home = new Label("Welcome to MacGyver");
+		//addComponent(home);
 
-		setComponentAlignment(home, Alignment.MIDDLE_CENTER);
+		//setComponentAlignment(home, Alignment.MIDDLE_CENTER);
 
 		ViewDecorators.decorate(this);
 	}

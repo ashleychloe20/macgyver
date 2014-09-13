@@ -1,7 +1,7 @@
 package io.macgyver.core.web.vaadin;
 
-import io.macgyver.core.web.views.BeansView;
-import io.macgyver.core.web.views.HomeView;
+import io.macgyver.core.web.vaadin.views.BeansView;
+import io.macgyver.core.web.vaadin.views.HomeView;
 
 import java.util.List;
 
@@ -12,9 +12,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.ClassResource;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
@@ -52,6 +55,7 @@ public class MacGyverUI extends UI {
 		menubar = new MenuBar();
 
 		hl.addComponent(menubar);
+	//	hl.setComponentAlignment(menubar, Alignment.TOP_LEFT);
 		hl.setWidth(100, Unit.PERCENTAGE);
 
 		layout.addComponent(hl);
@@ -67,12 +71,13 @@ public class MacGyverUI extends UI {
 
 		// https://vaadin.com/book/vaadin7/-/page/advanced.navigator.html
 
-		MenuItem home = menubar.addItem("Home", navigateMenuCommand(""));
+		MenuItem home = menubar.addItem("MacGyver", navigateMenuCommand(""));
 
 		addMenuItem("Admin", "Beans", "admin/beans");
 
-		hl.setComponentAlignment(menubar, Alignment.MIDDLE_CENTER);
-
+		hl.setComponentAlignment(menubar, Alignment.TOP_CENTER);
+	
+		
 		MacGyverUIDecorator
 				.dispatch(new MacGyverUIDecorator.MacGyverUICreateEvent(this));
 		MacGyverUIDecorator
