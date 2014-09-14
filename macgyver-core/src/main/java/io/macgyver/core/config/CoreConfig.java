@@ -4,6 +4,7 @@ import grails.util.Environment;
 import io.macgyver.core.Bootstrap;
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
+import io.macgyver.core.CorePlugin;
 import io.macgyver.core.CoreSystemInfo;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
@@ -207,5 +208,10 @@ public class CoreConfig implements EnvironmentAware {
 	@Bean
 	public PluginManager macPluginManager() {
 		return new PluginManager();
+	}
+	
+	@Bean
+	public CorePlugin macCorePlugin() {
+		return new CorePlugin();
 	}
 }

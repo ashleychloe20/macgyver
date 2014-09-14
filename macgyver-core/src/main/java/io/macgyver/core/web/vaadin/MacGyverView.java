@@ -1,6 +1,5 @@
 package io.macgyver.core.web.vaadin;
 
-import com.google.common.base.Preconditions;
 import com.vaadin.navigator.View;
 import com.vaadin.ui.VerticalLayout;
 

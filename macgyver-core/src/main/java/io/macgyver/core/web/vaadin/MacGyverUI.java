@@ -7,10 +7,13 @@ import io.macgyver.core.auth.AuthUtil;
 import io.macgyver.core.auth.MacGyverRole;
 import io.macgyver.core.web.vaadin.views.HomeView;
 
+import java.awt.Menu;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import org.crsh.shell.impl.command.spi.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,9 +24,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
@@ -34,10 +42,12 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
@@ -45,6 +55,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
 @Theme("valo")
+@PreserveOnRefresh
 public class MacGyverUI extends UI {
 
 	Logger logger = LoggerFactory.getLogger(MacGyverUI.class);
@@ -118,42 +129,50 @@ public class MacGyverUI extends UI {
 
 		navigator = new Navigator(this, viewDisplay);
 
-		
-
-		registerView("home", HomeView.class, null, null);
+	//	registerView("home", HomeView.class, null, null);
 
 		getPluginManager().dispatchRegisterViews(this);
 
 		menuLayout.addMenu(buildMenu());
-		
+
 		String f = Page.getCurrent().getUriFragment();
 		if (f == null || f.equals("")) {
 			navigator.navigateTo("home");
 		}
 
-		/*
-		 * navigator.addViewChangeListener(new ViewChangeListener() {
-		 * 
-		 * @Override public boolean beforeViewChange(ViewChangeEvent event) {
-		 * return true; }
-		 * 
-		 * @Override public void afterViewChange(ViewChangeEvent event) { for
-		 * (Iterator<Component> it = menuItemsLayout.iterator(); it .hasNext();)
-		 * { it.next().removeStyleName("selected"); } for (Entry<String, String>
-		 * item : menuItems.entrySet()) { if
-		 * (event.getViewName().equals(item.getKey())) { for
-		 * (Iterator<Component> it = menuItemsLayout .iterator(); it.hasNext();)
-		 * { Component c = it.next(); if (c.getCaption() != null &&
-		 * c.getCaption().startsWith( item.getValue())) {
-		 * c.addStyleName("selected"); break; } } break; } }
-		 * menu.removeStyleName("valo-menu-visible"); } });
-		 */
+		navigator.addViewChangeListener(new ViewChangeListener() {
+
+			@Override
+			public boolean beforeViewChange(ViewChangeEvent event) {
+				return true;
+			}
+
+			@Override
+			public void afterViewChange(ViewChangeEvent event) {
+				for (Iterator<Component> it = menuItemsLayout.iterator(); it
+						.hasNext();) {
+					it.next().removeStyleName("selected");
+				}
+				for (Entry<String, String> item : menuItems.entrySet()) {
+					if (event.getViewName().equals(item.getKey())) {
+						for (Iterator<Component> it = menuItemsLayout
+								.iterator(); it.hasNext();) {
+							Component c = it.next();
+							if (c.getCaption() != null
+									&& c.getCaption().startsWith(
+											item.getValue())) {
+								c.addStyleName("selected");
+								break;
+							}
+						}
+						break;
+					}
+				}
+				menu.removeStyleName("valo-menu-visible");
+			}
+		});
 
 	}
-
-
-
-
 
 	private ObjectNode createAppDescriptorSkeleton() {
 
@@ -163,6 +182,17 @@ public class MacGyverUI extends UI {
 		ArrayNode m0 = mapper.createArrayNode();
 		menu.put("items", m0);
 
+		ObjectNode mn = mapper.createObjectNode();
+		mn.put("display", "MacGyver");
+		ArrayNode items = mapper.createArrayNode();
+		ObjectNode home = mapper.createObjectNode();
+		home.put("display", "Home");
+		home.put("viewName", "home");
+		items.add(home);
+		mn.put("items", items);
+
+		m0.add(mn);
+
 		return top;
 
 	}
@@ -170,6 +200,8 @@ public class MacGyverUI extends UI {
 	CssLayout buildMenu() {
 
 		HorizontalLayout top = new HorizontalLayout();
+
+	
 		top.setWidth("100%");
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 		top.addStyleName("valo-menu-title");
@@ -192,9 +224,24 @@ public class MacGyverUI extends UI {
 		showMenu.setIcon(FontAwesome.LIST);
 		menu.addComponent(showMenu);
 
-		Label title = new Label("<h3><strong>MacGyver</strong></h3>",
+		final Label title = new Label("<h3><strong>MacGyver</strong></h3>",
 				ContentMode.HTML);
 		title.setSizeUndefined();
+
+		
+		// Label's don't have click listeners, so we have use the layout
+		top.addLayoutClickListener(new LayoutClickListener() {
+
+			@Override
+			public void layoutClick(LayoutClickEvent event) {
+			
+				if (event!=null && event.getClickedComponent()!=null && event.getClickedComponent()==title) {
+					navigator.navigateTo("home");
+				}
+
+			}
+		});
+
 		top.addComponent(title);
 		top.setExpandRatio(title, 1);
 
@@ -206,11 +253,13 @@ public class MacGyverUI extends UI {
 		if (Strings.isNullOrEmpty(username)) {
 			username = "anonymous";
 		}
-		MenuItem settingsItem = settings.addItem(username, new ExternalResource("/resources/images/profile-pic-300px.jpg"), null);
+		MenuItem settingsItem = settings
+				.addItem(username, new ExternalResource(
+						"/resources/images/profile-pic-300px.jpg"), null);
 		// settingsItem.addItem("Edit Profile", null);
 		// settingsItem.addItem("Preferences", null);
 		// settingsItem.addSeparator();
-		settingsItem.addItem("Sign Out", null);
+		settingsItem.addItem("Sign Out", new SignOutCommand());
 		menu.addComponent(settings);
 
 		menuItemsLayout.setPrimaryStyleName("valo-menuitems");
@@ -224,8 +273,8 @@ public class MacGyverUI extends UI {
 
 		for (int i = 0; i < topItems.size(); i++) {
 			JsonNode topItem = topItems.get(i);
-			
-			logger.info("build item: "+topItem);
+
+			logger.info("build item: " + topItem);
 			label = new Label(topItem.path("display").asText(),
 					ContentMode.HTML);
 			label.setPrimaryStyleName("valo-menu-subtitle");
@@ -240,7 +289,7 @@ public class MacGyverUI extends UI {
 				Button b = new Button(display, new Button.ClickListener() {
 					@Override
 					public void buttonClick(ClickEvent event) {
-						 navigator.navigateTo(viewName);
+						navigator.navigateTo(viewName);
 					}
 				});
 				b.setHtmlContentAllowed(true);
@@ -264,10 +313,6 @@ public class MacGyverUI extends UI {
 		return cmd;
 	}
 
-
-
-
-
 	public boolean currentUserHasRole(MacGyverRole role) {
 		return AuthUtil.currentUserHasRole(role);
 	}
@@ -279,7 +324,9 @@ public class MacGyverUI extends UI {
 	public void registerView(String viewName, Class<? extends View> v,
 			String topLevelMenu, String subMenu) {
 
-		logger.info("registerView: viewName={}, class={}, topMenu={}, subMenu{}",viewName,v,topLevelMenu,subMenu);
+		logger.info(
+				"registerView: viewName={}, class={}, topMenu={}, subMenu{}",
+				viewName, v, topLevelMenu, subMenu);
 		if (topLevelMenu != null && subMenu != null) {
 			ArrayNode m0 = (ArrayNode) appDescriptor.path("menu").path("items");
 			ObjectNode topLevelMenuNode = null;
@@ -294,35 +341,44 @@ public class MacGyverUI extends UI {
 				topLevelMenuNode.put("display", topLevelMenu);
 				m0.add(topLevelMenuNode);
 			}
-			
+
 			ArrayNode subItems = null;
 			if (!topLevelMenuNode.has("items")) {
 				subItems = mapper.createArrayNode();
-				topLevelMenuNode.put("items",subItems);
-			}
-			else {
+				topLevelMenuNode.put("items", subItems);
+			} else {
 				subItems = topLevelMenuNode.withArray("items");
 			}
-			
-			ObjectNode subItem=null;
-			for (int i=0; i<subItems.size(); i++) {
+
+			ObjectNode subItem = null;
+			for (int i = 0; i < subItems.size(); i++) {
 				ObjectNode si = (ObjectNode) subItems.get(i);
 				if (si.path("display").asText().equals(subMenu)) {
 					subItem = si;
 				}
-			
+
 			}
 			if (subItem == null) {
 				subItem = mapper.createObjectNode();
-				subItem.put("display",subMenu);
+				subItem.put("display", subMenu);
 				subItem.put("viewName", viewName);
 				subItems.add(subItem);
 			}
 		}
-		
-		getNavigator().addView(viewName, v);
-	
-		logger.info("appDescriptor: {}",appDescriptor);
 
+		getNavigator().addView(viewName, v);
+
+		logger.info("appDescriptor: {}", appDescriptor);
+
+	}
+
+	public static class SignOutCommand implements MenuBar.Command {
+
+		@Override
+		public void menuSelected(MenuItem selectedItem) {
+			System.out.println("Sign out");
+			UI.getCurrent().getPage().setLocation("/logout");
+
+		}
 	}
 }
