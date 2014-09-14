@@ -50,7 +50,8 @@ public class Kernel implements ApplicationContextAware {
 		return k;
 	}
 
-	public synchronized ApplicationContext getApplicationContext() {
+
+	public synchronized ApplicationContext applicationContext() {
 
 		if (applicationContext == null) {
 
@@ -60,13 +61,15 @@ public class Kernel implements ApplicationContextAware {
 		}
 		return applicationContext;
 	}
-
+	public static ApplicationContext getApplicationContext() {
+		return Kernel.getInstance().applicationContext();
+	}
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		if (this.applicationContext != null
 				&& this.applicationContext != applicationContext) {
-			new RuntimeException().printStackTrace();
+		
 			throw new IllegalStateException("application context already set: "
 					+ this.applicationContext + " ;new: " + applicationContext);
 		}

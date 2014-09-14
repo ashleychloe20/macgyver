@@ -28,6 +28,7 @@ import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 
 import com.google.web.bindery.requestfactory.shared.impl.Constants;
 
@@ -62,6 +63,7 @@ public class ServerManagerExperimentLiveTest extends MacGyverIntegrationTest {
 	}
 
 	@org.junit.Test
+	@Ignore
 	public void testAndExperiment() {
 	/*	for (ComputeMetadata cmd: context.getComputeService().listNodes()) {
 			System.out.println(cmd);

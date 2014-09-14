@@ -7,6 +7,7 @@ import io.macgyver.core.CoreBindingSupplier;
 import io.macgyver.core.CoreSystemInfo;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverBeanFactoryPostProcessor;
+import io.macgyver.core.PluginManager;
 import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.Startup;
 import io.macgyver.core.auth.InternalUserManager;
@@ -201,5 +202,10 @@ public class CoreConfig implements EnvironmentAware {
 		cfg.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
 
 		return Hazelcast.newHazelcastInstance(cfg);
+	}
+	
+	@Bean
+	public PluginManager macPluginManager() {
+		return new PluginManager();
 	}
 }

@@ -47,7 +47,7 @@ public class AppInstancesView extends VerticalLayout implements View {
 	
 	public AppInstancesView() {
 		setMargin(true);
-		setSizeFull();
+	//	setSizeFull();
 		// setWidth(800, Unit.PIXELS);
 		table = new Table("App Instances",new IndexedJsonContainer());
 

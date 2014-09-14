@@ -1,9 +1,11 @@
-package io.macgyver.core.web.vaadin.views;
+package io.macgyver.core.web.vaadin.views.admin;
 
 import java.io.IOException;
 import java.util.List;
 
 import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
@@ -32,7 +34,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table.ColumnGenerator;
 
-public class ScriptAdminView extends VerticalLayout implements View {
+public class ScriptsView extends VerticalLayout implements View {
 
 	public static final String VIEW_NAME = "admin/scripts";
 	Table table;
@@ -40,9 +42,10 @@ public class ScriptAdminView extends VerticalLayout implements View {
 
 	boolean userHasExecutPermissions = false;
 
-	public ScriptAdminView() {
+	Logger logger = LoggerFactory.getLogger(ScriptsView.class);
+	public ScriptsView() {
 		super();
-
+		setMargin(true);
 		userHasExecutPermissions = AuthUtil
 				.currentUserHasRole(MacGyverRole.ROLE_MACGYVER_ADMIN);
 		container = new IndexedJsonContainer();
@@ -101,15 +104,16 @@ public class ScriptAdminView extends VerticalLayout implements View {
 
 		table.addGeneratedColumn("actions", cg);
 
-		Button b = new Button("Refresh");
+		Button b = new Button("Reload Scripts");
 
-		ClickListener bcl = new ClickListener() {
+	
+		b.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
 				refresh();
 			}
-		};
+		});
 		addComponent(b);
 		addComponent(table);
 		ViewDecorators.decorate(this);
@@ -138,10 +142,12 @@ public class ScriptAdminView extends VerticalLayout implements View {
 
 	public void refresh() {
 		try {
+			logger.info("reloading");
 			container.removeAllItems();
 			ExtensionResourceProvider extensionProvider = Kernel.getInstance()
 					.getApplicationContext()
 					.getBean(ExtensionResourceProvider.class);
+			extensionProvider.refresh();
 			ObjectMapper mapper = new ObjectMapper();
 			List<ObjectNode> list = Lists.newArrayList();
 

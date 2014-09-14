@@ -1,4 +1,4 @@
-package io.macgyver.core.web.vaadin.views;
+package io.macgyver.core.web.vaadin.views.admin;
 
 import org.springframework.context.ApplicationContext;
 
@@ -15,6 +15,7 @@ import com.vaadin.ui.VerticalLayout;
 
 public class BeansView extends VerticalLayout implements View {
 
+	public static final String VIEW_NAME="admin/beans";
 	Table table;
 
 	public BeansView() {

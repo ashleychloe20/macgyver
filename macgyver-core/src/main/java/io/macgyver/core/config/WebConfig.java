@@ -7,8 +7,8 @@ import io.macgyver.core.web.vaadin.MacGyverUI;
 import io.macgyver.core.web.vaadin.MacGyverVaadinServlet;
 import io.macgyver.core.web.vaadin.ViewDecorator;
 import io.macgyver.core.web.vaadin.ViewDecorators;
-import io.macgyver.core.web.vaadin.views.AdminUIDecorator;
-import io.macgyver.core.web.vaadin.views.BeansView;
+import io.macgyver.core.web.vaadin.views.admin.AdminPlugin;
+import io.macgyver.core.web.vaadin.views.admin.BeansView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,8 +98,8 @@ public class WebConfig implements EnvironmentAware {
 	}
 	
 	@Bean
-	public AdminUIDecorator macAdminUIDecorator() {
-		return new AdminUIDecorator();
+	public AdminPlugin macAdminUIDecorator() {
+		return new AdminPlugin();
 	}
 	
 }
