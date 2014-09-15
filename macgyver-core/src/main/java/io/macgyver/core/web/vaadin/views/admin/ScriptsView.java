@@ -3,6 +3,8 @@ package io.macgyver.core.web.vaadin.views.admin;
 import java.io.IOException;
 import java.util.List;
 
+import javax.xml.ws.soap.Addressing;
+
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +19,9 @@ import io.macgyver.core.resource.provider.filesystem.FileSystemResourceProvider;
 import io.macgyver.core.scheduler.AutoScheduler;
 import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.web.vaadin.IndexedJsonContainer;
+import io.macgyver.core.web.vaadin.ViewConfig;
 import io.macgyver.core.web.vaadin.ViewDecorators;
+import io.macgyver.core.web.vaadin.ViewMetadata;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -34,6 +38,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Table.ColumnGenerator;
 
+@ViewConfig(viewName=ScriptsView.VIEW_NAME,menuPath={"Admin","Scripts"})
 public class ScriptsView extends VerticalLayout implements View {
 
 	public static final String VIEW_NAME = "admin/scripts";
@@ -183,4 +188,6 @@ public class ScriptsView extends VerticalLayout implements View {
 			throw new MacGyverException(e);
 		}
 	}
+	
+
 }

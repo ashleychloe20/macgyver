@@ -103,8 +103,6 @@ public class Bootstrap {
 			//return;
 		}
 	
-
-		System.out.println(p);
 		bootstrapProps.putAll(p);
 		
 		String val = bootstrapProps.getProperty("macgyver.home");

@@ -11,6 +11,7 @@ import java.awt.Menu;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.crsh.shell.impl.command.spi.Command;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
 import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
@@ -129,7 +131,7 @@ public class MacGyverUI extends UI {
 
 		navigator = new Navigator(this, viewDisplay);
 
-	//	registerView("home", HomeView.class, null, null);
+		// registerView("home", HomeView.class, null, null);
 
 		getPluginManager().dispatchRegisterViews(this);
 
@@ -201,7 +203,6 @@ public class MacGyverUI extends UI {
 
 		HorizontalLayout top = new HorizontalLayout();
 
-	
 		top.setWidth("100%");
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 		top.addStyleName("valo-menu-title");
@@ -228,14 +229,14 @@ public class MacGyverUI extends UI {
 				ContentMode.HTML);
 		title.setSizeUndefined();
 
-		
 		// Label's don't have click listeners, so we have use the layout
 		top.addLayoutClickListener(new LayoutClickListener() {
 
 			@Override
 			public void layoutClick(LayoutClickEvent event) {
-			
-				if (event!=null && event.getClickedComponent()!=null && event.getClickedComponent()==title) {
+
+				if (event != null && event.getClickedComponent() != null
+						&& event.getClickedComponent() == title) {
 					navigator.navigateTo("home");
 				}
 
@@ -321,6 +322,27 @@ public class MacGyverUI extends UI {
 		return AuthUtil.currentUserHasRole(role);
 	}
 
+	public void registerView(Class<? extends View> view) {
+		Optional<ViewMetadata> vd = ViewMetadata.forView(view);
+		if (!vd.isPresent()) {
+			logger.error(view.toString() + " does not have @ViewConfig");
+			return;
+		}
+		ViewMetadata descriptor = vd.get();
+
+		String[] mp = descriptor.getMenuPath();
+
+		String topMenu = null;
+		String subMenu = null;
+
+		if (mp.length >= 2) {
+			topMenu = mp[0];
+			subMenu = mp[1];
+		}
+		registerView(descriptor.getViewName(), view, topMenu, subMenu);
+
+	}
+
 	public void registerView(String viewName, Class<? extends View> v,
 			String topLevelMenu, String subMenu) {
 
@@ -376,7 +398,6 @@ public class MacGyverUI extends UI {
 
 		@Override
 		public void menuSelected(MenuItem selectedItem) {
-			System.out.println("Sign out");
 			UI.getCurrent().getPage().setLocation("/logout");
 
 		}

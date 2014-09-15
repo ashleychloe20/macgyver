@@ -23,7 +23,7 @@ public class CmdbPlugin extends Plugin {
 	public void registerViews(MacGyverUI ui) {
 		logger.info("registerViews: {}", ui);
 
-		ui.registerView(AppInstancesView.VIEW_NAME, AppInstancesView.class, "Inventory","App Instances");
+		ui.registerView(AppInstancesView.class);
 		
 
 	}

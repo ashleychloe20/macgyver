@@ -7,7 +7,7 @@ public class CorePlugin extends Plugin {
 
 	@Override
 	public void registerViews(MacGyverUI ui) {
-		ui.registerView("home", HomeView.class, "MacGyver", "Home");
+		ui.registerView(HomeView.class);
 	}
 
 }

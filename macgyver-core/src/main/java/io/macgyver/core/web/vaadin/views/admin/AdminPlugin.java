@@ -15,9 +15,9 @@ public class AdminPlugin extends Plugin {
 
 
 		
-		ui.registerView(PropertyEncryptionView.VIEW_NAME, PropertyEncryptionView.class, "Admin", "Encrypt String");
-		ui.registerView(ScriptsView.VIEW_NAME,ScriptsView.class,"Admin","Scripts");
-		ui.registerView(BeansView.VIEW_NAME, BeansView.class, "Admin", "Spring Beans");
+		ui.registerView(PropertyEncryptionView.class);
+		ui.registerView(ScriptsView.class);
+		ui.registerView(BeansView.class);
 		
 	}
 

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
@@ -22,7 +23,10 @@ import io.macgyver.core.Kernel;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.web.vaadin.MacGyverView;
+import io.macgyver.core.web.vaadin.ViewConfig;
+import io.macgyver.core.web.vaadin.ViewMetadata;
 
+@ViewConfig(viewName=PropertyEncryptionView.VIEW_NAME,menuPath={"Admin","Encrypt String"})
 public class PropertyEncryptionView extends MacGyverView {
 
 	Logger logger = LoggerFactory.getLogger(PropertyEncryptionView.class);
@@ -118,4 +122,5 @@ public class PropertyEncryptionView extends MacGyverView {
 		}
 
 	}
+
 }
