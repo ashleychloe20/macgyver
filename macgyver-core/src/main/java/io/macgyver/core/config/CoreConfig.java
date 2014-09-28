@@ -12,6 +12,7 @@ import io.macgyver.core.PluginManager;
 import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.Startup;
 import io.macgyver.core.auth.InternalUserManager;
+import io.macgyver.core.cluster.ClusterManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
@@ -24,6 +25,7 @@ import io.macgyver.neo4j.rest.Neo4jRestClient;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -46,6 +48,12 @@ import com.ning.http.client.AsyncHttpClient;
 
 @Configuration
 public class CoreConfig implements EnvironmentAware {
+
+	@Value(value = "${macgyver.hazelcast.multicast.enabled:true}")
+	private boolean hazelcastMulticastEnabled = false;
+
+	@Value(value = "${macgyver.hazelcast.port:8000}")
+	private int hazelcastPort = 8000;
 
 	@Autowired
 	org.springframework.core.env.Environment env;
@@ -195,23 +203,43 @@ public class CoreConfig implements EnvironmentAware {
 
 	@Bean
 	public HazelcastInstance macHazelcast() {
+		
+		
+		String groupString = "macgyver";
+		String [] p = env.getActiveProfiles();
+		Arrays.sort(p);
+		if (p!=null) {
+			for (int i=0; i<p.length; i++) {
+				groupString = groupString+"-"+p[i];
+			}
+		}
+		logger.info("hazelcast group name: "+groupString);
+		
 		Config cfg = new Config();
-
+		cfg.getNetworkConfig().setPort(hazelcastPort);
+		cfg.getGroupConfig().setName(groupString);
 	
-		logger.warn("disabling hazelcast multicast discovery to speed things up");
-		cfg.setProperty("hazelcast.local.localAddress", "127.0.0.1");
-		cfg.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+		if (!hazelcastMulticastEnabled) {
+			logger.warn("disabling hazelcast multicast discovery to speed things up");
+		}
+	
+		cfg.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(hazelcastMulticastEnabled);
 
 		return Hazelcast.newHazelcastInstance(cfg);
 	}
-	
+
 	@Bean
 	public PluginManager macPluginManager() {
 		return new PluginManager();
 	}
-	
+
 	@Bean
 	public CorePlugin macCorePlugin() {
 		return new CorePlugin();
+	}
+
+	@Bean
+	public ClusterManager macClusterManager() {
+		return new ClusterManager();
 	}
 }

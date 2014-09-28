@@ -1,6 +1,7 @@
 package io.macgyver.core.scheduler;
 
 import io.macgyver.core.Kernel;
+import io.macgyver.core.cluster.ClusterManager;
 import io.macgyver.core.resource.Resource;
 import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.script.ScriptExecutor;
@@ -8,6 +9,7 @@ import io.macgyver.core.script.ScriptExecutor;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.apple.eawt.Application;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
@@ -111,6 +114,10 @@ public class AutoScheduler implements InitializingBean {
 	}
 
 	public void scan() throws IOException {
+		if (!isMaster()) {
+			
+			prune(new HashSet<JobKey>());
+		}
 		Set<JobKey> validJobKeySet = Sets.newConcurrentHashSet();
 
 		String scanId = UUID.randomUUID().toString();
@@ -269,13 +276,18 @@ public class AutoScheduler implements InitializingBean {
 
 	}
 
+	protected boolean isMaster() {
+		return Kernel.getApplicationContext().getBean(ClusterManager.class).isMaster();
+	}
 	protected void prune(Set<JobKey> validKeys) {
 		try {
+			
+			
 			Set<JobKey> keys = scheduler.getJobKeys(GroupMatcher
 					.jobGroupEquals(AUTO_SCHEDULER_GROUP));
 
 			for (JobKey key : keys) {
-				if (!validKeys.contains(key)) {
+				if ((!validKeys.contains(key)) || (!isMaster())) {
 					logger.info("deleting job: {}", key);
 					scheduler.deleteJob(key);
 					scriptResourceMap.remove(key.toString());
@@ -284,7 +296,7 @@ public class AutoScheduler implements InitializingBean {
 		} catch (SchedulerException e) {
 			logger.warn("", e);
 		}
-
+		
 	}
 
 }

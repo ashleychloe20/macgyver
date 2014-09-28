@@ -18,6 +18,7 @@ public class AdminPlugin extends Plugin {
 		ui.registerView(PropertyEncryptionView.class);
 		ui.registerView(ScriptsView.class);
 		ui.registerView(BeansView.class);
+		ui.registerView(ClusterView.class);
 		
 	}
 

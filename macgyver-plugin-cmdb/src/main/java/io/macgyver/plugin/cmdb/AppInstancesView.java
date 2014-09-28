@@ -8,6 +8,7 @@ import java.util.List;
 import io.macgyver.core.Kernel;
 import io.macgyver.core.web.vaadin.IndexedJsonContainer;
 import io.macgyver.core.web.vaadin.VaadinUtil;
+import io.macgyver.core.web.vaadin.ViewConfig;
 import io.macgyver.core.web.vaadin.ViewDecorators;
 import io.macgyver.neo4j.rest.Neo4jRestClient;
 
@@ -36,6 +37,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+@ViewConfig(viewName=AppInstancesView.VIEW_NAME, menuPath={"Inventory","App Instances"})
 public class AppInstancesView extends VerticalLayout implements View {
 
 	public static final String VIEW_NAME="cmdb/appInstances";
