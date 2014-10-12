@@ -1,6 +1,7 @@
 package io.macgyver.core.scheduler;
 
 import io.macgyver.core.Kernel;
+import io.macgyver.core.cluster.ClusterManager;
 import io.macgyver.core.resource.Resource;
 import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.script.ScriptExecutor;
@@ -26,10 +27,19 @@ public class ScriptJob implements Job {
 
 	public static final String SCRIPT_HASH_KEY = "scriptHash";
 
+	
+	private boolean isExecutionEnabled(JobExecutionContext context) {
+		ClusterManager cm = Kernel.getApplicationContext().getBean(ClusterManager.class);
+		return !cm.isMaster();
+	}
+	
+	
 	@Override
 	public void execute(JobExecutionContext context)
 			throws JobExecutionException {
+
 		try {
+		
 			Optional<Resource> r = Optional.absent();
 			String hashKey = context.getJobDetail().getJobDataMap()
 					.getString(ScriptJob.SCRIPT_HASH_KEY);

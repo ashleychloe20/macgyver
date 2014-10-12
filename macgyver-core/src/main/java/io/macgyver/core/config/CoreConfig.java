@@ -1,7 +1,10 @@
 package io.macgyver.core.config;
 
-import grails.util.Environment;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 import io.macgyver.core.Bootstrap;
+import io.macgyver.core.ConfigurationException;
 import io.macgyver.core.ContextRefreshApplicationListener;
 import io.macgyver.core.CoreBindingSupplier;
 import io.macgyver.core.CorePlugin;
@@ -12,6 +15,7 @@ import io.macgyver.core.PluginManager;
 import io.macgyver.core.ScriptHookManager;
 import io.macgyver.core.Startup;
 import io.macgyver.core.auth.InternalUserManager;
+import io.macgyver.core.cluster.ClusterManager;
 import io.macgyver.core.crypto.Crypto;
 import io.macgyver.core.eventbus.EventBusPostProcessor;
 import io.macgyver.core.eventbus.MacGyverEventBus;
@@ -21,9 +25,12 @@ import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.neo4j.rest.Neo4jRestClient;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -39,6 +46,7 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -46,6 +54,11 @@ import com.ning.http.client.AsyncHttpClient;
 
 @Configuration
 public class CoreConfig implements EnvironmentAware {
+
+	@Value(value = "${hazelcast.multicast.enabled:true}")
+	private boolean hazelcastMulticastEnabled = false;
+
+	private static final int HAZELCAST_PORT_DEFAULT = 8000;
 
 	@Autowired
 	org.springframework.core.env.Environment env;
@@ -171,7 +184,18 @@ public class CoreConfig implements EnvironmentAware {
 	@Bean(name = "macGraphClient")
 	public Neo4jRestClient macGraphClient() throws MalformedURLException {
 		Preconditions.checkNotNull(env);
-		return new Neo4jRestClient(env.getProperty("neo4j.url"));
+		String url = env.getProperty("neo4j.url");
+
+		if (Strings.isNullOrEmpty(url)) {
+			url = "http://localhost:7474";
+		}
+		logger.info("neo4j.uri: {}", url);
+		Neo4jRestClient client = new Neo4jRestClient(url);
+
+		client.setUsername(env.getProperty("neo4j.username"));
+		client.setPassword(env.getProperty("neo4j.password"));
+
+		return client;
 
 	}
 
@@ -195,23 +219,63 @@ public class CoreConfig implements EnvironmentAware {
 
 	@Bean
 	public HazelcastInstance macHazelcast() {
-		Config cfg = new Config();
 
-	
-		logger.warn("disabling hazelcast multicast discovery to speed things up");
-		cfg.setProperty("hazelcast.local.localAddress", "127.0.0.1");
-		cfg.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+		String groupString = "macgyver";
+		String[] p = env.getActiveProfiles();
+		Arrays.sort(p);
+		if (p != null) {
+			for (int i = 0; i < p.length; i++) {
+				groupString = groupString + "-" + p[i];
+			}
+		}
+		logger.info("hazelcast group name: " + groupString);
+
+		Config cfg = new Config();
+		cfg.getNetworkConfig().setPort(HAZELCAST_PORT_DEFAULT);
+		cfg.getGroupConfig().setName(groupString);
+
+		if (!hazelcastMulticastEnabled) {
+			logger.warn("disabling hazelcast multicast discovery to speed things up");
+		}
+
+		cfg.getNetworkConfig().getJoin().getMulticastConfig()
+				.setEnabled(hazelcastMulticastEnabled);
+
+		File f = new File(Bootstrap.getInstance().getConfigDir(),
+				"hazelcast.groovy");
+
+		if (f.exists()) {
+			try {
+				logger.info("sourcing hazelcast groovy config: {}",f);
+				Binding b = new Binding();
+				b.setVariable("config", cfg);
+				GroovyShell groovy = new GroovyShell(b);
+				groovy.evaluate(f);
+				cfg = (Config) groovy.getVariable("config");
+			} catch (ConfigurationException e) {
+				throw e;
+			} catch (IOException | RuntimeException e) {
+				throw new ConfigurationException(e);
+			}
+		} else {
+			logger.info("hazelcast groovy config file not found: {}",f);
+		}
 
 		return Hazelcast.newHazelcastInstance(cfg);
 	}
-	
+
 	@Bean
 	public PluginManager macPluginManager() {
 		return new PluginManager();
 	}
-	
+
 	@Bean
 	public CorePlugin macCorePlugin() {
 		return new CorePlugin();
+	}
+
+	@Bean
+	public ClusterManager macClusterManager() {
+		return new ClusterManager();
 	}
 }
