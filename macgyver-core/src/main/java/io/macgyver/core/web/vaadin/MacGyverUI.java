@@ -19,6 +19,7 @@ import io.macgyver.core.PluginManager;
 import io.macgyver.core.auth.AuthUtil;
 import io.macgyver.core.auth.MacGyverRole;
 import io.macgyver.core.web.vaadin.views.HomeView;
+import io.macgyver.xson.Xson;
 
 import java.awt.Menu;
 import java.io.IOException;
@@ -398,6 +399,7 @@ public class MacGyverUI extends UI {
 				subItem.put("display", subMenu);
 				subItem.put("viewName", viewName);
 				subItems.add(subItem);
+				Xson.sortArray(subItems, "$.display");
 			}
 		}
 

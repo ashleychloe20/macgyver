@@ -25,7 +25,10 @@ import io.macgyver.xson.impl.Jsr353PathProvider;
 import io.macgyver.xson.impl.PathPredicateImpl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 import net.minidev.json.JSONArray;
@@ -128,6 +131,26 @@ public class Xson {
 		
 	}
 
+	public static void sortArray(Object arrayNode, String jsonPath) {
+		
+		Preconditions.checkNotNull(arrayNode);
+		if (!ArrayNode.class.isAssignableFrom(arrayNode.getClass())) {
+			Preconditions.checkArgument(false, "type not supported: %s", arrayNode.getClass().getName());
+		}
+		ArrayNode n = (ArrayNode) arrayNode;
+		List<JsonNode> tmp = new ArrayList<JsonNode>(n.size());
+		for (JsonNode x: n) {
+			tmp.add(x);
+		}
+		
+		Collections.sort(tmp, Xson.pathComparator(jsonPath));
+		
+		n.removeAll();
+		for (JsonNode jn: tmp) {
+			n.add(jn);
+		}	
+	}
+	
 	public static JsonPathPredicate<Object> pathPredicate(String jsonPath) {
 		Preconditions.checkNotNull(jsonPath);
 		return new PathPredicateImpl(jsonPath);
