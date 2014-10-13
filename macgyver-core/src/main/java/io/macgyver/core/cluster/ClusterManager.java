@@ -124,7 +124,7 @@ public class ClusterManager {
 		}
 		
 		if (foundLiveMaster) {
-			logger.info("found master: {}",masterUuid);
+			logger.debug("found master: {}",masterUuid);
 		}
 		else {
 			logger.info("master not found");
