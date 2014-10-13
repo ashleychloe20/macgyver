@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -241,5 +242,13 @@ public class ServiceRegistry {
 		}
 		return p;
 
+	}
+	
+	/**
+	 * Returns an immutable Map of service definitions.
+	 * @return
+	 */
+	public Map<String,ServiceDefinition> getServiceDefinitions() {
+		return ImmutableMap.copyOf(definitions);
 	}
 }

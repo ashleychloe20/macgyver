@@ -32,6 +32,7 @@ public class AdminPlugin extends Plugin {
 		ui.registerView(ScriptsView.class);
 		ui.registerView(BeansView.class);
 		ui.registerView(ClusterView.class);
+		ui.registerView(ServicesView.class);
 		
 	}
 
