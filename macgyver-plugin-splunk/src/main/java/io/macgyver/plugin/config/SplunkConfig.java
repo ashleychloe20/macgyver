@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 public class SplunkConfig {
 
 	@Bean
-	public SplunkServiceFactory macNewRelicServiceFactory() {
+	public SplunkServiceFactory SplunkServiceFactory() {
 		return new SplunkServiceFactory();
 	}
 
