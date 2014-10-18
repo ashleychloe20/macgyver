@@ -101,7 +101,7 @@ public class WebConfig implements EnvironmentAware {
 	public ServletRegistrationBean macVaadinServlet() {
 		ServletRegistrationBean sb = new ServletRegistrationBean(new MacGyverVaadinServlet(), "/ui/*","/VAADIN/*");
 		sb.addInitParameter("ui", MacGyverUI.class.getName());
-		
+	//	sb.addInitParameter("legacyPropertyToString","false");
 		return sb;
 	}
 	
