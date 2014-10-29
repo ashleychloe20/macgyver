@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 public class PagerDutyConfig {
 
 	@Bean
-	public PagerDutyServiceFactory macSplunkServiceFactory() {
+	public PagerDutyServiceFactory macPagerDutyServiceFactory() {
 		return new PagerDutyServiceFactory();
 	}
 
