@@ -63,4 +63,21 @@ public class PagerDutyTest extends MacGyverIntegrationTest {
 		c.createIncident(null, "test summary", null, null,null);
 	
 	}
+	
+	
+	@Test
+	public void testRequestFormat() {
+		PagerDutyClientImpl c = new PagerDutyClientImpl();
+		c.setServiceKey("aaaaaa");
+		
+		
+		ObjectNode n = c.formatRequest("trigger", "ikey", "desc", "client", "http://example.com", null);
+		
+		
+		Assert.assertEquals("trigger",n.path("event_type").asText());
+		Assert.assertEquals("ikey",n.path("incident_key").asText());
+		Assert.assertEquals("desc",n.path("description").asText());
+		Assert.assertEquals("client",n.path("client").asText());
+		Assert.assertEquals("http://example.com",n.path("client_url").asText());
+	}
 }

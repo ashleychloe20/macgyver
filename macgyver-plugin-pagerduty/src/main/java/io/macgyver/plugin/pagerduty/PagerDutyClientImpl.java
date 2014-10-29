@@ -113,19 +113,21 @@ public class PagerDutyClientImpl implements PagerDutyClient {
 	public ObjectNode createIncident(String incidentKey, String description) {
 		return createIncident(incidentKey, description,null,null,null);
 	}
-	@Override
-	public ObjectNode createIncident(String incidentKey, String description,
-			String client, String clientUrl, ObjectNode n) {
+	
+	protected ObjectNode formatRequest(String operation, String incidentKey, String description, String client, String clientUrl, ObjectNode n) {
 		String serviceKey = getServiceKey();
-		if (!Strings.isNullOrEmpty(serviceKey)) {
+		if (Strings.isNullOrEmpty(serviceKey)) {
 			throw new BadRequestException("serviceKey must be set");
 		}
 		
 		ObjectNode input = new ObjectMapper().createObjectNode();
 		input.put("service_key", getServiceKey());
-		input.put("event_type", "trigger");
+		input.put("event_type", operation);
 		input.put("description", description);
 
+		if (!Strings.isNullOrEmpty(incidentKey)) {
+			input.put("incident_key", incidentKey);
+		}
 		if (!Strings.isNullOrEmpty(client)) {
 			input.put("client", client);
 		}
@@ -135,7 +137,13 @@ public class PagerDutyClientImpl implements PagerDutyClient {
 		if (n != null) {
 			input.put("details", n);
 		}
-		return postEvent(input);
+		return input;
+	}
+	@Override
+	public ObjectNode createIncident(String incidentKey, String description,
+			String client, String clientUrl, ObjectNode n) {
+	
+		return postEvent(formatRequest("trigger",incidentKey,description,client,clientUrl,n));
 
 	}
 }

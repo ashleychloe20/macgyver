@@ -18,8 +18,6 @@ import io.macgyver.core.service.ServiceDefinition;
 
 import java.util.Properties;
 
-import com.splunk.Service;
-import com.splunk.ServiceArgs;
 
 public class PagerDutyServiceFactory extends BasicServiceFactory<PagerDutyClient>{
 
@@ -33,7 +31,7 @@ public class PagerDutyServiceFactory extends BasicServiceFactory<PagerDutyClient
 		
 		
 		Properties p = def.getProperties();
-		
+	
 		String serviceKey = p.getProperty("serviceKey");
 		
 		PagerDutyClientImpl client = new PagerDutyClientImpl();
