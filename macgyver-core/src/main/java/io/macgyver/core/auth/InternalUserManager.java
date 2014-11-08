@@ -48,11 +48,9 @@ public class InternalUserManager {
 		if (r.next()) {
 			InternalUser u = new InternalUser();
 			u.username = r.getString("u.username");
-			
+
 			u.roles = (List<String>) r.getList("u.roles");
-			
-			
-	
+
 			return Optional.of(u);
 		}
 
@@ -90,17 +88,15 @@ public class InternalUserManager {
 		String hash = SCryptUtil.scrypt(password, 4096, 8, 1);
 
 		String c = "match (u:User) where u.username={username} set u.scryptHash={hash}";
-	
 
-		neo4j.execCypher(c, "username",username,"hash",hash);
+		neo4j.execCypher(c, "username", username, "hash", hash);
 
 	}
 
 	public void setRoles(String username, List<String> roles) {
-		
+
 		String c = "match (u:User) where u.username={username} set u.roles={roles}";
-		neo4j.execCypher(c,"username",username,"roles",roles);
-	
+		neo4j.execCypher(c, "username", username, "roles", roles);
 
 	}
 
@@ -115,7 +111,7 @@ public class InternalUserManager {
 		String cypher = "create (u:User {username:{username}})";
 		neo4j.execCypher(cypher, "username", username);
 
-		setRoles(username,roles);
+		setRoles(username, roles);
 		InternalUser u = new InternalUser();
 		u.username = username;
 		u.roles = Lists.newArrayList();
@@ -127,26 +123,29 @@ public class InternalUserManager {
 	@PostConstruct
 	public void initializeGraphDatabase() {
 		try {
-			
-			String cipher = "CREATE CONSTRAINT ON (u:User) ASSERT u.username IS UNIQUE";		
+
+			String cipher = "CREATE CONSTRAINT ON (u:User) ASSERT u.username IS UNIQUE";
 			neo4j.execCypher(cipher);
-			
+
 		} catch (Exception e) {
 			logger.warn(e.toString());
 		}
-		
-		
-		Optional<InternalUser> admin = getInternalUser("admin");
-		if (admin.isPresent()) {
-			logger.debug("admin user already exists");
-		}
-		else {
-			logger.info("adding admin user");
-			List<String> roleList = Lists.newArrayList("ROLE_MACGYVER_SHELL","ROLE_MACGYVER_UI", "ROLE_MACGYVER_ADMIN","ROLE_MACGYVER_USER");
-			
-			createUser("admin", roleList);
-			setPassword("admin", "admin");
-			
+
+		if (neo4j.checkOnline()) {
+
+			Optional<InternalUser> admin = getInternalUser("admin");
+			if (admin.isPresent()) {
+				logger.debug("admin user already exists");
+			} else {
+				logger.info("adding admin user");
+				List<String> roleList = Lists.newArrayList(
+						"ROLE_MACGYVER_SHELL", "ROLE_MACGYVER_UI",
+						"ROLE_MACGYVER_ADMIN", "ROLE_MACGYVER_USER");
+
+				createUser("admin", roleList);
+				setPassword("admin", "admin");
+
+			}
 		}
 
 	}
