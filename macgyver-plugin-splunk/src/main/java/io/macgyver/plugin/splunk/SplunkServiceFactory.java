@@ -16,53 +16,54 @@ package io.macgyver.plugin.splunk;
 import io.macgyver.core.service.BasicServiceFactory;
 import io.macgyver.core.service.ServiceDefinition;
 
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.WeakHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Maps;
 import com.splunk.Service;
-import com.splunk.ServiceArgs;
 
-public class SplunkServiceFactory extends BasicServiceFactory<Service>{
+public class SplunkServiceFactory extends BasicServiceFactory<Service> {
 
+	@Autowired
+	TokenRefreshManager tokenRefresh;
+	
 	public SplunkServiceFactory() {
 		super("Splunk");
 		
 	}
 
+
+
+
+
 	@Override
 	protected Service doCreateInstance(ServiceDefinition def) {
-		
-		
+
 		Properties p = def.getProperties();
+
+		Map<String,Object> args = Maps.newHashMap();
 		
-		ServiceArgs args = new ServiceArgs();
-		String username = p.getProperty("username");
-		String password = p.getProperty("password");
-		String host = p.getProperty("host");
-		String port = p.getProperty("port","8089");
-		String scheme = p.getProperty("scheme");
-		String token = p.getProperty("token");
-		
-		if (username!=null) {
-			args.setUsername(username);
-		}
-		if (password!=null) {
-			args.setPassword(password);
-		}
-		if (host!=null) {
-			args.setHost(host);
-		}
-		if (port!=null) {
-			args.setPort(Integer.parseInt(port));
-		}
-		if (token!=null) {
-			args.setToken(token);
-		}
-		if (scheme!=null) {
-			args.setScheme(scheme);
+		for (Map.Entry<Object,Object> entry: p.entrySet()) {
+			args.put(entry.getKey().toString(),entry.getValue());
 		}
 		
+		Object portObject = args.get("port");
+		if (portObject!=null) {
+			args.put("port", Integer.parseInt(portObject.toString()));
+		}
+	
 		Service service = Service.connect(args);
+		
+		tokenRefresh.registerService(service);
+
 		return service;
+
 	}
 
 

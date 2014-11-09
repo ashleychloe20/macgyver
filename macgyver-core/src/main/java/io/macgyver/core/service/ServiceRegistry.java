@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -73,26 +74,25 @@ public class ServiceRegistry {
 		Object instance = instances.get(name);
 
 		// check for an already-constructed service
-		if (instance != null) {
-			return instance;
-		}
-		if (logger.isDebugEnabled()) {
-			logger.debug("defs: {}", definitions);
-		}
-		ServiceDefinition def = definitions.get(name);
+		if (instance==null) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("defs: {}", definitions);
+			}
+			ServiceDefinition def = definitions.get(name);
 
-		if (def == null) {
-			throw new ServiceNotFoundException(name);
-		}
+			if (def == null) {
+				throw new ServiceNotFoundException(name);
+			}
 
-		if (def.isCollaborator()) {
-			String primaryName = def.getPrimaryName();
+			if (def.isCollaborator()) {
+				String primaryName = def.getPrimaryName();
 
-			get(primaryName);
-			instance = instances.get(name);
-		} else {
-			instance = def.getServiceFactory().get(name);
+				get(primaryName);
+				instance = instances.get(name);
+			} else {
+				instance = def.getServiceFactory().get(name);
 
+			}
 		}
 
 		return instance;
@@ -107,7 +107,8 @@ public class ServiceRegistry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void startAfterSpringContextInitialized() throws RuntimeException, IOException {
+	public void startAfterSpringContextInitialized() throws RuntimeException,
+			IOException {
 
 		collectServiceFactories();
 
@@ -243,12 +244,13 @@ public class ServiceRegistry {
 		return p;
 
 	}
-	
+
 	/**
 	 * Returns an immutable Map of service definitions.
+	 * 
 	 * @return
 	 */
-	public Map<String,ServiceDefinition> getServiceDefinitions() {
+	public Map<String, ServiceDefinition> getServiceDefinitions() {
 		return ImmutableMap.copyOf(definitions);
 	}
 }

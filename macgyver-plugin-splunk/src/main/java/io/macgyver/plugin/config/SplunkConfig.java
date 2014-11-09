@@ -14,6 +14,7 @@
 package io.macgyver.plugin.config;
 
 import io.macgyver.plugin.splunk.SplunkServiceFactory;
+import io.macgyver.plugin.splunk.TokenRefreshManager;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,4 +27,9 @@ public class SplunkConfig {
 		return new SplunkServiceFactory();
 	}
 
+	@Bean
+	public TokenRefreshManager macTokenRefreshManager() {
+		
+		return new TokenRefreshManager();
+	}
 }
