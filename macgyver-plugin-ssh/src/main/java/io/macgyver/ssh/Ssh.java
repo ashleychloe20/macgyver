@@ -68,6 +68,11 @@ public class Ssh {
 	public Ssh withPubKeyAuth(String username) {
 		return withAuth(new PubKeyCredentials(username));
 	}
+	
+	public Ssh withPubKeyAuth(String username, String privateKeyFile) {
+		return withPubKeyAuth(username,new File(privateKeyFile));
+	}
+	
 	public Ssh withPubKeyAuth(String username, File privateKeyFile) {
 		return withAuth(new PubKeyCredentials(username, privateKeyFile));
 	}
