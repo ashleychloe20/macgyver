@@ -13,8 +13,14 @@
  */
 package io.macgyver.ssh;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.PublicKey;
+
+import org.apache.sshd.SshClient;
+
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -23,21 +29,18 @@ import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 public class Ssh {
 
-	private String username = System.getProperty("user.name");
 	private String host;
 	private String command;
+
+	Credentials credentials;
 
 	private HostKeyVerifier verifier = null;
 	private int connectTimeout = -1;
 
-	public Ssh username(String username) {
-		this.username = username;
-		return this;
-	}
-
 	public static Ssh to(String host) {
 		return hostname(host);
 	}
+
 	public static Ssh hostname(String host) {
 		Ssh ssh = new Ssh();
 		ssh.host = host;
@@ -60,6 +63,21 @@ public class Ssh {
 	public Ssh connectTimeout(int timeout) {
 		this.connectTimeout = timeout;
 		return this;
+	}
+
+	public Ssh withPubKeyAuth(String username) {
+		return withAuth(new PubKeyCredentials(username));
+	}
+	public Ssh withPubKeyAuth(String username, File privateKeyFile) {
+		return withAuth(new PubKeyCredentials(username, privateKeyFile));
+	}
+	public Ssh withAuth(Credentials c) {
+		this.credentials = c;
+		return this;
+	}
+
+	public Ssh withPasswordAuth(String username, char[] password) {
+		return withAuth(new UsernamePasswordCredentials(username, password));
 	}
 
 	public Ssh hostKeyVerifier(HostKeyVerifier v) {
@@ -92,7 +110,8 @@ public class Ssh {
 			ssh.setConnectTimeout(connectTimeout);
 		}
 		try {
-			ssh.authPublickey(username);
+			applyCredentials(ssh);
+
 			final Session session = ssh.startSession();
 			try {
 				final Command cmd = session.exec(command);
@@ -105,5 +124,21 @@ public class Ssh {
 			ssh.disconnect();
 		}
 
+	}
+
+	protected void applyCredentials(SSHClient ssh) throws IOException {
+		Preconditions.checkNotNull(ssh);
+		if (credentials instanceof UsernamePasswordCredentials) {
+			UsernamePasswordCredentials upc = (UsernamePasswordCredentials) credentials;
+			ssh.authPassword(upc.getUsername(), upc.getPassword());
+		} else if (credentials instanceof PubKeyCredentials) {
+			PubKeyCredentials pk = (PubKeyCredentials) credentials;
+			if (pk.getPrivateKeyFile().isPresent()) {
+				ssh.authPublickey(pk.getUsername(), pk.getPrivateKeyFile()
+						.get().getAbsolutePath());
+			} else {
+				ssh.authPublickey(pk.getUsername());
+			}
+		}
 	}
 }
