@@ -1,5 +1,5 @@
-MacGyver Multi-Tool
-===================
+#MacGyver Multi-Tool
+
 
 [![Build Status](http://ci.macgyver.io/buildStatus/icon?job=macgyver-ci)](http://ci.macgyver.io/job/macgyver-ci/)
 
@@ -8,5 +8,12 @@ MacGyver Multi-Tool
 To Build and Test:
 
 ./gradlew test
+
+
+## Changes
+
+### 0.74.0
+* Upgraded SSHJ to 0.10.0
+* Better configuration of SSH authentication
 
 
