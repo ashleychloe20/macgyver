@@ -54,7 +54,9 @@ subprojects {
     	all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
     	all*.exclude group: 'log4j'
     	all*.exclude group: 'xml-apis'
+		all*.exclude group: 'org.bouncycastle', module: 'bcprov-jdk16'
         all*.exclude group: 'javax.ws.rs' , module: 'jsr311-api'
+		
 		provided
     }
     
