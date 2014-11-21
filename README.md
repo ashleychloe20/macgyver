@@ -12,8 +12,13 @@ To Build and Test:
 
 ## Changes
 
+### 0.75.0
+* Fixed dependency conflicts with bouncycastle 
+
 ### 0.74.0
 * Upgraded SSHJ to 0.10.0
 * Better configuration of SSH authentication
+
+
 
 
