@@ -55,29 +55,9 @@ public class LeftronicSender {
 		this.apiKey = apiKey;
 	}
 
-	public void send(String streamName, Number val) {
 
+	public void send(ObjectNode n) {
 		try {
-			if (val == null) {
-				return;
-			}
-			if (Strings.isNullOrEmpty(apiKey)) {
-				logger.warn("apiKey not set");
-				return;
-			}
-			ObjectNode n = mapper.createObjectNode();
-
-			n.put("accessKey", apiKey);
-			n.put("streamName", streamName);
-
-			if (val instanceof Integer) {
-				n.put("point", ((Integer) val).intValue());
-			} else if (val instanceof Long) {
-				n.put("point", ((Long) val).longValue());
-			} else {
-				n.put("point", val.doubleValue());
-			}
-
 			String stringPayload = n.toString();
 			if (logger.isTraceEnabled()) {
 				ObjectNode masked = (ObjectNode) mapper.readTree(stringPayload);
@@ -109,6 +89,38 @@ public class LeftronicSender {
 			client.preparePost(url).setBody(stringPayload).execute(h);
 
 		} catch (IOException | RuntimeException e) {
+			logger.warn("could not send data to leftronic: {}", e.toString());
+		}
+	}
+
+
+	public void send(String streamName, Number val) {
+
+		try {
+			if (val == null) {
+				return;
+			}
+			if (Strings.isNullOrEmpty(apiKey)) {
+				logger.warn("apiKey not set");
+				return;
+			}
+			ObjectNode n = mapper.createObjectNode();
+
+			n.put("accessKey", apiKey);
+			n.put("streamName", streamName);
+
+			if (val instanceof Integer) {
+				n.put("point", ((Integer) val).intValue());
+			} else if (val instanceof Long) {
+				n.put("point", ((Long) val).longValue());
+			} else {
+				n.put("point", val.doubleValue());
+			}
+
+			send(n);
+
+			
+		} catch (RuntimeException e) {
 			logger.warn("could not send data to leftronic: {}", e.toString());
 		} finally {
 

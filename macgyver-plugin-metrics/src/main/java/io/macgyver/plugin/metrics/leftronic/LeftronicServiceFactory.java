@@ -34,6 +34,8 @@ public class LeftronicServiceFactory extends BasicServiceFactory<LeftronicReport
 
 	}
 
+	public LeftronicSender leftronic;
+
 	
 	@Override
 	public LeftronicReporter doCreateInstance(ServiceDefinition def) {
@@ -42,7 +44,7 @@ public class LeftronicServiceFactory extends BasicServiceFactory<LeftronicReport
 		MetricRegistry registry = Kernel.getInstance().getApplicationContext().getBean(MetricRegistry.class);
 	
 		
-		LeftronicSender leftronic = new LeftronicSender(new AsyncHttpClient());
+		leftronic = new LeftronicSender(new AsyncHttpClient());
 		leftronic.setApiKey(def.getProperties().getProperty("apiKey"));
 		
 		
@@ -75,6 +77,10 @@ public class LeftronicServiceFactory extends BasicServiceFactory<LeftronicReport
 	@Override
 	public void doConfigureDefinition(ServiceDefinition def) {
 		def.setLazyInit(false);
+	}
+
+	public LeftronicSender getLeftronicSender() { 
+		return leftronic;
 	}
 
 }
