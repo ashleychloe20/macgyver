@@ -56,15 +56,16 @@ public class LeftronicSender {
 	}
 
 
-	public void send(ObjectNode n) {
+	public void send(ObjectNode input) {
 		try {
+			ObjectNode n = input;
 			String stringPayload = n.toString();
 			if (logger.isTraceEnabled()) {
 				ObjectNode masked = (ObjectNode) mapper.readTree(stringPayload);
 				masked.put("accessKey", "******");
 				logger.trace("sending data leftronic: {}", masked);
 			}
-
+			n.put("accessKey", apiKey);
 			AsyncCompletionHandler<String> h = new AsyncCompletionHandler<String>() {
 
 				@Override
@@ -106,7 +107,6 @@ public class LeftronicSender {
 			}
 			ObjectNode n = mapper.createObjectNode();
 
-			n.put("accessKey", apiKey);
 			n.put("streamName", streamName);
 
 			if (val instanceof Integer) {
