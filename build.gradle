@@ -141,6 +141,7 @@ subprojects {
          ** This patches the problem by removing the broken classpath entry. **/
         def nodesToRemove = []
         def file = new File(".classpath")
+	if (file.exists()) {
         def root = new XmlParser().parse(file)
     
         // find the broken elements
@@ -156,6 +157,7 @@ subprojects {
         file.withWriter {
             new XmlNodePrinter(new PrintWriter(it)).print(root)
         }
+	}
     }
     
 }
