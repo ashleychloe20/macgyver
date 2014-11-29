@@ -299,4 +299,12 @@ public class LeftronicReporter extends ScheduledReporter {
         return v;
     }
 
+    /**
+     * Expose the underlying leftronic client for direct access as needed.
+     * @return
+     */
+    public LeftronicSender getLeftronicSender() {
+    	return leftronicSender;
+    	
+    }
 }

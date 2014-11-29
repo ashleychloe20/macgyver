@@ -16,6 +16,7 @@ package io.macgyver.plugin.metrics.leftronic;
 import io.macgyver.core.MacGyverException;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +43,9 @@ public class LeftronicSender {
 
 	ObjectMapper mapper = new ObjectMapper();
 
+	final LeftronicCompletionHandler completionHandler = new LeftronicCompletionHandler();
 	public LeftronicSender(AsyncHttpClient client) {
-		Preconditions.checkNotNull(client);
+
 		this.client = client;
 	}
 
@@ -54,72 +56,83 @@ public class LeftronicSender {
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
 	}
+	
+	public static class LeftronicCompletionHandler extends AsyncCompletionHandler<String> {
+		@Override
+		public void onThrowable(Throwable t) {
+			logger.warn("problem sending to leftronic: {}",
+					t.toString());
+			super.onThrowable(t);
 
+		}
+
+		@Override
+		public String onCompleted(Response response) throws Exception {
+			int sc = response.getStatusCode();
+			if (sc >= 300) {
+				logger.warn("leftronic response code: {} body: {}", sc,
+						response.getResponseBody());
+			}
+			return null;
+		}	
+	}
 
 	public void send(ObjectNode input) {
 		try {
 			ObjectNode n = input;
 			String stringPayload = n.toString();
+			
 			if (logger.isTraceEnabled()) {
-				ObjectNode masked = (ObjectNode) mapper.readTree(stringPayload);
+				ObjectNode masked = input.deepCopy();
 				masked.put("accessKey", "******");
 				logger.trace("sending data leftronic: {}", masked);
 			}
-			n.put("accessKey", apiKey);
-			AsyncCompletionHandler<String> h = new AsyncCompletionHandler<String>() {
 
-				@Override
-				public void onThrowable(Throwable t) {
-					logger.warn("problem sending to leftronic: {}",
-							t.toString());
-					super.onThrowable(t);
+			
 
-				}
-
-				@Override
-				public String onCompleted(Response response) throws Exception {
-					int sc = response.getStatusCode();
-					if (sc >= 300) {
-						logger.warn("leftronic response code: {} body: {}", sc,
-								response.getResponseBody());
-					}
-					return null;
-				}
-			};
-
-			client.preparePost(url).setBody(stringPayload).execute(h);
+			client.preparePost(url).setBody(stringPayload).execute(completionHandler);
 
 		} catch (IOException | RuntimeException e) {
 			logger.warn("could not send data to leftronic: {}", e.toString());
 		}
 	}
 
+	protected ObjectNode formatPayloadForGauge(String streamName, Number val) {
+		
+		Preconditions.checkArgument(!Strings.isNullOrEmpty(streamName),"streamName must be set");
+		Preconditions.checkArgument(val!=null,"value must be set");
+		ObjectNode n = mapper.createObjectNode();
+
+		if (val == null) {
+			return n;
+		}
+		if (Strings.isNullOrEmpty(apiKey)) {
+			logger.warn("apiKey not set");
+
+		} else {
+			n.put("accessKey", getApiKey());
+		}
+		n.put("streamName", streamName);
+
+		if (val instanceof Integer) {
+			n.put("point", ((Integer) val).intValue());
+		} else if (val instanceof Long) {
+			n.put("point", ((Long) val).longValue());
+		}
+		else if (val instanceof BigInteger) {
+			n.put("point", ((BigInteger)val).longValue());
+		} else {
+			n.put("point", val.doubleValue());
+		}
+		return n;
+	}
 
 	public void send(String streamName, Number val) {
 
 		try {
-			if (val == null) {
-				return;
-			}
-			if (Strings.isNullOrEmpty(apiKey)) {
-				logger.warn("apiKey not set");
-				return;
-			}
-			ObjectNode n = mapper.createObjectNode();
 
-			n.put("streamName", streamName);
+			send(formatPayloadForGauge(streamName, val));
 
-			if (val instanceof Integer) {
-				n.put("point", ((Integer) val).intValue());
-			} else if (val instanceof Long) {
-				n.put("point", ((Long) val).longValue());
-			} else {
-				n.put("point", val.doubleValue());
-			}
-
-			send(n);
-
-			
 		} catch (RuntimeException e) {
 			logger.warn("could not send data to leftronic: {}", e.toString());
 		} finally {
