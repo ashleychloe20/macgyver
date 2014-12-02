@@ -12,6 +12,11 @@ To Build and Test:
 
 ## Changes
 
+
+### 0.76.0
+* Added AssertJ for fluent unit test assertions
+* Refactor of Leftronic client to add flexibility
+
 ### 0.75.0
 * Fixed dependency conflicts with bouncycastle 
 
