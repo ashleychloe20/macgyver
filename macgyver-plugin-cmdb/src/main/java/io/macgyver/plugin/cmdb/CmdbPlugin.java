@@ -15,7 +15,7 @@ package io.macgyver.plugin.cmdb;
 
 import io.macgyver.core.Plugin;
 import io.macgyver.core.web.vaadin.MacGyverUI;
-import io.macgyver.neo4j.rest.Neo4jRestClient;
+import io.macgyver.neorx.rest.NeoRxClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class CmdbPlugin extends Plugin {
 	Logger logger = LoggerFactory.getLogger(CmdbPlugin.class);
 
 	@Autowired
-	Neo4jRestClient neo4j;
+	NeoRxClient neo4j;
 
 
 
