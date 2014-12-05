@@ -36,6 +36,7 @@ import io.macgyver.core.web.vaadin.ViewConfig;
 import io.macgyver.core.web.vaadin.ViewDecorators;
 import io.macgyver.core.web.vaadin.ViewMetadata;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
@@ -98,7 +99,7 @@ public class ScriptsView extends VerticalLayout implements View {
 						Property p = item.getItemProperty("resource");
 						Object value = p.getValue();
 
-						ObjectNode on = container.getJsonObject(itemId);
+						JsonNode on = container.getJsonObject(itemId);
 						if (on != null) {
 							try {
 								String hash = on.path("hash").asText();
@@ -167,7 +168,7 @@ public class ScriptsView extends VerticalLayout implements View {
 					.getBean(ExtensionResourceProvider.class);
 			extensionProvider.refresh();
 			ObjectMapper mapper = new ObjectMapper();
-			List<ObjectNode> list = Lists.newArrayList();
+			List<JsonNode> list = Lists.newArrayList();
 
 			for (Resource r : extensionProvider.findResources()) {
 				ResourceProvider rp = r.getResourceProvider();
