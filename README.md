@@ -12,6 +12,11 @@ To Build and Test:
 
 ## Changes
 
+### 0.80.1
+* NeoRx related fixes
+
+### 0.80.0
+* Switched to NeoRx
 
 ### 0.76.0
 * Added AssertJ for fluent unit test assertions
