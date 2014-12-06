@@ -13,14 +13,14 @@
  */
 package io.macgyver.core.web.vaadin;
 
-import io.macgyver.core.MacGyverException;
 import io.macgyver.xson.Xson;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import rx.functions.Action1;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +37,7 @@ import com.vaadin.data.util.IndexedContainer;
  * @author Rob Schoening
  *
  */
-public class IndexedJsonContainer extends IndexedContainer {
+public class IndexedJsonContainer extends IndexedContainer  {
 
 	protected static ObjectMapper mapper = new ObjectMapper();
 
@@ -45,15 +45,16 @@ public class IndexedJsonContainer extends IndexedContainer {
 
 	protected Map<String, String> xsonMap = Maps.newConcurrentMap();
 
-	protected Map<Object, ObjectNode> rawDataMap = Maps.newConcurrentMap();
+	protected Map<Object, JsonNode> rawDataMap = Maps.newConcurrentMap();
 
+	public final AddItemAction ADD_ITEM_ACTION=new AddItemAction();
 	/**
 	 * Maps a Json object into this container.
 	 * 
 	 * @param node
 	 */
 	@SuppressWarnings("unchecked")
-	public void addJsonObject(ObjectNode node) {
+	public void addJsonObject(JsonNode node) {
 		Preconditions.checkNotNull(node);
 		Object itemId = addItem();
 		rawDataMap.put(itemId, node);
@@ -72,7 +73,7 @@ public class IndexedJsonContainer extends IndexedContainer {
 		}
 	}
 
-	public ObjectNode getJsonObject(Object itemId) {
+	public JsonNode getJsonObject(Object itemId) {
 		return rawDataMap.get(itemId);
 	}
 
@@ -96,6 +97,7 @@ public class IndexedJsonContainer extends IndexedContainer {
 		return super.removeAllItems();
 	}
 
+
 	/**
 	 * Adds each element in the given array to this container.
 	 * 
@@ -111,8 +113,8 @@ public class IndexedJsonContainer extends IndexedContainer {
 		}
 	}
 
-	public void addJsonObjects(Iterable<ObjectNode> list) {
-		for (ObjectNode n : list) {
+	public void addJsonObjects(Iterable<JsonNode> list) {
+		for (JsonNode n : list) {
 			addJsonObject(n);
 		}
 	}
@@ -123,7 +125,7 @@ public class IndexedJsonContainer extends IndexedContainer {
 		xsonMap.put(propertyId, jsonPath);
 	}
 
-	public String extractPropertyValue(ObjectNode data, String propertyId) {
+	public String extractPropertyValue(JsonNode data, String propertyId) {
 		Preconditions.checkNotNull(data);
 		Preconditions.checkNotNull(propertyId);
 
@@ -132,6 +134,22 @@ public class IndexedJsonContainer extends IndexedContainer {
 			return data.path(propertyId).asText();
 		} else {
 			return Xson.eval(data, xson);
+		}
+	}
+	
+	/**
+	 * We are not implementing Obervable pattern in the classic sense.  This is really 
+	 * just a callback for adding Observable<JsonNode> into the contianer.
+	 * @author rschoening
+	 *
+	 */
+	public class AddItemAction implements Action1<JsonNode> {
+
+		@Override
+		public void call(JsonNode t1) {
+			if (t1!=null) {
+				addJsonObject(t1);
+			}	
 		}
 	}
 

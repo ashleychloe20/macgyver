@@ -13,8 +13,9 @@
  */
 package io.macgyver.core.auth;
 
-import io.macgyver.neo4j.rest.Neo4jRestClient;
-import io.macgyver.neo4j.rest.Result;
+
+
+import io.macgyver.neorx.rest.NeoRxClient;
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,10 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.lambdaworks.crypto.SCryptUtil;
 
@@ -38,18 +42,27 @@ public class InternalUserManager {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	Neo4jRestClient neo4j;
+	NeoRxClient neo4j;
 
 	public Optional<InternalUser> getInternalUser(final String id) {
 
 		String q = "match (u:User) where u.username={username} return u.username,u.roles";
 
-		Result r = neo4j.execCypher(q, "username", id.toLowerCase());
-		if (r.next()) {
+		JsonNode n = neo4j.execCypher(q, "username", id.toLowerCase()).toBlocking().firstOrDefault(null);
+		if (n!=null) {
 			InternalUser u = new InternalUser();
-			u.username = r.getString("u.username");
+			u.username = n.get("u.username").asText();
 
-			u.roles = (List<String>) r.getList("u.roles");
+			
+			u.roles = Lists.newArrayList();
+			JsonNode roles = n.get("u.roles");
+			
+			if (roles!=null && roles.isArray()) {
+				for (int i=0; i<roles.size(); i++) {
+					u.roles.add(roles.get(i).asText());
+				}
+			}
+			u.roles = ImmutableList.copyOf(u.roles);
 
 			return Optional.of(u);
 		}
@@ -62,11 +75,10 @@ public class InternalUserManager {
 			String q = "match (u:User) where u.username={username} return u.scryptHash";
 			ObjectNode n = new ObjectMapper().createObjectNode();
 			n.put("username", username);
-			Result r = neo4j.execCypher(q, n);
-			if (r.next()) {
+			JsonNode userNode = neo4j.execCypher(q, "username", username).toBlocking().firstOrDefault(null);
+			if (userNode!=null) {
 
-				String hashValue = Strings.emptyToNull(r
-						.getString("u.scryptHash"));
+				String hashValue = Strings.emptyToNull(userNode.asText());
 				if (hashValue == null) {
 					return false;
 				}
@@ -131,7 +143,7 @@ public class InternalUserManager {
 			logger.warn(e.toString());
 		}
 
-		if (neo4j.checkOnline()) {
+		if (neo4j.checkConnection()) {
 
 			Optional<InternalUser> admin = getInternalUser("admin");
 			if (admin.isPresent()) {

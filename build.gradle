@@ -1,7 +1,7 @@
 
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
+    gradleVersion = '2.2.1'
 }
 /*allprojects {
     group 'io.macgyver'
@@ -112,8 +112,9 @@ subprojects {
     }
 	uploadArchives {
 	    repositories {
+			name = 'macgyver-bintray'
 	        mavenDeployer {
-	            name = 'macgyver-bintray'
+	            
                 if (!project.hasProperty('bintrayUser')) {
                     project.ext['bintrayUser']=""
                 }

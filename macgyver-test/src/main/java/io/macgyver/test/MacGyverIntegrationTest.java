@@ -13,14 +13,12 @@
  */
 package io.macgyver.test;
 
-import io.macgyver.neo4j.rest.Neo4jRestClient;
+import io.macgyver.neorx.rest.NeoRxClient;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Properties;
 
 import org.junit.Assume;
@@ -32,13 +30,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import com.google.common.base.Strings;
-import com.google.common.io.Files;
 
 @SpringApplicationConfiguration(classes = TestConfig.class,initializers={SoftDependencyInitializer.class})
 //s@ContextConfiguration(loader = AnnotationConfigContextLoader.class, classes = { TestConfig.class }, initializers={SoftDependencyInitializer.class})
@@ -61,7 +56,7 @@ public abstract class MacGyverIntegrationTest extends
 		if (neo4jAvailable == null) {
 			
 			try {
-				neo4jAvailable = new Neo4jRestClient().checkOnline(); // TODO configurable endpoint
+				neo4jAvailable = new NeoRxClient().checkConnection(); // TODO configurable endpoint
 				
 			} catch (Exception e) {
 				logger.info("problem communicating with neo4j", e);

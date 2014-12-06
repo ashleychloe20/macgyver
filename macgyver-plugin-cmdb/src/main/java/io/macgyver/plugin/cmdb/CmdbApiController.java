@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.neo4j.rest.Neo4jRestClient;
+import io.macgyver.neorx.rest.NeoRxClient;
 import io.macgyver.xson.Xson;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
@@ -64,7 +65,7 @@ public class CmdbApiController {
 	ObjectMapper mapper = new ObjectMapper();
 	
 	@Autowired
-	Neo4jRestClient neo4j;
+	NeoRxClient neo4j;
 	
 	
 
@@ -92,37 +93,38 @@ public class CmdbApiController {
 
 	@RequestMapping(value="/appInstances", method=RequestMethod.GET) 
 	@PreAuthorize("hasAnyRole('ROLE_MACGYVER_USER','ROLE_MACGYVER_API_RO')")
-	public ResponseEntity<List<ObjectNode>> allAppInstances() {
+	public ResponseEntity<List<JsonNode>> allAppInstances() {
 		String cypher = "match (x:AppInstance) return x";
-		List<ObjectNode> results = neo4j.execCypher(cypher).asVertexDataList("x");	
+		List<JsonNode> results = neo4j.execCypher(cypher).toList().toBlocking().first();
 		beautifyTimestamps(results);
-		return new ResponseEntity<List<ObjectNode>>(results, HttpStatus.OK);
+		return new ResponseEntity<List<JsonNode>>(results, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/appInstances/environment/{env}", method=RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ROLE_MACGYVER_USER','ROLE_MACGYVER_API_RO')")
-	public ResponseEntity<List<ObjectNode>> appInstancesByEnv(@PathVariable String env) {
+	public ResponseEntity<List<JsonNode>> appInstancesByEnv(@PathVariable String env) {
 		String cypher = "match (x:AppInstance {environment:{env}}) return x";
-		List<ObjectNode> results = neo4j.execCypher(cypher,"env",env).asVertexDataList("x");
+		List<JsonNode> results = neo4j.execCypher(cypher,"env",env).toList().toBlocking().first();
 		beautifyTimestamps(results);
-		return new ResponseEntity<List<ObjectNode>>(results, HttpStatus.OK);
+		return new ResponseEntity<List<JsonNode>>(results, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/appInstances/environment/{env}/appId/{appId}", method=RequestMethod.GET) 
 	@PreAuthorize("hasAnyRole('ROLE_MACGYVER_USER','ROLE_MACGYVER_API_RO')")
-	public ResponseEntity<List<ObjectNode>> appInstance(@PathVariable String env, @PathVariable String appId) {
+	public ResponseEntity<List<JsonNode>> appInstance(@PathVariable String env, @PathVariable String appId) {
 		String cypher = "match (x:AppInstance {appId:{appIds},environment:{env}}) return x";
-		List<ObjectNode> results = neo4j.execCypher(cypher,"appIds",appId,"env",env).asVertexDataList("x");	
+		List<JsonNode> results = neo4j.execCypher(cypher,"appIds",appId,"env",env).toList().toBlocking().first();
 		beautifyTimestamps(results);
-		return new ResponseEntity<List<ObjectNode>>(results, HttpStatus.OK);
+		return new ResponseEntity<List<JsonNode>>(results, HttpStatus.OK);
 	}
 	
-	protected void beautifyTimestamps(List<ObjectNode> list) {
+	protected void beautifyTimestamps(List<JsonNode> list) {
 		PrettyTime pt = new PrettyTime();
-		for (ObjectNode n : list) {
+		for (JsonNode n : list) {
 			long val = n.path("lastContactTs").asLong(0);
 			Date d = new Date(val);
-			n.put("lastContactPrettyTs", pt.format(d));
+			ObjectNode on = (ObjectNode) n;
+			on.put("lastContactPrettyTs", pt.format(d));
 		}
 	}
 

@@ -14,13 +14,14 @@
 package io.macgyver.plugin.cmdb;
 
 import io.macgyver.core.MacGyverException;
-import io.macgyver.neo4j.rest.Neo4jRestClient;
-import io.macgyver.neo4j.rest.Result;
+
+import io.macgyver.neorx.rest.NeoRxClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
@@ -29,7 +30,7 @@ public class AppInstanceManager {
 	Logger logger = LoggerFactory.getLogger(AppInstanceManager.class);
 
 	@Autowired
-	Neo4jRestClient neo4j;
+	NeoRxClient neo4j;
 
 	
 
@@ -41,23 +42,22 @@ public class AppInstanceManager {
 
 		String cypher = "match (ai:AppInstance) where ai.host={host} and ai.groupId={groupId} and ai.appId={appId} return ai";
 
-		Result r = neo4j.execCypher(cypher, "host", host, "groupId", groupId,
-				"appId", appId);
+		JsonNode val = neo4j.execCypher(cypher, "host", host, "groupId", groupId,
+				"appId", appId).toBlocking().firstOrDefault(null);
 
-		if (r.next()) {
+		if (val!=null) {
 
-			ObjectNode n = r.getObjectNode("ai");
-			return n;
+			return (ObjectNode) val;
+			
 		} else {
 
 			String createCypher = "CREATE (ai:AppInstance {host:{host}, appId:{appId}, groupId:{groupId}}) RETURN ai";
 
-			r = neo4j.execCypher(createCypher, "host", host, "appId", appId,
-					"groupId", groupId);
+			val = neo4j.execCypher(createCypher, "host", host, "appId", appId,
+					"groupId", groupId).toBlocking().firstOrDefault(null);
 
-			if (r.next()) {
-				ObjectNode n = r.getObjectNode("ai");
-				return n;
+			if (val!=null) {
+				return (ObjectNode) val;
 			}
 
 		}
@@ -81,7 +81,7 @@ public class AppInstanceManager {
 		if (!Strings.isNullOrEmpty(host) && !Strings.isNullOrEmpty(app)) {
 			ObjectNode n = getOrCreateAppInstance(host, group, app);
 		
-			ObjectNode set = (ObjectNode) n.get("data");
+			ObjectNode set = n;
 			set.put("lastContactTs", System.currentTimeMillis());
 			set.setAll(data);
 
@@ -92,10 +92,9 @@ public class AppInstanceManager {
 			p.put("props", set);
 			String cypher = "match (ai:AppInstance) where ai.host={host} and ai.appId={appId} set ai={props} return ai";
 
-			Result r = neo4j.execCypher(cypher, p);
-			if (r.next()) {
-				ObjectNode rv = (ObjectNode) r.getObjectNode("ai").path("data");
-				return rv;
+			JsonNode r = neo4j.execCypher(cypher, p).toBlocking().firstOrDefault(null);
+			if (r!=null) {
+				return (ObjectNode) r;
 			}
 		}
 		return new ObjectMapper().createObjectNode();

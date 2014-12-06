@@ -23,11 +23,13 @@ import io.macgyver.core.web.vaadin.IndexedJsonContainer;
 import io.macgyver.core.web.vaadin.VaadinUtil;
 import io.macgyver.core.web.vaadin.ViewConfig;
 import io.macgyver.core.web.vaadin.ViewDecorators;
-import io.macgyver.neo4j.rest.Neo4jRestClient;
+
+import io.macgyver.neorx.rest.NeoRxClient;
 
 import org.ocpsoft.prettytime.PrettyTime;
 import org.springframework.context.ApplicationContext;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.vaadin.data.Container;
@@ -148,7 +150,7 @@ public class AppInstancesView extends VerticalLayout implements View {
 	 * @param row
 	 * @return
 	 */
-	boolean filter(String search, ObjectNode row) {
+	boolean filter(String search, JsonNode row) {
 		if (Strings.isNullOrEmpty(search) || row==null) {
 			return false;
 		}
@@ -164,15 +166,14 @@ public class AppInstancesView extends VerticalLayout implements View {
 
 	public void refresh() {
 
-		Neo4jRestClient neo4j = Kernel.getInstance().getApplicationContext()
-				.getBean(Neo4jRestClient.class);
+		NeoRxClient neo4j = Kernel.getInstance().getApplicationContext()
+				.getBean(NeoRxClient.class);
 
 		table.removeAllItems();
 
 		String cypher = "match (ai:AppInstance)   return ai";
 
-		List<ObjectNode> results = neo4j.execCypher(cypher).asVertexDataList(
-				"ai");
+		List<JsonNode> results = neo4j.execCypher(cypher).toList().toBlocking().first();
 
 		ApplicationContext ctx = Kernel.getInstance().getApplicationContext();
 
@@ -181,29 +182,21 @@ public class AppInstancesView extends VerticalLayout implements View {
 
 		String searchValue = searchTextField.getValue();
 		
-		for (ObjectNode node : results) {
-
+		for (JsonNode node : results) {
+			ObjectNode objectNode = (ObjectNode) node;
 			if (filter(searchValue, node)) {
 			
 				long lastContact = node.path("lastContactTs").asLong(0);
 				if (lastContact>0) {
 					PrettyTime pt = new PrettyTime();
 					String pretty = pt.format(new Date(lastContact));
-					node.put("lastContactPrettyTs", pretty);
+					
+					objectNode.put("lastContactPrettyTs", pretty);
 				}
 				
-				container.addJsonObject(node);
+				container.addJsonObject(objectNode);
 			
-				/*Object newItemId = table.addItem();
-				Item row1 = table.getItem(newItemId);
-
-				for (Object name : containerProps) {
-
-					String val = node.path(name.toString()).asText();
-
-					row1.getItemProperty(name).setValue(val);
-
-				}*/
+			
 			}
 
 		}

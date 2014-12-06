@@ -36,7 +36,7 @@ import io.macgyver.core.resource.provider.filesystem.FileSystemResourceProvider;
 import io.macgyver.core.script.BindingSupplierManager;
 import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.service.ServiceRegistry;
-import io.macgyver.neo4j.rest.Neo4jRestClient;
+import io.macgyver.neorx.rest.NeoRxClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,11 +51,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import com.google.common.base.Preconditions;
@@ -195,7 +193,7 @@ public class CoreConfig implements EnvironmentAware {
 	}
 
 	@Bean(name = "macGraphClient")
-	public Neo4jRestClient macGraphClient() throws MalformedURLException {
+	public NeoRxClient macGraphClient() throws MalformedURLException {
 		Preconditions.checkNotNull(env);
 		String url = env.getProperty("neo4j.url");
 
@@ -203,7 +201,7 @@ public class CoreConfig implements EnvironmentAware {
 			url = "http://localhost:7474";
 		}
 		logger.info("neo4j.uri: {}", url);
-		Neo4jRestClient client = new Neo4jRestClient(url);
+		NeoRxClient client = new NeoRxClient(url);
 
 		client.setUsername(env.getProperty("neo4j.username"));
 		client.setPassword(env.getProperty("neo4j.password"));
