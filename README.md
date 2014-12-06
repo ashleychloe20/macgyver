@@ -12,6 +12,9 @@ To Build and Test:
 
 ## Changes
 
+### 0.80.2
+* Fix broken AppInstance checkIn
+
 ### 0.80.1
 * NeoRx related fixes
 
