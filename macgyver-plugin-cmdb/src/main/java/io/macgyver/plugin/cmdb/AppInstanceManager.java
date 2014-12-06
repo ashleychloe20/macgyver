@@ -81,7 +81,7 @@ public class AppInstanceManager {
 		if (!Strings.isNullOrEmpty(host) && !Strings.isNullOrEmpty(app)) {
 			ObjectNode n = getOrCreateAppInstance(host, group, app);
 		
-			ObjectNode set = (ObjectNode) n.get("data");
+			ObjectNode set = n;
 			set.put("lastContactTs", System.currentTimeMillis());
 			set.setAll(data);
 
@@ -94,8 +94,7 @@ public class AppInstanceManager {
 
 			JsonNode r = neo4j.execCypher(cypher, p).toBlocking().firstOrDefault(null);
 			if (r!=null) {
-				ObjectNode rv = (ObjectNode) r.path("data");
-				return rv;
+				return (ObjectNode) r;
 			}
 		}
 		return new ObjectMapper().createObjectNode();
