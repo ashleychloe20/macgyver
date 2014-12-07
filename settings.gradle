@@ -1,8 +1,6 @@
 include   'macgyver-core',
             'macgyver-jruby',
             'macgyver-jython',
-			'macgyver-xson',
-            'macgyver-neo4j',
             'macgyver-plugin-metrics',
 			'macgyver-plugin-cmdb',
             'macgyver-plugin-ldap',

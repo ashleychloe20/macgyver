@@ -14,26 +14,20 @@
 package io.macgyver.core.web.vaadin;
 
 import io.macgyver.core.Kernel;
-import io.macgyver.core.MacGyverConfigurationException;
 import io.macgyver.core.PluginManager;
 import io.macgyver.core.auth.AuthUtil;
 import io.macgyver.core.auth.MacGyverRole;
-import io.macgyver.core.web.vaadin.views.HomeView;
-import io.macgyver.xson.Xson;
+import io.macgyver.core.util.JsonNodes;
 
-import java.awt.Menu;
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map.Entry;
 
-import org.crsh.shell.impl.command.spi.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -47,12 +41,10 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -63,7 +55,6 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
@@ -399,7 +390,8 @@ public class MacGyverUI extends UI {
 				subItem.put("display", subMenu);
 				subItem.put("viewName", viewName);
 				subItems.add(subItem);
-				Xson.sortArray(subItems, "$.display");
+				JsonNodes.sort(subItems,JsonNodes.textComparator("display"));
+				// Xson.sortArray(subItems, "$.display");
 			}
 		}
 

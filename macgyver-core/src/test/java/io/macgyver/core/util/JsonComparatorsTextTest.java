@@ -1,0 +1,142 @@
+package io.macgyver.core.util;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Comparator;
+
+import org.assertj.core.api.Assertions;
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class JsonComparatorsTextTest {
+	ObjectMapper mapper = new ObjectMapper();
+
+	@Test
+	public void testStringCompare() {
+		Comparator<JsonNode> c = JsonNodes.textComparator("test", false);
+
+		assertThat("".compareTo("abc")).isLessThan(0);
+		assertThat("a".compareTo("z")).isLessThan(0); // sanity check
+
+		assertThat(
+				c.compare(mapper.createObjectNode().put("test", "a"), mapper
+						.createObjectNode().put("test", "z"))).isLessThan(0);
+		assertThat(
+				c.compare(mapper.createObjectNode().put("test", "z"), mapper
+						.createObjectNode().put("test", "a"))).isGreaterThan(0);
+		assertThat(
+				c.compare(mapper.createObjectNode().put("test", "a"), mapper
+						.createObjectNode().put("test", "a"))).isEqualTo(0);
+		assertThat(
+				c.compare(mapper.createObjectNode().put("test", "A"), mapper
+						.createObjectNode().put("test", "z"))).isLessThan(0);
+
+		assertThat(
+				c.compare(mapper.createObjectNode().put("test", ""), mapper
+						.createObjectNode().put("test", "z"))).isLessThan(0);
+		assertThat(
+				c.compare(mapper.createObjectNode(), mapper.createObjectNode()
+						.put("test", "z"))).isLessThan(0);
+	}
+
+
+
+	@Test
+	public void testNumeric() {
+		Comparator<JsonNode> c = JsonNodes.textComparator("test");
+
+		assertThat(c.compare(mapper.createObjectNode().put("test", 1), mapper
+				.createObjectNode().put("test", 1))).isEqualTo(0);
+		assertThat(c.compare(mapper.createObjectNode().put("test", 1),
+				mapper.createObjectNode().put("test", 2))).isLessThan(0);
+		assertThat(c.compare(mapper.createObjectNode().put("test", 2),
+				mapper.createObjectNode().put("test", 1))).isGreaterThan(0);
+
+		assertThat(c.compare(mapper.createObjectNode().put("test", 111),
+				mapper.createObjectNode().put("test", 19))).isLessThan(0);
+
+	}
+
+	@Test
+	public void testMissingNumeric() {
+		Comparator<JsonNode> c = JsonNodes.textComparator("test");
+
+		assertThat(c.compare(mapper.createObjectNode(), mapper
+				.createObjectNode().put("test", 19))).isLessThan(0);
+
+		assertThat(c.compare(mapper.createObjectNode().put("test", 19),
+				mapper.createObjectNode())).isGreaterThan(0);
+	}
+
+	@Test
+	public void testNumericAndString() {
+		Comparator<JsonNode> c = JsonNodes.textComparator("test");
+
+		assertThat(c.compare(mapper.createObjectNode().put("test", "111"),
+				mapper.createObjectNode().put("test", "99"))).isLessThan(0);
+		assertThat(c.compare(mapper.createObjectNode().put("test", 111),
+				mapper.createObjectNode().put("test", 99))).isLessThan(0);
+
+		assertThat(c.compare(mapper.createObjectNode().put("test", 111),
+				mapper.createObjectNode().put("test", "99"))).isLessThan(0);
+
+		assertThat(c.compare(mapper.createObjectNode().put("test", "99"),
+				mapper.createObjectNode().put("test", 111))).isGreaterThan(0);
+
+	}
+
+	@Test
+	public void testCaseSensitive() {
+		Comparator<JsonNode> c = JsonNodes.textComparator("test", true);
+
+		assertThat("a".compareTo("A")).isPositive();
+		assertThat(c.compare(mapper.createObjectNode().put("test", "a"),
+				mapper.createObjectNode().put("test", "A"))).isPositive();
+
+		assertThat("A".compareTo("a")).isNegative();
+		assertThat(c.compare(mapper.createObjectNode().put("test", "A"),
+				mapper.createObjectNode().put("test", "a"))).isNegative();
+
+		assertThat("howdy".compareTo("HELLO")).isPositive();
+		assertThat(c.compare(
+				mapper.createObjectNode().put("test", "howdy"), mapper
+						.createObjectNode().put("test", "HELLO"))).isPositive();
+	}
+
+	@Test
+	public void testCaseInsensitive() {
+		Comparator<JsonNode> c = JsonNodes.textComparator("test", false);
+
+		assertEquals(0, "a".compareToIgnoreCase("A"));
+		assertEquals(0, c.compare(mapper.createObjectNode().put("test", "a"),
+				mapper.createObjectNode().put("test", "A")));
+
+		assertEquals(0, "A".compareToIgnoreCase("a"));
+		assertEquals(0, c.compare(mapper.createObjectNode().put("test", "A"),
+				mapper.createObjectNode().put("test", "a")));
+
+		assertEquals(0, "hELLo".compareToIgnoreCase("hello"));
+		assertEquals(0, c.compare(mapper.createObjectNode()
+				.put("test", "hELLo"),
+				mapper.createObjectNode().put("test", "hello")));
+
+		assertThat("howdy".compareToIgnoreCase("HELLO")).isPositive();
+		assertThat(c.compare(
+				mapper.createObjectNode().put("test", "howdy"), mapper
+						.createObjectNode().put("test", "HELLO"))).isPositive();
+	}
+
+	@Test
+	public void testNullEmptyString() {
+		Comparator<JsonNode> c = JsonNodes.textComparator("test");
+
+		assertThat(c.compare(mapper.createObjectNode().put("test", "abc"),
+				mapper.createObjectNode().put("test", ""))).isPositive();
+
+	}
+}

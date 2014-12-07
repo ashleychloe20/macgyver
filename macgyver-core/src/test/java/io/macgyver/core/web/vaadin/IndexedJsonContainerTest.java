@@ -31,8 +31,5 @@ public class IndexedJsonContainerTest {
 		Assert.assertEquals("Jerry",c.extractPropertyValue(n, "name"));
 		
 		
-		c.addJsonPathPropertyExtractor("firstName", "$.name");
-		
-		Assert.assertEquals("Jerry",c.extractPropertyValue(n, "firstName"));
 	}
 }

@@ -13,8 +13,6 @@
  */
 package io.macgyver.core.web.vaadin;
 
-import io.macgyver.xson.Xson;
-
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -37,7 +35,7 @@ import com.vaadin.data.util.IndexedContainer;
  * @author Rob Schoening
  *
  */
-public class IndexedJsonContainer extends IndexedContainer  {
+public class IndexedJsonContainer extends IndexedContainer {
 
 	protected static ObjectMapper mapper = new ObjectMapper();
 
@@ -47,7 +45,8 @@ public class IndexedJsonContainer extends IndexedContainer  {
 
 	protected Map<Object, JsonNode> rawDataMap = Maps.newConcurrentMap();
 
-	public final AddItemAction ADD_ITEM_ACTION=new AddItemAction();
+	public final AddItemAction ADD_ITEM_ACTION = new AddItemAction();
+
 	/**
 	 * Maps a Json object into this container.
 	 * 
@@ -66,8 +65,8 @@ public class IndexedJsonContainer extends IndexedContainer  {
 					getItem(itemId).getItemProperty(pid).setValue(val);
 				}
 			} catch (RuntimeException e) {
-				logger.warn("problem mapping json to container item: "+pid, e);
-				
+				logger.warn("problem mapping json to container item: " + pid, e);
+
 			}
 
 		}
@@ -97,7 +96,6 @@ public class IndexedJsonContainer extends IndexedContainer  {
 		return super.removeAllItems();
 	}
 
-
 	/**
 	 * Adds each element in the given array to this container.
 	 * 
@@ -119,27 +117,19 @@ public class IndexedJsonContainer extends IndexedContainer  {
 		}
 	}
 
-	public void addJsonPathPropertyExtractor(String propertyId, String jsonPath) {
-		Preconditions.checkNotNull(propertyId);
-		Preconditions.checkNotNull(jsonPath);
-		xsonMap.put(propertyId, jsonPath);
-	}
-
 	public String extractPropertyValue(JsonNode data, String propertyId) {
 		Preconditions.checkNotNull(data);
 		Preconditions.checkNotNull(propertyId);
 
-		String xson = xsonMap.get(propertyId);
-		if (xson == null) {
-			return data.path(propertyId).asText();
-		} else {
-			return Xson.eval(data, xson);
-		}
+		return data.path(propertyId).asText();
+
 	}
-	
+
 	/**
-	 * We are not implementing Obervable pattern in the classic sense.  This is really 
-	 * just a callback for adding Observable<JsonNode> into the contianer.
+	 * We are not implementing Obervable pattern in the classic sense. This is
+	 * really just a callback for adding Observable<JsonNode> into the
+	 * contianer.
+	 * 
 	 * @author rschoening
 	 *
 	 */
@@ -147,9 +137,9 @@ public class IndexedJsonContainer extends IndexedContainer  {
 
 		@Override
 		public void call(JsonNode t1) {
-			if (t1!=null) {
+			if (t1 != null) {
 				addJsonObject(t1);
-			}	
+			}
 		}
 	}
 
