@@ -4,10 +4,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.assertj.core.util.Preconditions;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 public class JsonNodes {

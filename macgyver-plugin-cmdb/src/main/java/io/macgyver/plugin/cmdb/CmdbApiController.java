@@ -25,7 +25,6 @@ import javax.ws.rs.core.MediaType;
 
 import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.neorx.rest.NeoRxClient;
-import io.macgyver.xson.Xson;
 
 import org.ocpsoft.prettytime.PrettyTime;
 import org.slf4j.Logger;
