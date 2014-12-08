@@ -112,9 +112,9 @@ subprojects {
     }
 	uploadArchives {
 	    repositories {
-			name = 'macgyver-bintray'
+			
 	        mavenDeployer {
-	            
+	            name = 'macgyver-bintray'
                 if (!project.hasProperty('bintrayUser')) {
                     project.ext['bintrayUser']=""
                 }
