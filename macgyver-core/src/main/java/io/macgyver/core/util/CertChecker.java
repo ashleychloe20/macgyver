@@ -35,15 +35,17 @@ import com.squareup.okhttp.Response;
 
 public class CertChecker {
 
-	public static final String DESCRIPTION="description";
-	int certExpirationWarningDays=30;
-	
+	public static final String DESCRIPTION = "description";
+	int certExpirationWarningDays = 30;
+
 	public int getCertExpirationWarningDays() {
 		return this.certExpirationWarningDays;
 	}
+
 	public void setCertExpirationWarningDays(int d) {
 		this.certExpirationWarningDays = d;
 	}
+
 	public java.security.cert.X509Certificate convert(
 			javax.security.cert.X509Certificate cert) {
 		try {
@@ -143,48 +145,86 @@ public class CertChecker {
 		return problems;
 
 	}
-	public ObjectNode checkCertificates(String url) throws GeneralSecurityException,IOException{
-		return checkCertificates(url,null);
+
+	public ObjectNode checkCertificates(String url)
+			throws GeneralSecurityException, IOException {
+		return checkCertificates(url, null);
 	}
-	public ObjectNode checkCertificates(String url, String alternateHost)
+
+	public ObjectNode checkCertificates(String url, String alternateHost) throws IOException, GeneralSecurityException{
+		ObjectNode n = new ObjectMapper().createObjectNode();
+		return checkCertificates(n,url,alternateHost);
+	}
+	protected ObjectNode checkCertificates(ObjectNode n, String url, String alternateHost)
 			throws IOException, GeneralSecurityException {
-		List<X509Certificate> certs = fetchCertificates(url);
+		ObjectMapper mapper = new ObjectMapper();
 
-		URL xurl = new URL(url);
-		String host = xurl.getHost();
+		
+		ArrayNode problems = mapper.createArrayNode();
+		n.set("problems", problems);
+		n.set("certs", mapper.createArrayNode());
+		try {
+			URL xurl = new URL(url);
+			String host = xurl.getHost();
+			n.put("host", alternateHost != null ? alternateHost : host);
+			n.put("url", url);
+			List<X509Certificate> certs = fetchCertificates(url);
 
-		ObjectNode n = checkCertificates(certs, alternateHost != null ? alternateHost
-				: host);
-		n.put("url", url);
+			
+			
+			n = checkCertificates(n,certs, alternateHost != null ? alternateHost
+					: host);
+			
 
-		n.put("host", alternateHost != null ? alternateHost : host);
-		List<ObjectNode> chainErrors = checkCertChain(url);
-		ArrayNode errors = (ArrayNode) n.path("problems");
-		for (ObjectNode x : chainErrors) {
-			errors.add(x);
+			try {
+
+				List<ObjectNode> chainErrors = checkCertChain(url);
+				ArrayNode errors = (ArrayNode) n.path("problems");
+				for (ObjectNode x : chainErrors) {
+					errors.add(x);
+				}
+			} catch (Exception e) {
+				((ArrayNode) n.path("problems")).add(new ObjectMapper()
+						.createObjectNode().put("type", "error")
+						.put(DESCRIPTION, e.toString()));
+			}
+		} catch (Exception e) {
+			problems.add(mapper.createObjectNode().put("type", "error")
+					.put("description", e.toString()));
 		}
-
 		return n;
+
 	}
 
 	public ObjectNode checkCertificates(List<X509Certificate> certs) {
-		return checkCertificates(certs,null);
+		return checkCertificates(certs, null);
 	}
+
 	public ObjectNode checkCertificates(List<X509Certificate> certs,
 			String alternateHost) {
-		int fewestDaysToExpiration=Integer.MAX_VALUE;
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode results = mapper.createObjectNode();
 		ArrayNode certArray = mapper.createArrayNode();
 		ArrayNode problems = mapper.createArrayNode();
 		results.set("problems", problems);
+		results.set("certs", certArray);
+		return checkCertificates(results,certs,alternateHost);
+	}
+	protected ObjectNode checkCertificates(ObjectNode nx, List<X509Certificate> certs,
+			String alternateHost) {
+		int fewestDaysToExpiration = Integer.MAX_VALUE;
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayNode problems = (ArrayNode) nx.get("problems");
+		ArrayNode certArray = (ArrayNode) nx.get("certs");
+		
+		
 		try {
-			results.set("certs", certArray);
+			
 			for (X509Certificate cert : certs) {
 				ObjectNode n = mapper.createObjectNode();
 				String subjectDN = cert.getSubjectDN().getName();
 				n.put("subjectDN", subjectDN);
-				
+
 				n.put("subjectCN", extractCN(cert));
 				n.put("version", cert.getVersion());
 				n.put("issuerDN", cert.getIssuerDN().getName());
@@ -198,30 +238,35 @@ public class CertChecker {
 				n.put("notValidBeforeTimestamp", cert.getNotBefore().getTime());
 				n.put("serial", cert.getSerialNumber().toString());
 				n.put("isDateValid", true);
-				n.put("version",cert.getVersion());
+				n.put("version", cert.getVersion());
 				n.put("type", cert.getType());
-			
 				
 				if (System.currentTimeMillis() < cert.getNotBefore().getTime()) {
-					problems.add(mapper.createObjectNode().put(DESCRIPTION, "certificate not yet valid").put("type", "error"));
-					
+					problems.add(mapper.createObjectNode()
+							.put(DESCRIPTION, "certificate not yet valid")
+							.put("type", "error"));
+
 					n.put("isDateValid", false);
 				}
 				if (System.currentTimeMillis() > cert.getNotAfter().getTime()) {
-					
-					problems.add(mapper.createObjectNode().put(DESCRIPTION, "certificate expired").put("type", "error"));
-				
+
+					problems.add(mapper.createObjectNode()
+							.put(DESCRIPTION, "certificate expired")
+							.put("type", "error"));
+
 					n.put("isDateValid", false);
 				}
-				int daysToExpiration = Math.max(0,Days.daysBetween(
-						new DateTime(System.currentTimeMillis()),
-						new DateTime(cert.getNotAfter())).getDays());
-				n.put("daysToExpiration",daysToExpiration
-						);
-				fewestDaysToExpiration = Math.min(fewestDaysToExpiration, daysToExpiration);
-				
+				int daysToExpiration = Math.max(
+						0,
+						Days.daysBetween(
+								new DateTime(System.currentTimeMillis()),
+								new DateTime(cert.getNotAfter())).getDays());
+				n.put("daysToExpiration", daysToExpiration);
+				fewestDaysToExpiration = Math.min(fewestDaysToExpiration,
+						daysToExpiration);
+
 				certArray.add(n);
-				
+
 				Collection<List<?>> altNames = cert
 						.getSubjectAlternativeNames();
 				ArrayNode altNameArray = mapper.createArrayNode();
@@ -241,22 +286,29 @@ public class CertChecker {
 				}
 
 			}
+			
 		} catch (Exception e) {
-			problems.add(mapper.createObjectNode().put("type","error").put(DESCRIPTION,e.toString()));
+			problems.add(mapper.createObjectNode().put("type", "error")
+					.put(DESCRIPTION, e.toString()));
 		}
 
 		if (!doesCertificateHostnameMatch(certs, alternateHost)) {
-			problems.add(mapper.createObjectNode().
-			put(DESCRIPTION, "host name does not match certificate").put("type", "error"));
-			
+			problems.add(mapper.createObjectNode()
+					.put(DESCRIPTION, "host name does not match certificate")
+					.put("type", "error"));
+
 		}
-		if (fewestDaysToExpiration<=getCertExpirationWarningDays()) {
-			problems.add(mapper.createObjectNode().put(DESCRIPTION,"certificate will expire in "+fewestDaysToExpiration+" days").put("type", "warning"));
+		if (fewestDaysToExpiration <= getCertExpirationWarningDays()) {
+			problems.add(mapper
+					.createObjectNode()
+					.put(DESCRIPTION,
+							"certificate will expire in "
+									+ fewestDaysToExpiration + " days")
+					.put("type", "warning"));
 		}
-		
-		
-		results.put("daysToExpiration", fewestDaysToExpiration);
-		return results;
+
+		nx.put("daysToExpiration", fewestDaysToExpiration);
+		return nx;
 	}
 
 	public List<X509Certificate> fetchCertificates(String httpUrl)
