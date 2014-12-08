@@ -96,8 +96,14 @@ public class CertChecker {
 			if (Strings.isNullOrEmpty(cn)) {
 				// fall through
 			} else {
-				if (hostname != null && hostname.equalsIgnoreCase(cn)) {
-					return true;
+				if (hostname != null) {
+					if (hostname.equalsIgnoreCase(cn)) {
+						return true;
+					}
+					if (cn.startsWith("*")) {
+						return hostname.toLowerCase().endsWith(
+								cn.substring(1).toLowerCase());
+					}
 				}
 
 			}
@@ -151,15 +157,16 @@ public class CertChecker {
 		return checkCertificates(url, null);
 	}
 
-	public ObjectNode checkCertificates(String url, String alternateHost) throws IOException, GeneralSecurityException{
-		ObjectNode n = new ObjectMapper().createObjectNode();
-		return checkCertificates(n,url,alternateHost);
-	}
-	protected ObjectNode checkCertificates(ObjectNode n, String url, String alternateHost)
+	public ObjectNode checkCertificates(String url, String alternateHost)
 			throws IOException, GeneralSecurityException {
+		ObjectNode n = new ObjectMapper().createObjectNode();
+		return checkCertificates(n, url, alternateHost);
+	}
+
+	protected ObjectNode checkCertificates(ObjectNode n, String url,
+			String alternateHost) throws IOException, GeneralSecurityException {
 		ObjectMapper mapper = new ObjectMapper();
 
-		
 		ArrayNode problems = mapper.createArrayNode();
 		n.set("problems", problems);
 		n.set("certs", mapper.createArrayNode());
@@ -170,11 +177,8 @@ public class CertChecker {
 			n.put("url", url);
 			List<X509Certificate> certs = fetchCertificates(url);
 
-			
-			
-			n = checkCertificates(n,certs, alternateHost != null ? alternateHost
-					: host);
-			
+			n = checkCertificates(n, certs,
+					alternateHost != null ? alternateHost : host);
 
 			try {
 
@@ -208,18 +212,18 @@ public class CertChecker {
 		ArrayNode problems = mapper.createArrayNode();
 		results.set("problems", problems);
 		results.set("certs", certArray);
-		return checkCertificates(results,certs,alternateHost);
+		return checkCertificates(results, certs, alternateHost);
 	}
-	protected ObjectNode checkCertificates(ObjectNode nx, List<X509Certificate> certs,
-			String alternateHost) {
+
+	protected ObjectNode checkCertificates(ObjectNode nx,
+			List<X509Certificate> certs, String alternateHost) {
 		int fewestDaysToExpiration = Integer.MAX_VALUE;
 		ObjectMapper mapper = new ObjectMapper();
 		ArrayNode problems = (ArrayNode) nx.get("problems");
 		ArrayNode certArray = (ArrayNode) nx.get("certs");
-		
-		
+
 		try {
-			
+
 			for (X509Certificate cert : certs) {
 				ObjectNode n = mapper.createObjectNode();
 				String subjectDN = cert.getSubjectDN().getName();
@@ -240,7 +244,7 @@ public class CertChecker {
 				n.put("isDateValid", true);
 				n.put("version", cert.getVersion());
 				n.put("type", cert.getType());
-				
+
 				if (System.currentTimeMillis() < cert.getNotBefore().getTime()) {
 					problems.add(mapper.createObjectNode()
 							.put(DESCRIPTION, "certificate not yet valid")
@@ -286,7 +290,7 @@ public class CertChecker {
 				}
 
 			}
-			
+
 		} catch (Exception e) {
 			problems.add(mapper.createObjectNode().put("type", "error")
 					.put(DESCRIPTION, e.toString()));
