@@ -201,10 +201,10 @@ public class CoreConfig implements EnvironmentAware {
 			url = "http://localhost:7474";
 		}
 		logger.info("neo4j.uri: {}", url);
-		NeoRxClient client = new NeoRxClient(url);
-
-		client.setUsername(env.getProperty("neo4j.username"));
-		client.setPassword(env.getProperty("neo4j.password"));
+		
+		boolean validateCerts=false;
+		
+		NeoRxClient client = new NeoRxClient(url,env.getProperty("neo4j.username"),env.getProperty("neo4j.password"),validateCerts);
 
 		return client;
 
