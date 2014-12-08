@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
+import com.google.common.io.BaseEncoding;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -183,21 +184,24 @@ public class CertChecker {
 				ObjectNode n = mapper.createObjectNode();
 				String subjectDN = cert.getSubjectDN().getName();
 				n.put("subjectDN", subjectDN);
-
+				
 				n.put("subjectCN", extractCN(cert));
 				n.put("version", cert.getVersion());
 				n.put("issuerDN", cert.getIssuerDN().getName());
-				n.put("notAfterDate",
+				n.put("notValidAfter",
 						ISODateTimeFormat.dateTime().print(
 								cert.getNotAfter().getTime()));
-				n.put("notAfterTimestamp", cert.getNotAfter().getTime());
-				n.put("notBeforeDate",
+				n.put("notValidAfterTimestamp", cert.getNotAfter().getTime());
+				n.put("notValidBefore",
 						ISODateTimeFormat.dateTime().print(
 								cert.getNotBefore().getTime()));
-				n.put("notBeforeTimestamp", cert.getNotBefore().getTime());
+				n.put("notValidBeforeTimestamp", cert.getNotBefore().getTime());
 				n.put("serial", cert.getSerialNumber().toString());
 				n.put("isDateValid", true);
-
+				n.put("version",cert.getVersion());
+				n.put("type", cert.getType());
+			
+				
 				if (System.currentTimeMillis() < cert.getNotBefore().getTime()) {
 					problems.add(mapper.createObjectNode().put(DESCRIPTION, "certificate not yet valid").put("type", "error"));
 					
@@ -249,6 +253,9 @@ public class CertChecker {
 		if (fewestDaysToExpiration<=getCertExpirationWarningDays()) {
 			problems.add(mapper.createObjectNode().put(DESCRIPTION,"certificate will expire in "+fewestDaysToExpiration+" days").put("type", "warning"));
 		}
+		
+		
+		results.put("daysToExpiration", fewestDaysToExpiration);
 		return results;
 	}
 

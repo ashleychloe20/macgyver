@@ -10,6 +10,9 @@ To Build and Test:
 
 ## Changes
 
+### 0.81.0
+* Add CertChecker
+
 ### 0.80.2
 * Fix broken AppInstance checkIn
 
