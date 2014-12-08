@@ -42,7 +42,8 @@ dependencies {
     compile "org.glassfish:javax.json:1.0.4"
     compile "org.codehaus.groovy:groovy-all:${GROOVY_VERSION}"
     
-    
+    compile "org.bouncycastle:bcprov-jdk15on:${BOUNCYCASTLE_VERSION}"
+    compile "org.bouncycastle:bcpkix-jdk15on:${BOUNCYCASTLE_VERSION}"
     compile "org.jboss.resteasy:jaxrs-api:${RESTEASY_VERSION}"
     compile "org.jboss.resteasy:resteasy-client:${RESTEASY_VERSION}"
     compile "org.jboss.resteasy:resteasy-jackson2-provider:${RESTEASY_VERSION}"
