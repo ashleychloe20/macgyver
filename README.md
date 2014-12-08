@@ -10,6 +10,9 @@ To Build and Test:
 
 ## Changes
 
+### 0.81.1
+* CertChecker can match hostnames on wildcard cert
+
 ### 0.81.0
 * Add CertChecker
 
