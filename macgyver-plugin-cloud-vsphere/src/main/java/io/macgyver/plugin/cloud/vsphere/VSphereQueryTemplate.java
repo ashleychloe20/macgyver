@@ -13,20 +13,24 @@
  */
 package io.macgyver.plugin.cloud.vsphere;
 
+import static io.macgyver.plugin.cloud.vsphere.ManagedObjectTypes.VIRTUAL_MACHINE;
+
 import java.rmi.RemoteException;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import com.vmware.vim25.mo.HostSystem;
 import com.vmware.vim25.mo.InventoryNavigator;
 import com.vmware.vim25.mo.ManagedEntity;
 import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
 
-public class VmQueryTemplate {
+public class VSphereQueryTemplate {
 
-	ServiceInstance serviceInstance;
 
-	public VmQueryTemplate(ServiceInstance serviceInstance) {
+	private ServiceInstance serviceInstance;
+
+	public VSphereQueryTemplate(ServiceInstance serviceInstance) {
 		this.serviceInstance = serviceInstance;
 	}
 
@@ -34,6 +38,28 @@ public class VmQueryTemplate {
 		return serviceInstance;
 	}
 
+	
+	public Iterable<HostSystem> findAllHostSystems() {
+		try {
+
+			InventoryNavigator nav = new InventoryNavigator(
+					getServiceInstance().getRootFolder());
+
+			ManagedEntity[] entitites = nav
+					.searchManagedEntities(ManagedObjectTypes.HOST_SYSTEM);
+			List<HostSystem> vmList = Lists.newArrayList();
+
+			for (ManagedEntity me : entitites) {
+				vmList.add((HostSystem) me);
+			}
+
+			return java.util.Collections.unmodifiableList(vmList);
+		} catch (RemoteException e) {
+			throw new VSphereExceptionWrapper(e);
+		}
+
+	}
+	
 	public Iterable<VirtualMachine> findAllVirtualMachines() {
 		try {
 
@@ -41,7 +67,7 @@ public class VmQueryTemplate {
 					getServiceInstance().getRootFolder());
 
 			ManagedEntity[] entitites = nav
-					.searchManagedEntities("VirtualMachine");
+					.searchManagedEntities(VIRTUAL_MACHINE);
 			List<VirtualMachine> vmList = Lists.newArrayList();
 
 			for (ManagedEntity me : entitites) {

@@ -11,35 +11,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyer.plugin.cloud.vsphere;
+package io.macgyver.plugin.cloud.vsphere.cmdb;
 
 import java.net.URL;
 
 import org.jclouds.ContextBuilder;
+import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.ComputeMetadata;
+import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.concurrent.config.ExecutorServiceModule;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
 
-import io.macgyver.plugin.cloud.vsphere.VmQueryTemplate;
+import io.macgyver.neorx.rest.NeoRxClient;
+import io.macgyver.plugin.cloud.vsphere.VSphereQueryTemplate;
+import io.macgyver.plugin.cloud.vsphere.cmdb.VSphereScanner;
 import io.macgyver.test.MacGyverIntegrationTest;
 import static com.google.common.util.concurrent.MoreExecutors.sameThreadExecutor;
-public class ScanTest extends MacGyverIntegrationTest {
+public class VSphereScannerIntegrationTest extends MacGyverIntegrationTest {
 
 	
 	String url;
 	String user;
 	String pass;
 	ServiceInstance serviceInstance;
+	
+	@Autowired
+	NeoRxClient neo4j;
 	
 	@Before
 	public void setupCreds() {
@@ -56,6 +64,7 @@ public class ScanTest extends MacGyverIntegrationTest {
 			serviceInstance = new ServiceInstance(new URL(url), user,pass,true);
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			Assume.assumeTrue(false);
 		}
 	}
@@ -63,10 +72,12 @@ public class ScanTest extends MacGyverIntegrationTest {
 	@Test
 	public void testX() throws Exception {
 		
-		VmQueryTemplate t = new VmQueryTemplate(serviceInstance);
-		for (VirtualMachine vm : t.findAllVirtualMachines()) {
-			logger.info("vm: {}",vm);
-		}
+		
+		VSphereScanner s = new VSphereScanner(serviceInstance,neo4j);
+		
+	//	s.scanAllVirtualMachines();
+		s.scanAllHosts();
+
 		
 		
 		

@@ -14,7 +14,7 @@
 package io.macgyver.jclouds.vsphere;
 
 import io.macgyver.plugin.cloud.vsphere.VSphereExceptionWrapper;
-import io.macgyver.plugin.cloud.vsphere.VmQueryTemplate;
+import io.macgyver.plugin.cloud.vsphere.VSphereQueryTemplate;
 
 import java.rmi.RemoteException;
 import java.util.List;
