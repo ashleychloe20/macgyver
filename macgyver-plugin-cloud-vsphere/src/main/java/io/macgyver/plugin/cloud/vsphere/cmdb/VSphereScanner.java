@@ -199,10 +199,10 @@ public class VSphereScanner {
 
 	public void scanHost(HostSystem host) {
 		try {
-
+			logger.info("scanning esxi host: {}",host.getName());
 			ObjectNode n = toObjectNode(host);
 
-			System.out.println(n);
+			
 			updateComputeHost(n);
 
 			long now = client.execCypher("return timestamp() as ts")

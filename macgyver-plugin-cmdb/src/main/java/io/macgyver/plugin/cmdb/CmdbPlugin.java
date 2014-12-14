@@ -16,6 +16,7 @@ package io.macgyver.plugin.cmdb;
 import io.macgyver.core.Plugin;
 import io.macgyver.core.web.vaadin.MacGyverUI;
 import io.macgyver.neorx.rest.NeoRxClient;
+import io.macgyver.plugin.cmdb.ui.ComputeInstancesView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class CmdbPlugin extends Plugin {
 
 		ui.registerView(AppInstancesView.class);
 		
-
+		ui.registerView(ComputeInstancesView.class);
 	}
 
 

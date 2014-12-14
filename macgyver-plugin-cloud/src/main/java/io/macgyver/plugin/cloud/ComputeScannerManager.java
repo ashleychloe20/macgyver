@@ -28,6 +28,7 @@ public class ComputeScannerManager {
 			boolean success = latch.compareAndSet(null, Thread.currentThread());
 			if (!success) {
 				logger.warn("only one thread allowed to execute");
+				return;
 			}
 			List<ComputeScanner> copy = Lists.newArrayList(computeScannerMap
 					.values());
@@ -40,7 +41,8 @@ public class ComputeScannerManager {
 				}
 			}
 		} finally {
-			latch.set(null);
+			latch.compareAndSet(Thread.currentThread(), null);
+		
 		}
 
 	}
