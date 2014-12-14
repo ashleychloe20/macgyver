@@ -1,6 +1,5 @@
 package io.macgyver.plugin.cloud.vsphere.cmdb;
 
-
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
@@ -46,12 +45,19 @@ public class VSphereScanner {
 	protected VSphereScanner() {
 		// for unit testing
 	}
+
 	public VSphereScanner(ServiceInstance si, NeoRxClient client) {
 
 		Preconditions.checkNotNull(si);
 		Preconditions.checkNotNull(client);
 		serviceInstance = si;
 		this.client = client;
+	}
+
+	protected JsonNode ensureController() {
+		String cypher = "merge (c:ComputeController {macId: {macId}}) set c.type='vcenter' return c";
+		return client.execCypher(cypher, "macId", getVCenterId()).toBlocking()
+				.first();
 	}
 
 	public synchronized String getVCenterId() {
@@ -86,13 +92,19 @@ public class VSphereScanner {
 				.format("merge (c:ComputeHost {macId:{macId}}) on match set %s ,c.lastUpdateTs=timestamp() ON CREATE SET %s, c.lastUpdateTs=timestamp() return c",
 						setClause, setClause);
 
-		client.execCypher(cypher, n);
+		JsonNode computeHost = client.execCypher(cypher, n).toBlocking()
+				.first();
 
+		JsonNode vcenter = ensureController();
+
+		String vcenterMacId = vcenter.get("macId").asText();
+		cypher = "match (c:ComputeController {macId:{vcenterMacId}}), (h:ComputeHost {macId:{hostMacId} }) MERGE (c)-[r:MANAGES]->(h) ON CREATE SET r.lastUpdateTs=timestamp() ON MATCH SET r.lastUpdateTs=timestamp() return r";
+		client.execCypher(cypher, "vcenterMacId", vcenterMacId, "hostMacId",
+				computeHost.get("macId").asText());
 	}
 
 	public void updateComputeInstance(ObjectNode n) {
 
-	
 		String setClause = createSetClause("c", n);
 
 		String cypher = "merge (c:ComputeInstance {macId:{macId}}) on match set "
@@ -100,8 +112,8 @@ public class VSphereScanner {
 				+ ",c.lastUpdateTs=timestamp() ON CREATE SET "
 				+ setClause + ", c.lastUpdateTs=timestamp() return c";
 
-		JsonNode res = client.execCypher(cypher, n).toBlocking().first();
-		System.out.println(res);
+		client.execCypher(cypher, n).toBlocking().first();
+
 	}
 
 	String getMacUuid(VirtualMachine vm) {
@@ -109,10 +121,13 @@ public class VSphereScanner {
 	}
 
 	public String computeMacId(ManagedObjectReference mor) {
-		Preconditions.checkNotNull(mor,"ManagedObjectReference cannot be null");
-		
-		Preconditions.checkArgument(! ManagedObjectTypes.VIRTUAL_MACHINE.equals(mor.getType()), "cannot call computeMacId() with mor.type=VirtualMachine");
-	
+		Preconditions
+				.checkNotNull(mor, "ManagedObjectReference cannot be null");
+
+		Preconditions.checkArgument(
+				!ManagedObjectTypes.VIRTUAL_MACHINE.equals(mor.getType()),
+				"cannot call computeMacId() with mor.type=VirtualMachine");
+
 		return Hashing
 				.sha1()
 				.hashString(getVCenterId() + mor.getType() + mor.getVal(),
@@ -127,7 +142,7 @@ public class VSphereScanner {
 			// http://www.virtuallyghetto.com/2011/11/vsphere-moref-managed-object-reference.html
 
 			ServerConnection sc = vm.getServerConnection();
-			
+
 			ManagedObjectReference mor = vm.getMOR();
 			String moType = mor.getType();
 			String moVal = mor.getVal();
@@ -148,22 +163,15 @@ public class VSphereScanner {
 			setVal(n, "vmwGuestAlternateName", cfg.getAlternateGuestName());
 			setVal(n, "vmwLocationId", cfg.getLocationId());
 
-			/*
-			 * GuestNicInfo[] gni = g.getNet(); if (gni != null) { for
-			 * (GuestNicInfo ni : g.getNet()) {
-			 * System.out.println(ni.macAddress+" "+ni.getNetwork());
-			 * 
-			 * } }
-			 */
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn("",e);
 		}
 		return n;
 	}
 
 	public void scan(VirtualMachine vm) {
-		logger.info("scanning vm: {}", vm.getName());
+		logger.debug("scanning vm: {}", vm.getName());
 		ObjectNode n = toComputeNodeData(vm);
 		updateComputeInstance(n);
 	}
@@ -171,8 +179,7 @@ public class VSphereScanner {
 	ObjectNode toObjectNode(HostSystem host) {
 		ManagedObjectReference mor = host.getMOR();
 		HostHardwareInfo hh = host.getHardware();
-		ObjectNode n = mapper.createObjectNode()
-				.put("macId", getMacId(host))
+		ObjectNode n = mapper.createObjectNode().put("macId", getMacId(host))
 				.put("name", host.getName()).put("vmwMorType", mor.getType())
 				.put("vmwMorVal", mor.getVal()).put("vmwHardwareModel",
 
@@ -190,31 +197,31 @@ public class VSphereScanner {
 
 	}
 
-	public void scanHost(HostSystem host)  {
+	public void scanHost(HostSystem host) {
 		try {
-		ObjectNode n = toObjectNode(host);
 
-		System.out.println(n);
-		updateComputeHost(n);
+			ObjectNode n = toObjectNode(host);
 
-		long now = client.execCypher("return timestamp() as ts").toBlocking()
-				.first().asLong();
+			System.out.println(n);
+			updateComputeHost(n);
 
-		VirtualMachine[] vms = host.getVms();
-		if (vms != null) {
-			for (VirtualMachine vm : vms) {
-				try {
-					scan(vm);
-					updateHostVmRelationship(host, vm);
-				} catch (Exception e) {
-					e.printStackTrace();
+			long now = client.execCypher("return timestamp() as ts")
+					.toBlocking().first().asLong();
+
+			VirtualMachine[] vms = host.getVms();
+			if (vms != null) {
+				for (VirtualMachine vm : vms) {
+					try {
+						scan(vm);
+						updateHostVmRelationship(host, vm);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
-		}
 
-		clearStaleRelationships(host, now);
-		}
-		catch (RemoteException e) {
+			clearStaleRelationships(host, now);
+		} catch (RemoteException e) {
 			throw new VSphereExceptionWrapper(e);
 		}
 

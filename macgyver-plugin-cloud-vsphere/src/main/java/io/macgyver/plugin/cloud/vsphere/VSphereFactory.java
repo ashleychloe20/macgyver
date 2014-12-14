@@ -16,10 +16,12 @@ package io.macgyver.plugin.cloud.vsphere;
 import io.macgyver.core.MacGyverException;
 import io.macgyver.core.service.BasicServiceFactory;
 import io.macgyver.core.service.ServiceDefinition;
+import io.macgyver.plugin.cloud.ComputeScannerManager;
 
 import java.io.IOException;
 import java.net.URL;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.vmware.vim25.mo.ServiceInstance;
@@ -29,8 +31,17 @@ public class VSphereFactory extends BasicServiceFactory<ServiceInstance> {
 
 	public static final String CERTIFICATE_VERIFICATION_DEFAULT = "false";
 
+	@Autowired
+	ComputeScannerManager computeScannerManager;
+	
 	public VSphereFactory() {
 		super("vijava");
+	}
+
+	@Override
+	public void doConfigureDefinition(ServiceDefinition def) {
+		super.doConfigureDefinition(def);
+		computeScannerManager.register(new VSphereComputeServiceScanner(def.getName()));
 	}
 
 	@Override
