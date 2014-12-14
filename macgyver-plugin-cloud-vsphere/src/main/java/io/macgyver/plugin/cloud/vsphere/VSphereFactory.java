@@ -35,7 +35,7 @@ public class VSphereFactory extends BasicServiceFactory<ServiceInstance> {
 	ComputeScannerManager computeScannerManager;
 	
 	public VSphereFactory() {
-		super("vijava");
+		super("vsphere");
 	}
 
 	@Override
