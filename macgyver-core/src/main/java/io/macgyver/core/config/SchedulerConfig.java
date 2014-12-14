@@ -13,18 +13,19 @@
  */
 package io.macgyver.core.config;
 
-import io.macgyver.core.scheduler.AutoScheduler;
-import io.macgyver.core.scheduler.AutoWiringSpringJobFactory;
-import io.macgyver.core.scheduler.SchedulerUtil;
+import io.macgyver.core.scheduler.MacGyverScheduleListener;
+import io.macgyver.core.scheduler.ScheduleScanner;
+import io.macgyver.core.scheduler.MacGyverTaskCollector;
+import io.macgyver.neorx.rest.NeoRxClient;
+import it.sauronsoftware.cron4j.SchedulerListener;
+import it.sauronsoftware.cron4j.TaskCollector;
 
-import java.util.Properties;
-
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 @Configuration
 public class SchedulerConfig {
@@ -35,41 +36,49 @@ public class SchedulerConfig {
 	@Autowired
 	ApplicationContext applicationContext;
 
-	@Bean
-	public SchedulerFactoryBean macSchedulerFactoryBean() {
-
-		SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
-		schedulerFactoryBean.setAutoStartup(schedulerEnabled);
-
-		// This prevents Quartz from checking for updates
-		// http://quartz-scheduler.org/documentation/best-practices
-		Properties quartzProperties = new Properties();
-		quartzProperties.setProperty("org.quartz.scheduler.skipUpdateCheck",
-				"true");
-		schedulerFactoryBean.setQuartzProperties(quartzProperties);
-
-		AutoWiringSpringJobFactory jobFactory = new AutoWiringSpringJobFactory();
-		jobFactory.setApplicationContext(applicationContext);
-		schedulerFactoryBean.setJobFactory(jobFactory);
-		return schedulerFactoryBean;
-	}
-
-	@Bean
-	public AutoWiringSpringJobFactory macSpringJobFactory() {
-		return new AutoWiringSpringJobFactory();
-	}
-
-	@Bean
-	public SchedulerUtil macSchedulerUtil() {
-		return new SchedulerUtil();
-	}
+	@Autowired
+	NeoRxClient neo4j;
+	
 	
 
 	
 	@Bean
-	public AutoScheduler macAutoScheduler() {
-		return new AutoScheduler();
+	public ScheduleScanner macAutoScheduler() {
+		return new ScheduleScanner();
 	}
 
+
+	@Bean
+	public TaskCollector macTaskCollector() {
+		return new MacGyverTaskCollector();
+	}
+	
+	@Bean
+	public SchedulerListener macSchedulerListener() {
+		return new MacGyverScheduleListener();
+	}
+	@Bean
+	public it.sauronsoftware.cron4j.Scheduler macScheduler() {
+		final it.sauronsoftware.cron4j.Scheduler scheduler = new it.sauronsoftware.cron4j.Scheduler();
+		scheduler.addTaskCollector(macTaskCollector());
+		scheduler.setDaemon(true);
+		scheduler.addSchedulerListener(macSchedulerListener());
+		LoggerFactory.getLogger(SchedulerConfig.class).info("starting scheduler: {}",scheduler);
+		scheduler.start();
+		
+		Runnable r = new Runnable() {
+
+			@Override
+			public void run() {
+				LoggerFactory.getLogger(it.sauronsoftware.cron4j.Scheduler.class).info("heartbeat");
+				
+			}
+			
+		};
+		String key = scheduler.schedule("* * * * *",r);
+		
+		
+		return scheduler;
+	}
 	
 }

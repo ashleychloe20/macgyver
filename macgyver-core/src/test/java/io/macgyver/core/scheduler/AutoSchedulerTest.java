@@ -13,7 +13,7 @@
  */
 package io.macgyver.core.scheduler;
 
-import io.macgyver.core.scheduler.AutoScheduler;
+import io.macgyver.core.scheduler.ScheduleScanner;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class AutoSchedulerTest {
 		String data = "blah\nblah\n//   #@Schedule    " + expected + "   \n\nblah";
 		Files.write(data, f, Charsets.UTF_8);
 
-		LineProcessor<Optional<ObjectNode>> lp = new AutoScheduler.CrontabLineProcessor();
+		LineProcessor<Optional<ObjectNode>> lp = new ScheduleScanner.CrontabLineProcessor();
 
 		Optional<ObjectNode> x = Files.readLines(f, Charsets.UTF_8, lp);
 

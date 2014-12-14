@@ -1,4 +1,6 @@
 
-// %%Schedule {"cron":"*/6 * * * * ?"}
+// #@Schedule {"cron":"* * * * *"}
 
 println "hello"
+
+println cron
