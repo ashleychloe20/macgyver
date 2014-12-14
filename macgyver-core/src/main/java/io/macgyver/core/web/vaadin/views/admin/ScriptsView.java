@@ -20,10 +20,12 @@ import io.macgyver.core.auth.MacGyverRole;
 import io.macgyver.core.resource.Resource;
 import io.macgyver.core.resource.ResourceProvider;
 import io.macgyver.core.resource.provider.filesystem.FileSystemResourceProvider;
+import io.macgyver.core.scheduler.MacGyverTask;
 import io.macgyver.core.script.ExtensionResourceProvider;
 import io.macgyver.core.web.vaadin.IndexedJsonContainer;
 import io.macgyver.core.web.vaadin.ViewConfig;
 import io.macgyver.core.web.vaadin.ViewDecorators;
+import it.sauronsoftware.cron4j.Scheduler;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,7 +49,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.VerticalLayout;
 
-@ViewConfig(viewName=ScriptsView.VIEW_NAME,menuPath={"Admin","Scripts"})
+@ViewConfig(viewName = ScriptsView.VIEW_NAME, menuPath = { "Admin", "Scripts" })
 public class ScriptsView extends VerticalLayout implements View {
 
 	public static final String VIEW_NAME = "admin/scripts";
@@ -57,6 +59,7 @@ public class ScriptsView extends VerticalLayout implements View {
 	boolean userHasExecutPermissions = false;
 
 	Logger logger = LoggerFactory.getLogger(ScriptsView.class);
+
 	public ScriptsView() {
 		super();
 		setMargin(true);
@@ -81,7 +84,7 @@ public class ScriptsView extends VerticalLayout implements View {
 					Object columnId) {
 
 				if (!userHasExecutPermissions) {
-					// no button to execute 
+					// no button to execute
 					return null;
 				}
 				Button b = new Button("Invoke");
@@ -120,7 +123,6 @@ public class ScriptsView extends VerticalLayout implements View {
 
 		Button b = new Button("Reload Scripts");
 
-	
 		b.addClickListener(new ClickListener() {
 
 			@Override
@@ -189,8 +191,16 @@ public class ScriptsView extends VerticalLayout implements View {
 	}
 
 	public void scheduleImmediate(Resource r) {
-		throw new UnsupportedOperationException();
+		try {
+			Scheduler scheduler = Kernel.getApplicationContext().getBean(
+					Scheduler.class);
+			ObjectNode n = new ObjectMapper().createObjectNode();
+			n.put("script", r.getPath());
+			MacGyverTask task = new MacGyverTask(n);
+			scheduler.launch(task);
+		} catch (IOException e) {
+			throw new MacGyverException(e);
+		}
 	}
-	
 
 }
