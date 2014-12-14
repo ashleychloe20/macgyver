@@ -11,9 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyver.jclouds.vsphere;
+package io.macgyver.plugin.cloud.vsphere.jclouds;
 
 import static org.junit.Assert.assertEquals;
+import io.macgyver.plugin.cloud.vsphere.jclouds.VSphereApiMetadata;
 
 import org.junit.Assert;
 import org.junit.Test;

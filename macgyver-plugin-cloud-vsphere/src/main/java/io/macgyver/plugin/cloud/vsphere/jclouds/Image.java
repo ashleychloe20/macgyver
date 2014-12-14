@@ -11,19 +11,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyver.jclouds.vsphere;
+package io.macgyver.plugin.cloud.vsphere.jclouds;
 
 import com.google.common.base.Objects;
 
 /**
- * This would be replaced with the real java object related to the underlying data center
+ * This would be replaced with the real java object related to the underlying image
  */
-public class Datacenter {
+public class Image {
 
    public int id;
    public String name;
 
-   public Datacenter(int id, String name) {
+   public Image(int id, String name) {
       this.id = id;
       this.name = name;
    }

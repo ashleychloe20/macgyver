@@ -11,32 +11,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyver.jclouds.vsphere;
+package io.macgyver.plugin.cloud.vsphere.jclouds;
 
 import com.google.common.base.Objects;
 
 /**
- * This would be replaced with the real java object related to the underlying hardware
+ * This would be replaced with the real java object related to the underlying data center
  */
-public class Hardware {
+public class Datacenter {
 
    public int id;
    public String name;
-   public int cores;
-   public int ram;
-   public float disk;
 
-   public Hardware(int id, String name, int cores, int ram, float disk) {
+   public Datacenter(int id, String name) {
       this.id = id;
       this.name = name;
-      this.cores = cores;
-      this.ram = ram;
-      this.disk = disk;
    }
 
    @Override
    public int hashCode() {
-      return Objects.hashCode(id, name, cores, ram, disk);
+      return Objects.hashCode(id, name);
    }
 
    @Override
@@ -48,8 +42,7 @@ public class Hardware {
 
    @Override
    public String toString() {
-      return Objects.toStringHelper(this).add("id", id).add("name", name).add("cores", cores).add("ram", ram)
-            .add("disk", disk).toString();
+      return Objects.toStringHelper(this).add("id", id).add("name", name).toString();
    }
 
 }

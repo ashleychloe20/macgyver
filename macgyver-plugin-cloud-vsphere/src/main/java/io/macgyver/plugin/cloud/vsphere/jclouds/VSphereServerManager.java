@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyver.jclouds.vsphere;
+package io.macgyver.plugin.cloud.vsphere.jclouds;
 
 import io.macgyver.plugin.cloud.vsphere.VSphereExceptionWrapper;
 import io.macgyver.plugin.cloud.vsphere.VSphereQueryTemplate;
@@ -150,7 +150,7 @@ public class VSphereServerManager {
 		throw new UnsupportedOperationException();
 	}
 
-	public Iterable<io.macgyver.jclouds.vsphere.Hardware> listHardware() {
+	public Iterable<io.macgyver.plugin.cloud.vsphere.jclouds.Hardware> listHardware() {
 		return Lists.newArrayList();
 
 	}

@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyver.jclouds.vsphere;
+package io.macgyver.plugin.cloud.vsphere.jclouds;
 
 public class RefUtil {
 // [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}

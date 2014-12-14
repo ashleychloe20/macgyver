@@ -11,10 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyver.jclouds.vsphere;
+package io.macgyver.plugin.cloud.vsphere.jclouds;
 
 
-import io.macgyver.jclouds.vsphere.VSphereApiMetadata;
+import io.macgyver.plugin.cloud.vsphere.jclouds.VSphereApiMetadata;
 
 import java.util.Properties;
 

@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.macgyver.jclouds.vsphere;
+package io.macgyver.plugin.cloud.vsphere.jclouds;
 
 import javax.annotation.Resource;
 import javax.inject.Named;
@@ -28,13 +28,13 @@ import org.jclouds.logging.Logger;
 import com.google.common.base.Function;
 
 @Singleton
-public class VSphereImageToImage implements Function<io.macgyver.jclouds.vsphere.Image, Image> {
+public class VSphereImageToImage implements Function<io.macgyver.plugin.cloud.vsphere.jclouds.Image, Image> {
    @Resource
    @Named(ComputeServiceConstants.COMPUTE_LOGGER)
    protected Logger logger = Logger.NULL;
 
    @Override
-   public Image apply(io.macgyver.jclouds.vsphere.Image from) {
+   public Image apply(io.macgyver.plugin.cloud.vsphere.jclouds.Image from) {
 
       ImageBuilder builder = new ImageBuilder();
       builder.ids(from.id + "");
