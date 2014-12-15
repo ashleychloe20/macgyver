@@ -48,12 +48,12 @@ public class MacGyverTask extends Task {
 
 	Map<String, Object> createArgsFromConfig() {
 		Map<String, Object> args = com.google.common.collect.Maps.newHashMap();
-
-		Iterator<String> t = config.fieldNames();
+		JsonNode params = config.path("parameters");
+		Iterator<String> t = params.fieldNames();
 		while (t.hasNext()) {
 			String param = t.next();
 
-			JsonNode val = config.get(param);
+			JsonNode val = params.get(param);
 			if (val.isValueNode()) {
 				args.put(param, val.asText());
 			}

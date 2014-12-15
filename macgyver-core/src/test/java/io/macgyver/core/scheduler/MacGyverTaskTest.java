@@ -13,13 +13,16 @@ public class MacGyverTaskTest {
 	@Test
 	public void testIt() {
 		
-		ObjectNode n = new ObjectMapper()
+		ObjectNode params = new ObjectMapper()
 		.createObjectNode().put("foo", "bar").put("intval", 2)
 		.put("boolval", true);
 		
-		n.set("objectNode", new ObjectMapper().createObjectNode());
+		params.set("objectNode", new ObjectMapper().createObjectNode());
 		
-		n.set("arrayNode", new ObjectMapper().createObjectNode());
+		params.set("arrayNode", new ObjectMapper().createObjectNode());
+		
+		ObjectNode n = new ObjectMapper().createObjectNode();
+		n.set("parameters", params);
 		
 		MacGyverTask task = new MacGyverTask(n);
 
