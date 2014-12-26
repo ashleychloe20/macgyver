@@ -64,7 +64,7 @@ dependencies {
 	compile "org.bouncycastle:bcpkix-jdk15on:${BOUNCYCASTLE_VERSION}"
 	compile "org.bouncycastle:bcprov-jdk15on:${BOUNCYCASTLE_VERSION}"
 
-    compile("org.codehaus.groovy:groovy-all:2.3.1")
+    compile("org.codehaus.groovy:groovy-all:2.3.9")
 	
 
 	
