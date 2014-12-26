@@ -13,8 +13,6 @@
  */
 package io.macgyver.core.auth;
 
-
-
 import io.macgyver.neorx.rest.NeoRxClient;
 
 import java.util.Iterator;
@@ -48,17 +46,17 @@ public class InternalUserManager {
 
 		String q = "match (u:User) where u.username={username} return u.username,u.roles";
 
-		JsonNode n = neo4j.execCypher(q, "username", id.toLowerCase()).toBlocking().firstOrDefault(null);
-		if (n!=null) {
+		JsonNode n = neo4j.execCypher(q, "username", id.toLowerCase())
+				.toBlocking().firstOrDefault(null);
+		if (n != null) {
 			InternalUser u = new InternalUser();
 			u.username = n.get("u.username").asText();
 
-			
 			u.roles = Lists.newArrayList();
 			JsonNode roles = n.get("u.roles");
-			
-			if (roles!=null && roles.isArray()) {
-				for (int i=0; i<roles.size(); i++) {
+
+			if (roles != null && roles.isArray()) {
+				for (int i = 0; i < roles.size(); i++) {
 					u.roles.add(roles.get(i).asText());
 				}
 			}
@@ -75,20 +73,33 @@ public class InternalUserManager {
 			String q = "match (u:User) where u.username={username} return u.scryptHash";
 			ObjectNode n = new ObjectMapper().createObjectNode();
 			n.put("username", username);
-			JsonNode userNode = neo4j.execCypher(q, "username", username).toBlocking().firstOrDefault(null);
-			if (userNode!=null) {
+			JsonNode userNode = neo4j.execCypher(q, "username", username)
+					.toBlocking().firstOrDefault(null);
+			if (userNode != null) {
 
 				String hashValue = Strings.emptyToNull(userNode.asText());
 				if (hashValue == null) {
 					return false;
 				}
-				return SCryptUtil.check(password,
-						Strings.nullToEmpty(hashValue));
+				try {
+					return SCryptUtil.check(password,
+							Strings.nullToEmpty(hashValue));
+				} catch (IllegalArgumentException e) {
+					// if the hash is invalid, we'll get an
+					// IllegalArgumentException
+					// This could happen if the hashed password was set to
+					// something to prevent login
+					// no need to log a whole stack trace for this
+					logger.info("auth error: " + e.toString());
+					return false;
+				}
 
 			} else {
 				return false;
 			}
-		} catch (Exception e) {
+		}
+
+		catch (Exception e) {
 			logger.warn("auth error", e);
 			return false;
 		}
