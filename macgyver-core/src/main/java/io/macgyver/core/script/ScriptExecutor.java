@@ -130,13 +130,21 @@ public class ScriptExecutor implements ApplicationContextAware {
 
 	}
 
+	protected String qualifyPath(String arg) {
+		if (arg.startsWith("scripts/")) {
+			return arg;
+		}
+		else {
+			return "scripts/"+arg;
+		}
+	}
 	public Object run(String arg, Map<String, Object> vars,
 			boolean failIfNotFound) throws IOException {
 
 		try {
 			Resource r = getExtensionResourceLoader().getResourceByPath(
-					"scripts/" + arg);
-			logger.info("found scriptResource: " + r);
+					qualifyPath(arg));
+			logger.debug("found scriptResource: " + r);
 			return run(r, vars, failIfNotFound);
 		} catch (FileNotFoundException e) {
 			logger.warn("resource not found: " + arg);
@@ -160,7 +168,7 @@ public class ScriptExecutor implements ApplicationContextAware {
 		Object rval = null;
 		try {
 
-			logger.info("script {}", f);
+			logger.debug("script {}", f);
 			if (!f.exists() && !failIfNotFound) {
 				logger.info("init script not found: {}", f);
 				return null;

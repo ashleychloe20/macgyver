@@ -34,7 +34,7 @@ dependencies {
     compile 'joda-time:joda-time:2.3'
     
     compile 'com.lambdaworks:scrypt:1.4.0'
-
+	compile 'it.sauronsoftware.cron4j:cron4j:2.2.5'
 	compile 'com.hazelcast:hazelcast:3.2.5'
 	
 	compile 'aspectj:aspectjweaver:1.5.4'
@@ -51,7 +51,7 @@ dependencies {
     compile 'javax.inject:javax.inject:1'
     compile 'com.ning:async-http-client:1.7.23'
 	compile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
-	compile 'org.quartz-scheduler:quartz:2.2.1'
+
 
     compile("org.springframework.boot:spring-boot-starter-web:${SPRING_BOOT_VERSION}")
     compile("org.springframework.boot:spring-boot-starter-remote-shell:${SPRING_BOOT_VERSION}")
