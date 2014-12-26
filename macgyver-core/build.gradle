@@ -20,10 +20,10 @@ mainClassName = 'io.macgyver.core.ServerMain'
 
 
 dependencies {
-
-   
+    
+    compile "org.codehaus.groovy:groovy-all:${GROOVY_VERSION}"
     compile "org.slf4j:jcl-over-slf4j:${SLF4J_VERSION}"
-	compile "io.macgyver.neorx:neorx:${NEORX_VERSION}"
+    compile "io.macgyver.neorx:neorx:${NEORX_VERSION}"
 
     compile "com.google.guava:guava:${GUAVA_VERSION}"
     compile 'com.google.code.gson:gson:2.2.4'
@@ -40,7 +40,7 @@ dependencies {
 	compile 'aspectj:aspectjweaver:1.5.4'
 	
     compile "org.glassfish:javax.json:1.0.4"
-    compile "org.codehaus.groovy:groovy-all:${GROOVY_VERSION}"
+    
     
     compile "org.bouncycastle:bcprov-jdk15on:${BOUNCYCASTLE_VERSION}"
     compile "org.bouncycastle:bcpkix-jdk15on:${BOUNCYCASTLE_VERSION}"
@@ -63,8 +63,6 @@ dependencies {
 
 	compile "org.bouncycastle:bcpkix-jdk15on:${BOUNCYCASTLE_VERSION}"
 	compile "org.bouncycastle:bcprov-jdk15on:${BOUNCYCASTLE_VERSION}"
-
-    compile("org.codehaus.groovy:groovy-all:2.3.9")
 	
 
 	
