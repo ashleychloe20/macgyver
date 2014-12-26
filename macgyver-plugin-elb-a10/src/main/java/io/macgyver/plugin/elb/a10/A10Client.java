@@ -17,9 +17,18 @@ import io.macgyver.core.jaxrs.SslTrust;
 import io.macgyver.plugin.elb.ElbException;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -244,8 +253,8 @@ public class A10Client {
 
 		if (!validateCertificates) {
 			builder = builder.hostnameVerifier(
-					SslTrust.withoutHostnameVerification()).sslContext(
-					SslTrust.withoutCertificateValidation());
+					withoutHostnameVerification()).sslContext(
+					withoutCertificateValidation());
 		}
 		return builder.build();
 	}
@@ -253,6 +262,58 @@ public class A10Client {
 	protected WebTarget newWebTarget() {
 
 		return newClient().target(url);
+
+	}
+	
+
+	public static HostnameVerifier withoutHostnameVerification() {
+		HostnameVerifier verifier = new HostnameVerifier() {
+
+			@Override
+			public boolean verify(String hostname, SSLSession session) {
+				// TODO Auto-generated method stub
+				return true;
+			}
+		};
+		return verifier;
+	}
+
+	static AtomicReference<SSLContext> trustAllContext = new AtomicReference<>();
+
+	public static synchronized SSLContext withoutCertificateValidation() {
+		try {
+			SSLContext sslContext = trustAllContext.get();
+			if (sslContext != null) {
+				return sslContext;
+			}
+			TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+
+				@Override
+				public X509Certificate[] getAcceptedIssuers() {
+
+					return null;
+				}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] arg0,
+						String arg1) throws CertificateException {
+
+				}
+
+				@Override
+				public void checkClientTrusted(X509Certificate[] arg0,
+						String arg1) throws CertificateException {
+
+				}
+			} };
+			sslContext = SSLContext.getInstance("TLS");
+			sslContext.init(null, trustAllCerts,
+					new java.security.SecureRandom());
+			trustAllContext.set(sslContext);
+			return sslContext;
+		} catch (GeneralSecurityException e) {
+			throw new RuntimeException(e);
+		}
 
 	}
 }

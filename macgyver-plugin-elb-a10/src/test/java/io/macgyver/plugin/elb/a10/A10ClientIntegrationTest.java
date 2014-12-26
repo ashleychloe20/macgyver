@@ -56,6 +56,7 @@ public class A10ClientIntegrationTest extends MacGyverIntegrationTest {
 			try {
 				client.authenticate();
 			} catch (Exception e) {
+				logger.warn("problem communicating with A10",e);
 				hasConnectivity = false;
 				Assume.assumeTrue("junit has connectivity with A10",
 						hasConnectivity);

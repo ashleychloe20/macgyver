@@ -66,7 +66,7 @@ public class SslTrust {
 
 				}
 			} };
-			sslContext = SSLContext.getInstance("SSL");
+			sslContext = SSLContext.getInstance("TLS");
 			sslContext.init(null, trustAllCerts,
 					new java.security.SecureRandom());
 			trustAllContext.set(sslContext);
