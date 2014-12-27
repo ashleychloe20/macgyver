@@ -15,12 +15,12 @@ package io.macgyver.plugin.newrelic;
 
 import java.io.IOException;
 
+import io.macgyver.core.ServiceInvocationException;
 import io.macgyver.test.MacGyverIntegrationTest;
 
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.core.Form;
 
 import org.aspectj.lang.annotation.Before;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
@@ -31,36 +31,39 @@ import com.google.common.base.Strings;
 
 public class NewRelicClientTest extends MacGyverIntegrationTest {
 
-	
 	String apiKey;
-	
+
 	@org.junit.Before
 	public void checkIfKeyIsAvailable() {
-		apiKey = getPrivateProperty("newrelic.apiKey");	
+		apiKey = getPrivateProperty("newrelic.apiKey");
 	}
-	
+
 	@Test
 	public void testX() throws IOException {
 		Assume.assumeFalse(Strings.isNullOrEmpty(apiKey));
 		NewRelicClient c = new NewRelicClient();
 		c.setApiKey(apiKey);
-		
+
 		JsonNode x = c.get("applications");
-		
+		logger.info("response: "+x);
 		Assert.assertTrue(x.has("applications"));
-		
-		
+
 	}
-	
-	
-	@Test(expected=NotAuthorizedException.class)
+
+	@Test
 	public void testInvalidKey() {
 
-		NewRelicClient c = new NewRelicClient();
-		c.setApiKey("invalid");
-		
-		JsonNode x = c.get("applications.json");
-	
+		try {
+			NewRelicClient c = new NewRelicClient();
+			c.setApiKey("invalid");
+
+			JsonNode x = c.get("applications.json");
+
+			Assert.fail("expected exception");
+		} catch (Exception e) {
+			Assertions.assertThat(e).isInstanceOf(
+					ServiceInvocationException.class).hasMessageContaining("Invalid API Key");
+		}
 	}
 
 }
