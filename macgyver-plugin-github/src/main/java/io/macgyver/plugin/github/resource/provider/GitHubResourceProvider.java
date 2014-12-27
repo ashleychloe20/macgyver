@@ -20,9 +20,6 @@ import io.macgyver.core.resource.Resource;
 import io.macgyver.core.resource.ResourceMatcher;
 import io.macgyver.core.resource.ResourceProvider;
 
-import org.eclipse.egit.github.core.Repository;
-import org.eclipse.egit.github.core.service.GitHubService;
-import org.eclipse.egit.github.core.service.RepositoryService;
 import org.kohsuke.github.GHContent;
 import org.kohsuke.github.GHRef;
 import org.kohsuke.github.GHRepository;
@@ -72,8 +69,6 @@ public class GitHubResourceProvider extends ResourceProvider {
 		GHRepository repo = gh.getRepository(getRepoName());
 		GHContent c;
 	
-		RepositoryService rs;
-		Repository repox;
 	
 		for (GHRef ref: repo.getRefs()) {
 			logger.debug("ref type: {}",ref.getObject().getType());

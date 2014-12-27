@@ -15,8 +15,8 @@ configurations {
 
 dependencies {
 
-    compile 'org.kohsuke:github-api:1.53'
-	compile 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
+    compile 'org.kohsuke:github-api:1.59'
+	
     testCompile project(':macgyver-test')
 	 compile project(':macgyver-core')
 	 compile project(':macgyver-plugin-git')
