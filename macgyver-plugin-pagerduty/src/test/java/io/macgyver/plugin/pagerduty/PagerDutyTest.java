@@ -15,15 +15,13 @@ package io.macgyver.plugin.pagerduty;
 
 import java.io.IOException;
 
+import io.macgyver.core.MacGyverException;
 import io.macgyver.core.service.ServiceRegistry;
 import io.macgyver.plugin.pagerduty.PagerDutyClientImpl;
 import io.macgyver.test.MacGyverIntegrationTest;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.core.Form;
-
 import org.aspectj.lang.annotation.Before;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
@@ -40,21 +38,21 @@ public class PagerDutyTest extends MacGyverIntegrationTest {
 	ServiceRegistry registry;
 	
 	
-
 	
 	
-	@Test(expected=BadRequestException.class)
+	@Test(expected=PagerDutyInvocationException.class)
 	public void testInvalidKey() {
 
 
 		PagerDutyClientImpl c = new PagerDutyClientImpl();
 		c.setServiceKey("aaaaaa");
-		c.createIncident(null, "test summary", null, null,null);
+		ObjectNode n = c.createIncident(null, "test summary", null, null,null);
 	
+		Assert.fail();
 	}
 
 	
-	@Test(expected=BadRequestException.class)
+	@Test(expected=MacGyverException.class)
 	public void testMissingServiceKey() {
 
 

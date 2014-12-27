@@ -2,6 +2,7 @@ package io.macgyver.plugin.pagerduty;
 
 import java.util.Properties;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface PagerDutyClient {

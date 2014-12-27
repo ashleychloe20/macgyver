@@ -49,7 +49,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
 
-
 public class A10Client {
 
 	public static final String A10_AUTH_TOKEN_KEY = "token";
@@ -63,7 +62,6 @@ public class A10Client {
 	private static final TimeUnit DEFAULT_TOKEN_CACHE_DURATION_TIME_UNIT = TimeUnit.MINUTES;
 
 	public boolean validateCertificates = true;
-
 
 	public A10Client(String url, String username, String password) {
 		this.url = url;
@@ -110,14 +108,16 @@ public class A10Client {
 	void throwExceptionIfNecessary(ObjectNode response) {
 
 		if (response.has("response") && response.get("response").has("err")) {
-			
-				String code = response.path("response").path("err").path("code").asText();
-				String msg = response.path("response").path("err").path("msg").asText();
-				
-				logger.warn("error response: {}", response);
-				A10RemoteException x = new A10RemoteException(code, msg);
-				throw x;
-			
+
+			String code = response.path("response").path("err").path("code")
+					.asText();
+			String msg = response.path("response").path("err").path("msg")
+					.asText();
+
+			logger.warn("error response: {}", response);
+			A10RemoteException x = new A10RemoteException(code, msg);
+			throw x;
+
 		}
 
 	}
@@ -131,8 +131,7 @@ public class A10Client {
 		Response resp = wt.request().post(
 				Entity.entity(f, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
 
-		ObjectNode obj = resp
-				.readEntity(ObjectNode.class);
+		ObjectNode obj = resp.readEntity(ObjectNode.class);
 
 		throwExceptionIfNecessary(obj);
 
@@ -152,36 +151,38 @@ public class A10Client {
 		}
 
 		if (token == null) {
-			throw new ElbException(
-					"could not obtain auth token");
+			throw new ElbException("could not obtain auth token");
 		}
 		return token;
 
 	}
 
 	public ObjectNode invoke(String method) {
-		Map<String,String> m = Maps.newHashMap();
+		Map<String, String> m = Maps.newHashMap();
 		return invoke(method, m);
 	}
 
-	protected Map<String,String> toMap(String...args) {
-		Map<String,String> m = Maps.newHashMap();
-		if (args==null || args.length==0) {
+	protected Map<String, String> toMap(String... args) {
+		Map<String, String> m = Maps.newHashMap();
+		if (args == null || args.length == 0) {
 			return m;
 		}
-		if (args.length %2 !=0) {
-			throw new IllegalArgumentException("arguments must be in multiples of 2 (key/value)");
-		}	
-		for (int i=0; i<args.length; i+=2) {
+		if (args.length % 2 != 0) {
+			throw new IllegalArgumentException(
+					"arguments must be in multiples of 2 (key/value)");
+		}
+		for (int i = 0; i < args.length; i += 2) {
 			Preconditions.checkNotNull(args[i]);
-			Preconditions.checkNotNull(args[i+1]);
-			m.put(args[i], args[i+1]);
+			Preconditions.checkNotNull(args[i + 1]);
+			m.put(args[i], args[i + 1]);
 		}
 		return m;
 	}
-	public ObjectNode invoke(String method, String...args) {
-		return invoke(method,toMap(args));
+
+	public ObjectNode invoke(String method, String... args) {
+		return invoke(method, toMap(args));
 	}
+
 	public ObjectNode invoke(String method, Map<String, String> params) {
 		if (params == null) {
 			params = Maps.newConcurrentMap();
@@ -212,7 +213,7 @@ public class A10Client {
 
 			ObjectNode response = (ObjectNode) new ObjectMapper()
 					.readTree(rawResponse);
-			
+
 			ObjectMapper mapper = new ObjectMapper();
 			String body = mapper.writerWithDefaultPrettyPrinter()
 					.writeValueAsString(response);
@@ -246,25 +247,30 @@ public class A10Client {
 
 	}
 
-	protected Client newClient() {
+	AtomicReference<Client> clientReference = new AtomicReference<Client>();
 
-		ClientBuilder builder = new ResteasyClientBuilder()
-				.establishConnectionTimeout(10, TimeUnit.SECONDS);
+	protected Client getClient() {
+		
+		// not guaranteed to be singleton, but close enough
+		if (clientReference.get() == null) {
+			ClientBuilder builder = new ResteasyClientBuilder()
+					.establishConnectionTimeout(10, TimeUnit.SECONDS);
 
-		if (!validateCertificates) {
-			builder = builder.hostnameVerifier(
-					withoutHostnameVerification()).sslContext(
-					withoutCertificateValidation());
+			if (!validateCertificates) {
+				builder = builder.hostnameVerifier(
+						withoutHostnameVerification()).sslContext(
+						withoutCertificateValidation());
+			}
+			clientReference.set(builder.build());
 		}
-		return builder.build();
+		return clientReference.get();
 	}
 
 	protected WebTarget newWebTarget() {
 
-		return newClient().target(url);
+		return getClient().target(url);
 
 	}
-	
 
 	public static HostnameVerifier withoutHostnameVerification() {
 		HostnameVerifier verifier = new HostnameVerifier() {
@@ -306,9 +312,14 @@ public class A10Client {
 
 				}
 			} };
+
+			// A10 management port seems to implement a fairly broken HTTPS
+			// stack which
+			// does not support re-negotiation
 			sslContext = SSLContext.getInstance("TLS");
 			sslContext.init(null, trustAllCerts,
 					new java.security.SecureRandom());
+
 			trustAllContext.set(sslContext);
 			return sslContext;
 		} catch (GeneralSecurityException e) {
