@@ -99,7 +99,10 @@ public class ClusterManager {
 	public void processHeartbeat() {
 
 		logger.debug("heartbeat!");
-
+		if (masterUuidRef==null) {
+			logger.info("ClusterManager is not fully initialized...skipping heartbeat");
+			return;
+		}
 		Member localMember = hazelcast.getCluster().getLocalMember();
 	
 		localMember.setLongAttribute("heartbeat", System.currentTimeMillis());
