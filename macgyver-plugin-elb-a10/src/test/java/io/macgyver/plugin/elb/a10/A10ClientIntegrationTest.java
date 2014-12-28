@@ -16,6 +16,7 @@ package io.macgyver.plugin.elb.a10;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
@@ -27,14 +28,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 
-import io.macgyver.plugin.elb.a10.A10Client;
+import io.macgyver.plugin.elb.a10.A10ClientImpl;
 import io.macgyver.plugin.elb.a10.A10RemoteException;
 import io.macgyver.test.MacGyverIntegrationTest;
 
 public class A10ClientIntegrationTest extends MacGyverIntegrationTest {
 
 	static boolean hasConnectivity = true;
-	static A10Client client;
+	static A10ClientImpl client;
 
 	@Before
 	public void setupClient() {
@@ -50,13 +51,13 @@ public class A10ClientIntegrationTest extends MacGyverIntegrationTest {
 			Assume.assumeTrue(!Strings.isNullOrEmpty(url));
 			Assume.assumeTrue(!Strings.isNullOrEmpty(username));
 			Assume.assumeTrue(!Strings.isNullOrEmpty(password));
-			client = new A10Client(url, username, password);
+			client = new A10ClientImpl(url, username, password);
 			client.setCertificateVerificationEnabled(false);
 
 			try {
 				client.authenticate();
 			} catch (Exception e) {
-				logger.warn("problem communicating with A10",e);
+				logger.warn("problem communicating with A10", e);
 				hasConnectivity = false;
 				Assume.assumeTrue("junit has connectivity with A10",
 						hasConnectivity);
@@ -80,8 +81,15 @@ public class A10ClientIntegrationTest extends MacGyverIntegrationTest {
 	}
 
 	@Test
-	public void testTokenCache() {
+	public void testDeviceInfo() {
+		
+		ObjectNode n = client.getDeviceInfo();
+		Assertions.assertThat(n).isNotNull();
+	}
 
+	@Test
+	public void testTokenCache() {
+		
 		String t1 = client.getAuthToken();
 		String t2 = client.getAuthToken();
 
@@ -102,11 +110,21 @@ public class A10ClientIntegrationTest extends MacGyverIntegrationTest {
 	}
 
 	@Test
+	public void testX() {
+		client.getSystemInfo();
+	}
+
+	@Test
+	public void testSystemPerf() {
+		client.getSystemPerformance();
+
+	}
+
+	@Test
 	public void testSLB() {
 
 		ObjectNode slb = client.getServiceGroupAll();
 		logger.info("getServiceGroupAll: {}", slb);
 	}
-
 
 }

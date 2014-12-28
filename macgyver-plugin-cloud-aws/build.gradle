@@ -15,10 +15,10 @@ configurations {
 
 dependencies {
 
-  
     testCompile project(':macgyver-test')
-     compile project(':macgyver-plugin-cloud')
-	 compile project(':macgyver-plugin-cmdb')
-     compile "org.apache.jclouds.provider:aws-ec2:${JCLOUDS_VERSION}"
+    compile project(":macgyver-core")
+    compile project(':macgyver-plugin-cloud')
+    compile project(':macgyver-plugin-cmdb')
+    compile "org.apache.jclouds.provider:aws-ec2:${JCLOUDS_VERSION}"
 }
 

@@ -27,9 +27,9 @@ public class A10ClientServiceFactory extends ServiceFactory<A10Client> {
 	}
 
 	@Override
-	protected A10Client doCreateInstance(ServiceDefinition def) {
+	protected A10ClientImpl doCreateInstance(ServiceDefinition def) {
 
-		A10Client c = new A10Client(def.getProperties().getProperty("url"), def
+		A10ClientImpl c = new A10ClientImpl(def.getProperties().getProperty("url"), def
 				.getProperties().getProperty("username"), def.getProperties()
 				.getProperty("password"));
 
@@ -41,7 +41,7 @@ public class A10ClientServiceFactory extends ServiceFactory<A10Client> {
 		} catch (Exception e) {
 			logger.warn("",e);
 		}
-
+		c.markImmutable();
 		return c;
 	}
 

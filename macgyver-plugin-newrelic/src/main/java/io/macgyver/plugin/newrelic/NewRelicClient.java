@@ -19,8 +19,6 @@ import io.macgyver.core.jaxrs.SslTrust;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.jboss.resteasy.plugins.providers.FormUrlEncodedProvider;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;

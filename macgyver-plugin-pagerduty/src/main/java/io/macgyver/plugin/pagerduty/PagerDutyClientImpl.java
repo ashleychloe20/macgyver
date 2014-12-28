@@ -19,8 +19,6 @@ import io.macgyver.core.jaxrs.SslTrust;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.HttpClient;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
