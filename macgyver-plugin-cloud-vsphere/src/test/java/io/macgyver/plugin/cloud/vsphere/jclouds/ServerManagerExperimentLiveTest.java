@@ -63,7 +63,7 @@ public class ServerManagerExperimentLiveTest extends MacGyverIntegrationTest {
 	@Ignore
 	public void testAndExperiment() {
 	/*	for (ComputeMetadata cmd: context.getComputeService().listNodes()) {
-			System.out.println(cmd);
+			logger.info("computeMetaData: {}",cmd);
 		}
 		*/
 		NodeMetadata md = context.getComputeService().getNodeMetadata("42143f20-3672-298a-75b5-ba18b3390fc4");

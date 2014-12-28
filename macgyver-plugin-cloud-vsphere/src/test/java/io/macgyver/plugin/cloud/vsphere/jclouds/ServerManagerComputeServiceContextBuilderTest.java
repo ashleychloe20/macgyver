@@ -34,7 +34,7 @@ public class ServerManagerComputeServiceContextBuilderTest {
       ComputeServiceContext context = ContextBuilder.newBuilder(
             new VSphereApiMetadata()).credentials("a","b").endpoint("https://somewhere").build(ComputeServiceContext.class);
       
-      System.out.println(context.unwrap());
+
       
       context.close();
   

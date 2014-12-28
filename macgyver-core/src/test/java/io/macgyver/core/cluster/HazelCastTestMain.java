@@ -13,6 +13,9 @@
  */
 package io.macgyver.core.cluster;
 
+import org.jboss.logging.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -23,8 +26,12 @@ import com.hazelcast.core.MembershipListener;
 
 public class HazelCastTestMain {
 
+	static org.slf4j.Logger logger = LoggerFactory
+			.getLogger(HazelCastTestMain.class);
+	
 	public static final void main(String[] args) {
 
+		
 		Config cfg = new Config();
 		cfg.getGroupConfig().setName("macgyver");
 		HazelcastInstance i = Hazelcast.newHazelcastInstance(cfg);
@@ -33,7 +40,7 @@ public class HazelCastTestMain {
 
 			@Override
 			public void memberRemoved(MembershipEvent membershipEvent) {
-				System.out.println("remove: " + membershipEvent);
+				logger.debug("remove: " + membershipEvent);
 
 			}
 
@@ -46,7 +53,7 @@ public class HazelCastTestMain {
 
 			@Override
 			public void memberAdded(MembershipEvent membershipEvent) {
-				System.out.println("add: " + membershipEvent);
+				logger.debug("add: " + membershipEvent);
 
 			}
 		};
@@ -55,11 +62,11 @@ public class HazelCastTestMain {
 		for (int j = 0; j < 9999999; j++) {
 			i.getCluster().getLocalMember()
 					.setLongAttribute("heartbeat", System.currentTimeMillis());
-		
+
 			try {
 				Thread.sleep(1000L);
+			} catch (Exception e) {
 			}
-			catch (Exception e ){}
 		}
 	}
 }

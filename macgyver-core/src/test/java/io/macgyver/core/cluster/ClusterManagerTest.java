@@ -27,19 +27,17 @@ public class ClusterManagerTest extends MacGyverIntegrationTest {
 
 	@Autowired
 	ClusterManager clusterManager;
-	
+
 	@Test
 	public void testCluster() {
-		System.out.println(clusterManager);
-		
+
 		Config cfg = new Config();
 		cfg.getGroupConfig().setName("macgyver");
 		HazelcastInstance i = Hazelcast.newHazelcastInstance(cfg);
-		
-		
-		System.out.println(i.getCluster().getMembers());
-		
-		System.out.println(clusterManager.isMaster());
-		
+
+		logger.info("members: {}", i.getCluster().getMembers());
+
+		logger.info("isMaster: {}", clusterManager.isMaster());
+
 	}
 }

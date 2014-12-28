@@ -63,18 +63,19 @@ public class TestJClouds extends MacGyverIntegrationTest {
 		Set<? extends Location> locations = context.getComputeService()
 				.listAssignableLocations();
 		for (Location location : locations) {
-			System.out.println("LOC: " + location);
+			logger.debug("location: " + location);
 		}
 
 		ComputeService svc = context.getComputeService();
 
 		for (ComputeMetadata cn : svc.listNodes()) {
 			NodeMetadata nm = (NodeMetadata) cn;
-			System.out.println(nm.getId());
-			System.out.println(nm.getLocation());
-			System.out.println(nm.getUserMetadata());
-			System.out.println(nm.getPrivateAddresses());
-			System.out.println(nm.getName());
+			logger.debug("id: {}",nm.getId());
+			logger.debug("location: {}",nm.getLocation());
+			logger.debug("userMetadata: {}",nm.getUserMetadata());
+			logger.debug("privateAddresses: {}",nm.getPrivateAddresses());
+			logger.debug("name: {}",nm.getName());
+
 		}
 
 	}

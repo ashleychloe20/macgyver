@@ -98,7 +98,7 @@ public class VSphereScannerIntegrationTest extends MacGyverIntegrationTest {
 		
 	      
 	      for(ComputeMetadata md: context.getComputeService().listNodes()) {
-	    	  System.out.println(md);
+	    	  logger.info("computeMetaData: {}",md);
 	      }
 	      
 	}
