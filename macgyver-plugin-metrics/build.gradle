@@ -15,8 +15,8 @@ configurations {
 
 dependencies {
 
-	compile 'com.codahale.metrics:metrics-core:3.0.2'
-	compile 'com.codahale.metrics:metrics-graphite:3.0.2'
+	compile 'io.dropwizard.metrics:metrics-core:3.1.0'
+	compile 'io.dropwizard.metrics:metrics-graphite:3.1.0'
 	
 	compile project(':macgyver-core')
 	testCompile project(':macgyver-test')
