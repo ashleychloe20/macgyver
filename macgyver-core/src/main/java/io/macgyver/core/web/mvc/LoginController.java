@@ -13,25 +13,45 @@
  */
 package io.macgyver.core.web.mvc;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.common.io.CharStreams;
+
 @Component(value="macLoginController")
 @Controller
 public class LoginController {
 
-	
+		@Autowired
+		ApplicationContext ctx;
 	
 		@RequestMapping("/login")
 		@ResponseBody
-		public ModelAndView home() {
+		public String home() {
 			
 		
-			ModelAndView m = new ModelAndView("auth/login");
-			return m;
+			Resource r = ctx.getResource("classpath:web/templates/auth/macgyver-login.html");
+			
+			
+			try (Reader reader = new InputStreamReader(r.getInputStream())) {
+				return CharStreams.toString(reader);
+			}
+			catch (IOException e) {
+				return "ERROR";
+			}
+			
+			
+		
 			
 		}
 	

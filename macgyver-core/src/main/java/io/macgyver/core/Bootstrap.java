@@ -135,10 +135,9 @@ public class Bootstrap {
 	
 
 			// need to move this block upstream to Bootstrap
-			System.setProperty("spring.gsp.reloadingEnabled", "true");
+		
 			String templateRoots = computeTemplateRoots();
-			logger.info("spring.gsp.templateRoots=" + templateRoots);
-			System.setProperty("spring.gsp.templateRoots", templateRoots);
+		
 
 		
 
