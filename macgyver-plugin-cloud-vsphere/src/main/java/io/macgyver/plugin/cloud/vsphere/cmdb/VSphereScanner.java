@@ -176,9 +176,8 @@ public class VSphereScanner {
 			setVal(n, "vmwGuestAlternateName", cfg.getAlternateGuestName());
 			setVal(n, "vmwLocationId", cfg.getLocationId());
 
-
 		} catch (Exception e) {
-			logger.warn("",e);
+			logger.warn("", e);
 		}
 		return n;
 	}
@@ -204,18 +203,24 @@ public class VSphereScanner {
 	}
 
 	public void updateHostVmRelationship(HostSystem h, VirtualMachine vm) {
+
+		logger.debug("updating relationship between host={} and vm={}",
+				h.getName(), vm.getName());
 		String cypher = "match (h:ComputeHost {macId:{hostMacUuid} }), (c:ComputeInstance {macId: {computeMacUuid}}) MERGE (h)-[r:HOSTS]->(c) ON CREATE SET r.lastUpdateTs=timestamp() ON MATCH SET r.lastUpdateTs=timestamp() return r";
 		client.execCypher(cypher, "hostMacUuid", getMacId(h), "computeMacUuid",
 				getMacUuid(vm));
+
+		// This might be a better place to remove any *other* rlationships from
+		// VM->Host
 
 	}
 
 	public void scanHost(HostSystem host) {
 		try {
-			logger.info("scanning esxi host: {}",host.getName());
+			logger.info("scanning esxi host {} and vms hosted on it",
+					host.getName());
 			ObjectNode n = toObjectNode(host);
 
-			
 			updateComputeHost(n);
 
 			long now = client.execCypher("return timestamp() as ts")
@@ -226,9 +231,17 @@ public class VSphereScanner {
 				for (VirtualMachine vm : vms) {
 					try {
 						scan(vm);
+					} catch (RuntimeException e) {
+						logger.warn("", e);
+					}
+
+					// Use a separate try/catch for the relationships so that if
+					// something went wrong above, we still get the
+					// relationships right.
+					try {
 						updateHostVmRelationship(host, vm);
-					} catch (Exception e) {
-						e.printStackTrace();
+					} catch (RuntimeException e) {
+						logger.warn("", e);
 					}
 				}
 			}
@@ -246,10 +259,22 @@ public class VSphereScanner {
 	}
 
 	protected void clearStaleRelationships(HostSystem host, long ts) {
+		logger.info(
+				"clearing stale ComputeHost->ComputeInstance relationships for host: {}",
+				host.getName());
 		String cypher = "match (h:ComputeHost {macId:{macId}})-[r:HOSTS]-(c:ComputeInstance) where r.lastUpdateTs<{ts} delete r";
+		
+		// this is for logging only
+			
+			for (JsonNode n : client
+					.execCypher(cypher.replace("delete r", "return r"), "macId", getMacId(host), "ts", ts)
+					.toBlocking().toIterable()) {
+				logger.info("clearing stale relationship: {}", n);
+			}
+		// end of logging section
+
 
 		client.execCypher(cypher, "macId", getMacId(host), "ts", ts);
-
 	}
 
 	public void scanAllHosts() {
@@ -257,28 +282,14 @@ public class VSphereScanner {
 		for (HostSystem host : t.findAllHostSystems()) {
 
 			try {
+
 				scanHost(host);
 
-			} catch (Exception e) {
-				e.printStackTrace();
-
+			} catch (RuntimeException e) {
+				logger.warn("scan host failed: {}", host.getName());
 			}
 
 		}
 	}
 
-	public void scanAllVirtualMachines() {
-		VSphereQueryTemplate t = new VSphereQueryTemplate(serviceInstance);
-		for (VirtualMachine vm : t.findAllVirtualMachines()) {
-
-			try {
-				scan(vm);
-
-			} catch (Exception e) {
-				e.printStackTrace();
-
-			}
-
-		}
-	}
 }

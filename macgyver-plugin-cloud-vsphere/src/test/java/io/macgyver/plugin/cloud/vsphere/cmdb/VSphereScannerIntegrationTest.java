@@ -75,7 +75,7 @@ public class VSphereScannerIntegrationTest extends MacGyverIntegrationTest {
 		
 		VSphereScanner s = new VSphereScanner(serviceInstance,neo4j);
 		
-	//	s.scanAllVirtualMachines();
+
 		s.scanAllHosts();
 
 		
