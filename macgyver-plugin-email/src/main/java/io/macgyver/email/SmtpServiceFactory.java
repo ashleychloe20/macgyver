@@ -33,7 +33,7 @@ public class SmtpServiceFactory extends
 	}
 
 	@Override
-	protected Session doCreateInstance(ServiceDefinition def) {
+	protected Object doCreateInstance(ServiceDefinition def) {
 		final Properties props = def.getProperties();
 		String host = props.getProperty("host");
 		boolean authEnabled = Boolean.parseBoolean(props.getProperty("auth"));
@@ -71,9 +71,9 @@ public class SmtpServiceFactory extends
 	@Override
 	protected void doCreateCollaboratorInstances(
 			ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, Session primaryBean) {
+			ServiceDefinition primaryDefinition, Object primaryBean) {
 		
-		registry.registerCollaborator(primaryDefinition.getName()+"Client", new SmtpClient(primaryBean));
+		registry.registerCollaborator(primaryDefinition.getName()+"Client", new SmtpClient((Session)primaryBean));
 	}
 
 	@Override

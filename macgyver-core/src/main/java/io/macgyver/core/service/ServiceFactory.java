@@ -28,8 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
 import com.google.common.collect.Maps;
 
 public abstract class ServiceFactory<T> implements ApplicationContextAware {
@@ -62,7 +64,7 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 
 	}
 
-	protected abstract T doCreateInstance(ServiceDefinition def);
+	protected abstract Object doCreateInstance(ServiceDefinition def);
 
 	public void doConfigureDefinition(ServiceDefinition def) {}
 	public synchronized Object get(String name) {
@@ -91,7 +93,7 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 			}
 			return instance;
 		} else {
-			T newInstance = doCreateInstance(def);
+			Object newInstance = doCreateInstance(def);
 			if (newInstance==null) {
 				throw new MacGyverException("service factory did not create an instance");
 			}
@@ -108,17 +110,22 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 
 	protected final void createCollaboratorInstances(
 			ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, T primaryBean) {
+			ServiceDefinition primaryDefinition, Object primaryBean) {
 		Preconditions.checkNotNull(registry);
 		Preconditions.checkNotNull(primaryDefinition);
 		Preconditions.checkNotNull(primaryBean);
 		
-		doCreateCollaboratorInstances(registry, primaryDefinition, primaryBean);
+		if (primaryBean instanceof Supplier) {
+			doCreateCollaboratorInstances(registry, primaryDefinition, (T) Supplier.class.cast(primaryBean).get());
+		}
+		else {
+			doCreateCollaboratorInstances(registry, primaryDefinition, (T) primaryBean);
+		}
 	}
 
-	protected abstract void doCreateCollaboratorInstances(
+	protected void doCreateCollaboratorInstances(
 			ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, T primaryBean);
+			ServiceDefinition primaryDefinition, Object primaryBean) {}
 
 	protected final void createServiceDefintions(Set<ServiceDefinition> defSet,
 			String name, Properties props) {
@@ -130,8 +137,8 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 		doCreateCollaboratorDefinitions(defSet, def);
 	}
 
-	public abstract void doCreateCollaboratorDefinitions(
-			Set<ServiceDefinition> defSet, ServiceDefinition def);
+	public  void doCreateCollaboratorDefinitions(
+			Set<ServiceDefinition> defSet, ServiceDefinition def) {}
 
 	public String getServiceType() {
 		return serviceType;
@@ -159,6 +166,6 @@ public abstract class ServiceFactory<T> implements ApplicationContextAware {
 	}
 
 	public String toString() {
-		return Objects.toStringHelper(this).add("serviceType", getServiceType()).toString();
+		return MoreObjects.toStringHelper(this).add("serviceType", getServiceType()).toString();
 	}
 }

@@ -95,10 +95,19 @@ public class ServiceRegistry {
 			}
 		}
 
-		return instance;
+		return unwrap(instance);
 
 	}
 
+	Object unwrap(Object object) {
+		if (object==null) {
+			return object;
+		}
+		if (object instanceof Supplier) {
+			return Supplier.class.cast(object).get();
+		}
+		return object;
+	}
 	private void registerServiceDefintion(ServiceDefinition def) {
 		def.getServiceFactory().doConfigureDefinition(def);
 		logger.info("registering service definition: {}", def);

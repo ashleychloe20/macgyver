@@ -42,16 +42,5 @@ public class HipChatServiceFactory extends
 		return c;
 	}
 
-	@Override
-	protected void doCreateCollaboratorInstances(ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, HipChat primaryBean) {
-		// Not required
-	}
-
-	@Override
-	public void doCreateCollaboratorDefinitions(Set<ServiceDefinition> defSet,
-			ServiceDefinition def) {
-		// Not required
-	}
 
 }

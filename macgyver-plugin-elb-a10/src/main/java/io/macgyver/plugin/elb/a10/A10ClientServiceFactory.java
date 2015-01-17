@@ -45,16 +45,6 @@ public class A10ClientServiceFactory extends ServiceFactory<A10Client> {
 		return c;
 	}
 
-	@Override
-	protected void doCreateCollaboratorInstances(ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, A10Client primaryBean) {
 
-	}
-
-	@Override
-	public void doCreateCollaboratorDefinitions(Set<ServiceDefinition> defSet,
-			ServiceDefinition def) {
-
-	}
 
 }

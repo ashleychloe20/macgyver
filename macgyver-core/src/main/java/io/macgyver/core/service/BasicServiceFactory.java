@@ -26,7 +26,7 @@ public abstract class BasicServiceFactory<T> extends ServiceFactory<T> {
 	@Override
 	protected void doCreateCollaboratorInstances(
 			ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, T primaryBean) {
+			ServiceDefinition primaryDefinition, Object primaryBean) {
 		// NO-OP
 
 	}

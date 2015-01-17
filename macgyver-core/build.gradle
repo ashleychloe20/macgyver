@@ -41,6 +41,8 @@ dependencies {
 	
     compile "org.glassfish:javax.json:1.0.4"
     
+    compile 'com.thoughtworks.proxytoys:proxytoys:1.0'
+    compile 'cglib:cglib-nodep:3.1'
     
     compile "org.bouncycastle:bcprov-jdk15on:${BOUNCYCASTLE_VERSION}"
     compile "org.bouncycastle:bcpkix-jdk15on:${BOUNCYCASTLE_VERSION}"

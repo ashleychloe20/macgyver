@@ -30,16 +30,7 @@ public class TestBeanServiceFactory extends ServiceFactory<TestBean> {
 		logger.info("creating testbean with props: ",def.getProperties().keySet());
 		return new TestBean();
 	}
-	@Override
-	protected void doCreateCollaboratorInstances(ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, TestBean primaryBean) {
 
-	}
-	@Override
-	public void doCreateCollaboratorDefinitions(Set<ServiceDefinition> defSet,
-			ServiceDefinition def) {
-
-	}
 
 
 

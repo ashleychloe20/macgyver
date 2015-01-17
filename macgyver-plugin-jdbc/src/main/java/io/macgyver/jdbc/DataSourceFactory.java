@@ -36,7 +36,7 @@ public class DataSourceFactory extends ServiceFactory<DataSource> {
 	}
 
 	@Override
-	protected DataSource doCreateInstance(ServiceDefinition def) {
+	protected Object doCreateInstance(ServiceDefinition def) {
 		try {
 			Properties p = new Properties();
 			// set some defaults
@@ -65,8 +65,8 @@ public class DataSourceFactory extends ServiceFactory<DataSource> {
 	@Override
 	protected void doCreateCollaboratorInstances(
 			ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, DataSource primaryBean) {
-		JdbcTemplate t = new JdbcTemplate(primaryBean, true);
+			ServiceDefinition primaryDefinition, Object primaryBean) {
+		JdbcTemplate t = new JdbcTemplate((DataSource)primaryBean, true);
 		registry.registerCollaborator(primaryDefinition.getPrimaryName()+"Template", t);
 	}
 

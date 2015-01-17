@@ -34,17 +34,7 @@ public class ServiceDefinitionTest {
 			return Boolean.TRUE;
 		}
 
-		@Override
-		protected void doCreateCollaboratorInstances(
-				ServiceRegistry registry,
-				ServiceDefinition primaryDefinition, Boolean primaryBean) {
-		}
-
-		@Override
-		public void doCreateCollaboratorDefinitions(
-				Set<ServiceDefinition> defSet, ServiceDefinition def) {
-			
-		}
+	
 	};
 	
 	

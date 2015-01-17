@@ -13,13 +13,17 @@
  */
 package io.macgyver.plugin.cloud.vsphere.cmdb;
 
+import static com.google.common.util.concurrent.MoreExecutors.sameThreadExecutor;
+import io.macgyver.neorx.rest.NeoRxClient;
+import io.macgyver.plugin.cloud.vsphere.RefreshingServiceInstance;
+import io.macgyver.test.MacGyverIntegrationTest;
+
 import java.net.URL;
+import java.util.Calendar;
 
 import org.jclouds.ContextBuilder;
-import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.ComputeMetadata;
-import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.concurrent.config.ExecutorServiceModule;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.junit.Assume;
@@ -30,14 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import com.thoughtworks.proxy.factory.CglibProxyFactory;
+import com.thoughtworks.proxy.toys.delegate.DelegationMode;
+import com.thoughtworks.proxy.toys.hotswap.HotSwapping;
 import com.vmware.vim25.mo.ServiceInstance;
-import com.vmware.vim25.mo.VirtualMachine;
-
-import io.macgyver.neorx.rest.NeoRxClient;
-import io.macgyver.plugin.cloud.vsphere.VSphereQueryTemplate;
-import io.macgyver.plugin.cloud.vsphere.cmdb.VSphereScanner;
-import io.macgyver.test.MacGyverIntegrationTest;
-import static com.google.common.util.concurrent.MoreExecutors.sameThreadExecutor;
 public class VSphereScannerIntegrationTest extends MacGyverIntegrationTest {
 
 	
@@ -61,7 +61,16 @@ public class VSphereScannerIntegrationTest extends MacGyverIntegrationTest {
 	
 		
 		try {
-			serviceInstance = new ServiceInstance(new URL(url), user,pass,true);
+			serviceInstance = new RefreshingServiceInstance(new URL(url), user,pass,true);
+			
+		
+			RefreshingServiceInstance cglibProxy  = HotSwapping.proxy(RefreshingServiceInstance.class).with(serviceInstance).mode(DelegationMode.DIRECT).build(new CglibProxyFactory());
+			
+			serviceInstance.getServerConnection().logout();
+			RefreshingServiceInstance.refreshToken(cglibProxy);
+			cglibProxy.currentTime();
+			
+			serviceInstance = cglibProxy;
 		}
 		catch (Exception e) {
 			e.printStackTrace();

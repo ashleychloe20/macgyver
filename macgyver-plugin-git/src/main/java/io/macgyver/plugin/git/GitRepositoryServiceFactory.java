@@ -73,19 +73,7 @@ public class GitRepositoryServiceFactory extends ServiceFactory<GitRepository>{
 		return repo;
 	}
 
-	@Override
-	protected void doCreateCollaboratorInstances(ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, GitRepository primaryBean) {
-		
-		
-	}
 
-	@Override
-	public void doCreateCollaboratorDefinitions(Set<ServiceDefinition> defSet,
-			ServiceDefinition def) {
-	
-		
-	}
 
 
 

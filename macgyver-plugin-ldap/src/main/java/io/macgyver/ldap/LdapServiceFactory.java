@@ -34,7 +34,7 @@ public class LdapServiceFactory extends ServiceFactory<LdapContextSource> {
 	}
 
 	@Override
-	public LdapContextSource doCreateInstance(ServiceDefinition def) {
+	public Object doCreateInstance(ServiceDefinition def) {
 		try {
 			Properties props = def.getProperties();
 			LdapContextSource cs = new LdapContextSource();
@@ -53,7 +53,7 @@ public class LdapServiceFactory extends ServiceFactory<LdapContextSource> {
 
 	@Override
 	protected void doCreateCollaboratorInstances(ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, LdapContextSource primaryBean) {
+			ServiceDefinition primaryDefinition, Object primaryBean) {
 		LdapTemplate template = new LdapTemplate(
 				(LdapContextSource) primaryBean);
 		registry.registerCollaborator(primaryDefinition.getName() + "Template",

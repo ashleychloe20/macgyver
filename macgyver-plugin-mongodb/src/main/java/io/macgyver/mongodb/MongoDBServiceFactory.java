@@ -41,7 +41,7 @@ public class MongoDBServiceFactory extends ServiceFactory<MongoClient> {
 		super("mongodb");
 	}
 
-	public MongoClient doCreateInstance(ServiceDefinition def) {
+	public Object doCreateInstance(ServiceDefinition def) {
 		Properties props = def.getProperties();
 		try {
 			return new ExtendedMongoClient(new MongoClientURI(
@@ -129,7 +129,7 @@ public class MongoDBServiceFactory extends ServiceFactory<MongoClient> {
 	@Override
 	protected void doCreateCollaboratorInstances(
 			ServiceRegistry registry,
-			ServiceDefinition primaryDefinition, MongoClient primaryBean) {
+			ServiceDefinition primaryDefinition, Object primaryBean) {
 		
 		ExtendedMongoClient c = (ExtendedMongoClient) primaryBean;
 		DB db = c.getDB(c.getDatabaseName());
